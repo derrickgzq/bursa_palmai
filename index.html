@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" class = "">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bursa PalmAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body class="font-sans bg-gray-50 text-black min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 min-h-screen sticky top-0 bg-white shadow-md p-6 flex flex-col justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-green-600 mb-6">Bursa PalmAI</h2>
+      <nav class="space-y-4" id="sidebar-nav">
+        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold">Mainpage</a>
+        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500">Company</a>
+        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500">Commodities</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500">MPOB Statistics</a>
+        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500">Export Import</a>
+        <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500">PalmAI Chatbot</a>
+      </nav>
+    </div>
+
+  </aside>
+
+  <!-- Main content -->
+  <div class="flex-1 p-6 max-w-5xl mx-auto">
+    <!-- Tab Contents -->
+    <section id="mainpage" class="tab-content">
+      <header class="text-center mb-8">
+        <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
+        <p class="text-lg text-gray-700">An AI, data-powered Bursa Malaysia Plantation Dashboard App</p>
+        <canvas id="bubbleChart"></canvas>
+      </header>
+    </section>
+
+    <section id="company" class="tab-content hidden">
+    <div x-show="activeTab === 'company'" x-init="initCompanyTab()" class="p-6 bg-white rounded-lg shadow-md">        
+      <!-- Header Section -->
+      <div class="mb-6">
+        <!-- Title and Dropdown in one row -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+          <h2 id="company-title" class="text-2xl font-bold text-green-600">
+            Kuala Lumpur Kepong Berhad
+          </h2>
+          <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
+            <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
+            <option value="IOI|1961.KL">IOI Corporation Berhad</option>
+            <option value="SDG|5285.KL">Sime Darby Guthrie</option>
+            <option value="FGV|5222.KL">FGV Holdings Berhad</option>
+          </select>
+        </div>
+        
+        <!-- Description below -->
+        <p id="company-description" class="text-gray-700 text-justify"></p>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Share Price Chart -->
+        <div class="h-[400px] min-h-[300px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Company Share Price</h3>
+          <div class="relative h-full w-full">
+            <canvas id="price-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Production Chart -->
+        <div class="h-[400px] min-h-[300px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Monthly Production</h3>
+          <div class="relative h-full w-full">
+            <canvas id="prod-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <section id="commodities" class="tab-content hidden">
+      <div class="flex flex-col space-y-8">
+        <!-- Soybean Chart -->
+        <div class="h-[600px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Soybean Futures</h3>
+          <canvas id="soy-price-chart" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Fertilizer Chart -->
+        <div class="h-[600px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Fertilizer Prices</h3>
+          <canvas id="fert-chart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="mpobstats" class="tab-content hidden">
+      <h2 class="text-lg font-semibold text-green-600 mb-2">Palm Oil Mills Map</h2>
+      <div id="map" style="height: 500px; border-radius: 12px;"></div>
+    </section>
+
+    <section id="exportimport" class="tab-content hidden">
+      <div class="flex flex-col space-y-8">
+        <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
+        <div class="h-[600px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
+          <canvas id="4th-chart" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Chemical and Related Products NEC Chart -->
+        <div class="h-[600px]">
+          <h3 class="text-lg font-semibold text-green-600 mb-2">Chemical and Related Products NEC Export and Import</h3>
+          <canvas id="5th-chart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="aichatbot" class="tab-content hidden">
+      <p class="text-center py-10">Bursa PalmAI chatbot content goes here...</p>
+    </section>
+
+    <footer class="mt-10 text-center text-sm text-gray-700">
+      &copy; 2025 Bursa PalmAI. All rights reserved.
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+  
+//STARTING OF JAVASCRIPT FROM HERE
+// MAINPAGE
+function createBubbleChart(data) {
+      const ctx = document.getElementById('bubbleChart').getContext('2d');
+
+      const marketCaps = data.map(d => d.market_cap_billion);
+      const minCap = Math.min(...marketCaps);
+      const maxCap = Math.max(...marketCaps);
+
+      const minRadius = 5;
+      const maxRadius = 20;
+
+      const chartData = data.map((item, index) => {
+        const normalized = (item.market_cap_billion - minCap) / (maxCap - minCap);
+        // Compress differences with sqrt or cube root
+        const compressed = Math.pow(normalized, 0.3); // smaller exponent → more compression
+        const radius = minRadius + compressed * (maxRadius - minRadius);
+        return {
+          x: index + 1,
+          y: item.market_cap_billion,
+          r: radius
+        };
+      });
+
+      const labels = data.map(item => item.company);
+
+      new Chart(ctx, {
+        type: 'bubble',
+        data: {
+          datasets: [{
+            label: 'Market Cap (Billion MYR)',
+            data: chartData,
+            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+            borderColor: 'rgba(34, 197, 94, 1)',
+            borderWidth: 1,
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'linear',
+              position: 'bottom',
+              ticks: {
+                stepSize: 1,
+                callback: function(value) {
+                  return labels[value - 1] || '';
+                }
+              },
+              title: {
+                display: true,
+                text: 'Company'
+              },
+              min: 0,
+              max: labels.length + 1
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Market Cap (Billion MYR)'
+              },
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = labels[context.parsed.x - 1];
+                  const value = context.parsed.y;
+                  return `${label}: ${value} Billion MYR`;
+                }
+              }
+            },
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+
+async function fetchMarketCapData() {
+  try {
+    const response = await fetch('http://localhost:8000/marketcap-data');  // FULL URL with port
+    if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
+    return await response.json();
+  } catch (err) {
+    console.error('Failed to fetch market cap data:', err);
+    return [];
+  }
+}
+
+fetchMarketCapData().then(data => {
+  if (data.length) {
+    createBubbleChart(data);
+  } else {
+    document.getElementById('bubbleChart').parentElement.innerHTML = '<p>No data to display</p>';
+  }
+});
+// MAINPAGE
+
+// COMPANY
+const companySelect = document.getElementById("company-select");
+const companyTitle = document.getElementById("company-title");
+const companyDescriptionEl = document.getElementById("company-description"); // Make sure this exists
+
+const nameMap = {
+  KLK: "Kuala Lumpur Kepong Berhad",
+  IOI: "IOI Corporation Berhad",
+  SDG: "Sime Darby Guthrie",
+  FGV: "FGV Holdings Berhad"
+};
+
+// Production Data
+async function fetchCompanyData(company) {
+  const response = await fetch(`http://localhost:8000/prod-data?company=${company}`);
+  const result = await response.json();
+  return result.data;
+}
+
+function getColor(index) {
+  const colors = [
+    "rgba(34, 197, 94, 0.7)",
+    "rgba(59, 130, 246, 0.7)",
+    "rgba(234, 179, 8, 0.7)",
+    "rgba(16, 185, 129, 0.7)",
+    "rgba(139, 92, 246, 0.7)",
+    "rgba(244, 63, 94, 0.7)"
+  ];
+  return colors[index % colors.length];
+}
+
+function buildBarChart(data, companyCode) {
+  const ctx = document.getElementById("prod-chart").getContext("2d");
+  const months = [...new Set(data.map(item => item.month))];
+  const rawMats = [...new Set(data.map(item => item.raw_mat))];
+
+  const datasets = rawMats.map((mat, i) => ({
+    label: mat,
+    data: months.map(month => {
+      const item = data.find(d => d.month === month && d.raw_mat === mat);
+      return item ? Number(item.volume) : 0;
+    }),
+    backgroundColor: getColor(i),
+  }));
+
+  if (window.prodChart) window.prodChart.destroy();
+
+  window.prodChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: months, datasets },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      animation: {
+        onComplete: () => {
+          window.prodChart.resize();
+        }
+      },
+      scales: {
+        x: { 
+          title: { display: true, text: 'Month' },
+          grid: { display: false } 
+        },
+        y: { 
+          beginAtZero: true, 
+          title: { display: true, text: 'Volume' },
+          grid: { display: false } 
+        }
+      },
+      plugins: {
+        legend: { labels: { color: "black" } },
+        title: {
+          display: true,
+          text: `${nameMap[companyCode]} Monthly Production by Raw Material`,
+          color: "black"
+        }
+      }
+    }
+  });
+}
+
+// Share Price Data
+async function fetchPriceData(ticker) {
+  const response = await fetch(`http://localhost:8000/price-data?ticker=${ticker}`);
+  const result = await response.json();
+  return result;
+}
+
+function drawPriceChart(data, ticker) {
+  const ctx = document.getElementById("price-chart").getContext("2d");
+  const labels = data.dates;
+  const prices = data.prices;
+
+  if (window.priceChart) window.priceChart.destroy();
+
+  window.priceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: `${ticker} Closing Price`,
+        data: prices,
+        borderColor: 'rgba(34, 197, 94, 0.7)', 
+        backgroundColor: 'rgba(34, 197, 94, 0.07)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      responsive: true,
+      animation: {
+        onComplete: () => {
+          window.priceChart.resize();
+        }
+      },
+      scales: {
+        x: { 
+          title: { display: true, text: 'Date' },
+          grid: { display: false } 
+        },
+        y: { 
+          title: { display: true, text: 'Price (MYR)' },
+          grid: { display: false } 
+        }
+      },
+      plugins: {
+        legend: { labels: { color: "black" } },
+        title: { 
+          display: true, 
+          text: `Share Price for ${ticker}`,
+          color: "black"
+        }
+      }
+    }
+  });
+}
+
+// Company description data
+async function fetchCompanyDescription(ticker) {
+  const response = await fetch(`http://localhost:8000/company-summary?ticker=${ticker}`);
+  if (!response.ok) {
+    console.error("Failed to fetch company description");
+    return "";
+  }
+  return await response.text();
+}
+
+// When dropdown changes
+companySelect.addEventListener("change", async (e) => {
+  const [companyCode, shareCode] = e.target.value.split("|");
+
+  // Update title
+  companyTitle.textContent = nameMap[companyCode];
+
+  // Fetch and update description
+  const description = await fetchCompanyDescription(shareCode);
+  if (companyDescriptionEl) {
+    companyDescriptionEl.textContent = description;
+  }
+
+  // Fetch and rebuild charts
+  const prodData = await fetchCompanyData(companyCode);
+  buildBarChart(prodData, companyCode);
+
+  const priceData = await fetchPriceData(shareCode);
+  drawPriceChart(priceData, shareCode);
+});
+
+// Initialize first load
+async function initCompanyTab() {
+  const selectedOption = companySelect.options[companySelect.selectedIndex];
+  const [companyCode, shareCode] = selectedOption.value.split("|");
+
+  companyTitle.textContent = nameMap[companyCode];
+
+  // Fetch and update description
+  const description = await fetchCompanyDescription(shareCode);
+  if (companyDescriptionEl) {
+    companyDescriptionEl.textContent = description;
+  }
+
+  const prodData = await fetchCompanyData(companyCode);
+  buildBarChart(prodData, companyCode);
+
+  const priceData = await fetchPriceData(shareCode);
+  drawPriceChart(priceData, shareCode);
+}
+
+// Tab click handler - no longer needed for resizing, but kept for initialization
+document.querySelector("[data-tab='company']").addEventListener("click", initCompanyTab);
+
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", initCompanyTab);
+//COMPANY
+
+//SIDEBAR
+  // Tab switching logic
+  const tabs = document.querySelectorAll(".tab-link");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  function showTab(tabId) {
+    tabContents.forEach(section => {
+      section.classList.toggle("hidden", section.id !== tabId);
+    });
+
+    tabs.forEach(tab => {
+      tab.classList.toggle("font-semibold", tab.dataset.tab === tabId);
+      tab.classList.toggle("text-green-600", tab.dataset.tab === tabId);
+      tab.classList.toggle("dark:text-green-400", tab.dataset.tab === tabId);
+    });
+
+    if (tabId === "company") {
+      const [companyCode, shareCode] = companySelect.value.split("|");
+      companyTitle.textContent = nameMap[companyCode];
+
+      fetchCompanyData(companyCode).then(data => buildBarChart(data, companyCode));
+      fetchPriceData(shareCode).then(data => drawPriceChart(data, shareCode));
+    }
+  }
+//SIDEBAR
+
+//COMMODITIES
+  //soybean price
+  async function fetchSoyPriceData() {
+    const response = await fetch("http://localhost:8000/soy-price-data?ticker=ZL=F");
+    const result = await response.json();
+    return result;
+  }
+
+  function drawSoyPriceChart(data) {
+    const ctx = document.getElementById("soy-price-chart").getContext("2d");
+
+    if (window.soyChart) window.soyChart.destroy();
+
+    window.soyChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.dates,
+        datasets: [{
+          label: "Soybean Oil Futures (ZL=F)",
+          data: data.prices,
+          borderColor: "rgba(34, 197, 94, 0.7)",       // blue
+          backgroundColor: "rgba(34, 197, 94, 0.07)",  // light fill
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            title: { display: true, text: "Date" },
+            ticks: { color: "black" },
+            grid: { display: false } 
+          },
+          y: {
+            title: { display: true, text: "Price (USD)" },
+            ticks: { color: "black" },
+            grid: { display: false } 
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: "black"
+            }
+          },
+          title: {
+            display: true,
+            text: "Soybean Oil Futures (Last 6 Months)",
+            color: "black",
+            font: { size: 18 }
+          }
+        }
+      }
+    });
+  }
+
+  // Optional: Only render the chart when the 'commodities' tab is opened
+  document.querySelectorAll(".tab-link").forEach(tab => {
+    tab.addEventListener("click", (e) => {
+      const tabId = tab.dataset.tab;
+      if (tabId === "commodities") {
+        fetchSoyPriceData().then(data => drawSoyPriceChart(data));
+      }
+    });
+  });
+
+  async function renderFertilizerChart() {
+    const response = await fetch("http://localhost:8000/fertilizer-data"); // Update URL if needed
+    const data = await response.json();
+
+    const labels = data["Month"];
+    const colors = {
+      "urea": "rgba(255, 99, 132, 1)",
+      "triple-superphosphate": "rgba(54, 162, 235, 1)",
+      "rock-phosphate": "rgba(255, 206, 86, 1)",
+      "potassium-chloride": "rgba(75, 192, 192, 1)",
+      "dap-fertilizer": "rgba(153, 102, 255, 1)"
+    };
+
+    const datasets = Object.keys(data)
+      .filter(key => key !== "Month")
+      .map(key => ({
+        label: key.replace(/-/g, ' '),
+        data: data[key],
+        fill: false,
+        borderColor: colors[key],
+        tension: 0.3
+      }));
+
+    new Chart(document.getElementById("fert-chart"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Fertilizer Prices (MYR)",
+            font: { size: 18 }
+          },
+          legend: {
+            position: 'bottom'
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Month" },
+            grid: { display: false } 
+          },
+          y: {
+            title: { display: true, text: "Price (MYR)" },
+            grid: { display: false } 
+          }
+        }
+      }
+    });
+  }
+
+  // Call this on page load or tab click
+  renderFertilizerChart();
+//COMMODITIES
+
+//EXPORT IMPORT
+  async function loadEXIMData() {
+      const res = await fetch("http://localhost:8000/exim-data");
+      const data = await res.json();
+
+      const labels = data.date;
+
+      const animal_exports = data.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
+      const animal_imports = data.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
+      const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
+
+      const chemical_exports = data.exports_Chemical_and_Related_Products_NEC;
+      const chemical_imports = data.imports_Chemical_and_Related_Products_NEC;
+      const chemical_net = chemical_exports.map((val, i) => val - chemical_imports[i]);
+
+      // Create chart for Animal Section
+      new Chart(document.getElementById("4th-chart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Net Export",
+              data: animal_net,
+              backgroundColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"),
+              borderColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"),
+              borderWidth: 1,
+              type: 'bar',
+              yAxisID: 'y',
+            },
+            {
+              label: "Exports",
+              data: animal_exports,
+              borderColor: "blue",
+              backgroundColor: "rgba(0, 0, 255, 0.1)",
+              type: "line",
+              yAxisID: 'y',
+            },
+            {
+              label: "Imports",
+              data: animal_imports,
+              borderColor: "orange",
+              backgroundColor: "rgba(255, 165, 0, 0.1)",
+              type: "line",
+              yAxisID: 'y',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Create chart for Chemical Section
+      new Chart(document.getElementById("5th-chart"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Net Export",
+              data: chemical_net,
+              backgroundColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"),
+              borderColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"),
+              borderWidth: 1,
+              type: 'bar',
+              yAxisID: 'y',
+            },
+            {
+              label: "Exports",
+              data: chemical_exports,
+              borderColor: "green",
+              backgroundColor: "rgba(0, 255, 0, 0.1)",
+              type: "line",
+              yAxisID: 'y',
+            },
+            {
+              label: "Imports",
+              data: chemical_imports,
+              borderColor: "red",
+              backgroundColor: "rgba(255, 0, 0, 0.1)",
+              type: "line",
+              yAxisID: 'y',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+  loadEXIMData();
+//EXPORT IMPORT
+
+//MPOB
+let map; // Make it global so we can call invalidateSize later
+let rspolayer, oplayer, millslayer; // To store the polygon layer
+
+document.addEventListener("DOMContentLoaded", function () {
+  const mapContainer = document.getElementById("map");
+  map = L.map("map").setView([4.310756684156521, 108.3481479634814], 6); // Malaysia center
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: 'Map data © OpenStreetMap contributors',
+  }).addTo(map);
+
+  // Fetch shapefile as GeoJSON and create a layer
+  fetch("http://127.0.0.1:8000/rsposhapefile")
+    .then(res => res.json())
+    .then(geojson => {
+      rspolayer = L.geoJSON(geojson, {
+        style: {
+          color: "green",
+          weight: 1.5,
+          opacity: 0.7,
+          fillOpacity: 0.3,
+        },
+        onEachFeature: function (feature, layer) {
+          const company = feature.properties.company || "N/A";
+          const plantation = feature.properties.plantation || "N/A";
+          const tooltipContent = `<b>Company:</b> ${company}<br><b>Plantation:</b> ${plantation}`;
+
+          layer.bindTooltip(tooltipContent, {
+            permanent: false, // shows on hover
+            direction: "top",
+            className: "leaflet-tooltip"
+          });
+        }
+      });
+
+      rspolayer.addTo(map); // add to map
+      addLayerControl();
+    });
+  fetch("http://127.0.0.1:8000/opshapefile")
+    .then(res => res.json())
+    .then(geojson => {
+      oplayer = L.geoJSON(geojson, {
+        style: {
+          color: "blue",
+          weight: 1.5,
+          opacity: 0.7,
+          fillOpacity: 0.3,
+        },
+        onEachFeature: function (feature, layer) {
+          const company = feature.properties.company || "N/A";
+          const name = feature.properties.name || "N/A";
+          const tooltipContent = `<b>Company:</b> ${company}<br><b>Name:</b> ${name}`;
+
+          layer.bindTooltip(tooltipContent, {
+            permanent: false, // shows on hover
+            direction: "top",
+            className: "leaflet-tooltip"
+          });
+        }
+      });
+
+      oplayer.addTo(map);
+      addLayerControl(); // Add control after both layers loaded
+    });
+    fetch("http://127.0.0.1:8000/mills")
+      .then(res => res.json())
+      .then(geojson => {
+        millslayer = L.geoJSON(geojson, {
+          pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng, {
+              radius: 2,
+              fillColor: "black",
+              color: "#000",
+              weight: 1,
+              opacity: 1,
+              fillOpacity: 0.8
+            });
+          },
+          onEachFeature: function (feature, layer) {
+            const name = feature.properties.Mill_Name || "Unknown";
+            const company = feature.properties.Parent_Company || "Unknown";
+            layer.bindTooltip(`<b>Mill:</b> ${name}<br><b>Company:</b> ${company}`);
+          }
+        });
+        millslayer.addTo(map);
+        addLayerControl();
+      });
+
+    function addLayerControl() {
+    if (rspolayer && oplayer && millslayer && !map.layerControlAdded) {
+      const overlayMaps = {
+        "RSPO Plantation": rspolayer,
+        "Oil Palm Consessions": oplayer,
+        "Mills": millslayer
+      };
+      L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
+      map.layerControlAdded = true;
+    }
+  }
+});
+
+  // Example function to switch tabs and fix map rendering
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.add('hidden');
+    });
+
+    const activeTab = document.getElementById(tabId);
+    activeTab.classList.remove('hidden');
+
+    if (tabId === 'mpobstats' && map) {
+      setTimeout(() => {
+        map.invalidateSize(); // Important fix!
+      }, 100); // Short delay ensures it's visible first
+    }
+  }
+//MPOB
+
+//MISCELLANEOUS
+  // Default to mainpage
+  showTab("mainpage");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", (e) => {
+      e.preventDefault();
+      showTab(tab.dataset.tab);
+    });
+  });
+//MISCELLANEOUS
+
+//ENDING OF JAVASCRIPT FROM HERE
+</script>
+</body>
+</html>
