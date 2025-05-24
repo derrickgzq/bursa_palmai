@@ -2,11 +2,12 @@ import pandas as pd
 from datetime import datetime, timedelta
 import yfinance as yf
 
-end = datetime.today()
-start = end - timedelta(days=180)  # last 6 months
-data = yf.download('AAPL', start=start, end=end)
+# Replace with your ticker
+ticker = yf.Ticker("2445.KL")  # Example: "2445.KL" for KPJ Healthcare Berhad
 
-ticker = yf.Ticker("2445.KL")
-description = ticker.info.get('longBusinessSummary')
+# Get quarterly earnings DataFrame
+earnings = ticker.quarterly_financials
 
-print(description)
+# Display the latest 3 quarters
+print("Latest 3 Quarterly Earnings:")
+print(earnings)  # Show top 3 most recent quarters

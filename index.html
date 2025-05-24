@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bursa PalmAI App</title>
+  <title>Bursa PalmAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -78,6 +78,13 @@
           </div>
         </div>
       </div>
+      <!-- Quarterly Earnings Chart Section -->
+    <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
+      <h3 class="text-lg font-semibold text-green-600 mb-2">Company Quarterly Earnings</h3>
+      <div class="relative h-full w-full">
+        <canvas id="earnings-chart"></canvas>
+      </div>
+    </div>
     </div>
   </section>
 
@@ -98,8 +105,8 @@
     </section>
 
     <section id="mpobstats" class="tab-content hidden">
-      <h2 class="text-lg font-semibold text-green-600 mb-2">Palm Oil Mills Map</h2>
-      <div id="map" style="height: 500px; border-radius: 12px;"></div>
+      <h2 class="text-2xl font-bold text-green-600 mb-2">Palm Oil Map</h2>
+      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px;"></div>
     </section>
 
     <section id="exportimport" class="tab-content hidden">
@@ -379,6 +386,98 @@ async function fetchCompanyDescription(ticker) {
   return await response.text();
 }
 
+// company earnings data
+async function fetchEarnings(ticker) {
+  const res = await fetch(`/company-earnings?ticker=${ticker}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch earnings for ${ticker}`);
+  }
+  const json = await res.json();
+  return json;
+}
+
+let chartInstance = null;  // Declare globally or in module scope
+
+function drawEarningsChart(data) {
+  const labels = data.data.map(d => d.Quarter);
+  const revenue = data.data.map(d => d["Total Revenue"]);
+  const netIncome = data.data.map(d => d["Net Income"]);
+  const margin = data.data.map(d => d["Operating Margin"]);
+
+  const ctx = document.getElementById("earnings-chart").getContext("2d");
+
+  // Destroy previous chart instance to avoid overlap
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Total Revenue (RM mil)",
+          data: revenue,
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          yAxisID: 'y',
+        },
+        {
+          label: "Net Income (RM mil)",
+          data: netIncome,
+          backgroundColor: "rgba(153, 102, 255, 0.6)",
+          yAxisID: 'y',
+        },
+        {
+          label: "Operating Margin (%)",
+          data: margin,
+          type: "line",
+          borderColor: "rgba(255, 99, 132, 1)",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderWidth: 2,
+          fill: false,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
+      stacked: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Quarterly Earnings – ${data.company}`
+        }
+      },
+      scales: {
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: {
+            display: true,
+            text: 'RM (Million)'
+          }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          grid: {
+            drawOnChartArea: false
+          },
+          title: {
+            display: true,
+            text: 'Operating Margin (%)'
+          }
+        }
+      }
+    }
+  });
+}
+
 // When dropdown changes
 companySelect.addEventListener("change", async (e) => {
   const [companyCode, shareCode] = e.target.value.split("|");
@@ -398,6 +497,9 @@ companySelect.addEventListener("change", async (e) => {
 
   const priceData = await fetchPriceData(shareCode);
   drawPriceChart(priceData, shareCode);
+
+  const earningsData = await fetchEarnings(shareCode);
+  drawEarningsChart(earningsData, shareCode);
 });
 
 // Initialize first load
@@ -407,7 +509,6 @@ async function initCompanyTab() {
 
   companyTitle.textContent = nameMap[companyCode];
 
-  // Fetch and update description
   const description = await fetchCompanyDescription(shareCode);
   if (companyDescriptionEl) {
     companyDescriptionEl.textContent = description;
@@ -418,6 +519,11 @@ async function initCompanyTab() {
 
   const priceData = await fetchPriceData(shareCode);
   drawPriceChart(priceData, shareCode);
+
+  const earningsData = await fetchEarnings(shareCode);
+  setTimeout(() => {
+    drawEarningsChart(earningsData, shareCode);
+  }, 100); 
 }
 
 // Tab click handler - no longer needed for resizing, but kept for initialization
@@ -720,8 +826,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
       });
-
-      rspolayer.addTo(map); // add to map
+      //rspolayer.addTo(map); // add to map
       addLayerControl();
     });
   fetch("http://127.0.0.1:8000/opshapefile")
@@ -746,8 +851,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
       });
-
-      oplayer.addTo(map);
+      //oplayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
     fetch("http://127.0.0.1:8000/mills")
@@ -756,30 +860,174 @@ document.addEventListener("DOMContentLoaded", function () {
         millslayer = L.geoJSON(geojson, {
           pointToLayer: function (feature, latlng) {
             return L.circleMarker(latlng, {
-              radius: 2,
+              radius: 1,
               fillColor: "black",
               color: "#000",
-              weight: 1,
+              weight: 0.8,
               opacity: 1,
               fillOpacity: 0.8
             });
           },
           onEachFeature: function (feature, layer) {
             const name = feature.properties.Mill_Name || "Unknown";
-            const company = feature.properties.Parent_Company || "Unknown";
+            const company = feature.properties.Parent_Com || "Unknown";
             layer.bindTooltip(`<b>Mill:</b> ${name}<br><b>Company:</b> ${company}`);
           }
         });
-        millslayer.addTo(map);
+        //millslayer.addTo(map);
         addLayerControl();
       });
+    fetch("http://127.0.0.1:8000/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+      switch (label) {
+        case "No Data":
+          return "#999999";  // grey
+        case "Low (0 to 1 in 1,000)":
+          return "#ffff99";  // pale yellow
+        case "Low - Medium (1 in 1,000 to 2 in 1,000)":
+          return "#ffcc33";  // yellow-orange
+        case "Medium - High (2 in 1,000 to 6 in 1,000)":
+          return "#ff6600";  // orange
+        case "High (6 in 1,000 to 1 in 100)":
+          return "#ff3300";  // red-orange
+        case "Extremely High (more than 1 in 100)":
+          return "#cc0000";  // dark red
+        default:
+          return "#cccccc";  // light grey for unknown
+      }
+    }
+      rfrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+        const label = feature.properties.rfr_label || "N/A";
+        return {
+          color: getColor(label),
+          weight: 1.5,
+          opacity: 0.5,
+          fillOpacity: 0.3,
+          fillColor: getColor(label)
+        };
+      },
+        onEachFeature: function (feature, layer) {
+          const label = feature.properties.rfr_label || "N/A";
+          const name = feature.properties.gid_0 || "N/A";
+          const tooltipContent = `<b>Riverine Flood Risk Label:</b> ${label}`;
 
+          layer.bindTooltip(tooltipContent, {
+            permanent: false, // shows on hover
+            direction: "top",
+            className: "leaflet-tooltip"
+          });
+        }
+      });
+
+      //rfrlayer.addTo(map);
+      addLayerControl(); // Add control after both layers loaded
+    });
+    fetch("http://127.0.0.1:8000/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+      switch (label) {
+        case "No Risk":
+      return "#00cc66"; // Green
+        case "Low (0 to 9 in 1,000,000)":
+          return "#ccff33"; // Light yellow-green
+        case "Low - Medium (9 in 1,000,000 to 7 in 100,000)":
+          return "#ffff66"; // Yellow
+        case "Medium - High (7 in 100,000 to 3 in 10,000)":
+          return "#ffcc00"; // Orange-yellow
+        case "High (3 in 10,000 to 2 in 1,000)":
+          return "#ff6600"; // Orange
+        case "Extremely High (more than 2 in 1,000)":
+          return "#cc0000"; // Red
+        case "No Data":
+        default:
+          return "#999999"; // Grey for unknown
+      }
+    }
+      cfrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+        const label = feature.properties.cfr_label || "N/A";
+        return {
+          color: getColor(label),
+          weight: 1.5,
+          opacity: 0.5,
+          fillOpacity: 0.3,
+          fillColor: getColor(label)
+        };
+      },
+        onEachFeature: function (feature, layer) {
+          const label = feature.properties.cfr_label || "N/A";
+          const name = feature.properties.gid_0 || "N/A";
+          const tooltipContent = `<b>Coastal Flood Risk Label:</b> ${label}`;
+
+          layer.bindTooltip(tooltipContent, {
+            permanent: false, // shows on hover
+            direction: "top",
+            className: "leaflet-tooltip"
+          });
+        }
+      });
+      //cfrlayer.addTo(map);
+      addLayerControl(); // Add control after both layers loaded
+    });
+    fetch("http://127.0.0.1:8000/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+        switch (label) {
+          case "Medium (0.4-0.6)":
+            return "#FFD700"; // Gold
+          case "Medium - High (0.6-0.8)":
+            return "#FFA500"; // Orange
+          case "High (0.8-1.0)":
+            return "#FF4500"; // OrangeRed
+          case "No Data":
+          default:
+            return "#D3D3D3"; // Light Gray
+        }
+    }
+      drrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+        const label = feature.properties.drr_label || "N/A";
+        return {
+          color: getColor(label),
+          weight: 1.5,
+          opacity: 0.5,
+          fillOpacity: 0.3,
+          fillColor: getColor(label)
+        };
+      },
+        onEachFeature: function (feature, layer) {
+          const label = feature.properties.drr_label || "N/A";
+          const name = feature.properties.gid_0 || "N/A";
+          const tooltipContent = `<b>Drought Risk Label:</b> ${label}`;
+
+          layer.bindTooltip(tooltipContent, {
+            permanent: false, // shows on hover
+            direction: "top",
+            className: "leaflet-tooltip"
+          });
+        }
+      });
+      //cfrlayer.addTo(map);
+      addLayerControl(); // Add control after both layers loaded
+    });
     function addLayerControl() {
-    if (rspolayer && oplayer && millslayer && !map.layerControlAdded) {
+    if (rspolayer && oplayer && millslayer && rfrlayer && cfrlayer && drrlayer && !map.layerControlAdded) {
+      rspolayer.addTo(map);
+      oplayer.addTo(map);
+      millslayer.addTo(map);
+
       const overlayMaps = {
         "RSPO Plantation": rspolayer,
         "Oil Palm Consessions": oplayer,
-        "Mills": millslayer
+        "Mills": millslayer,
+        "Riverine flood risk": rfrlayer,
+        "Coastal flood risk": cfrlayer,
+        "Drought risk": drrlayer
       };
       L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
       map.layerControlAdded = true;

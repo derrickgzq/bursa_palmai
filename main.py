@@ -127,6 +127,47 @@ def get_company_price_data(ticker: str):
     prices = data['Close'].tolist()
     return {"dates": dates, "prices": prices}
 
+@app.get("/company-earnings")
+def get_company_earnings(ticker):
+    stock = yf.Ticker(ticker)
+    earnings_df = stock.quarterly_financials
+
+    if earnings_df.empty:
+        raise HTTPException(status_code=404, detail="No earnings data found")
+
+    # Transpose so that each row is a quarter
+    earnings_df = earnings_df.T.reset_index()
+    earnings_df.rename(columns={"index": "Quarter"}, inplace=True)
+
+    # Keep only needed columns if available
+    needed_cols = ["Quarter"]
+    for col in ["Total Revenue", "Net Income", "Operating Income"]:
+        if col in earnings_df.columns:
+            needed_cols.append(col)
+
+    earnings_df = earnings_df[needed_cols]
+    earnings_df = earnings_df.dropna(how='all', subset=needed_cols[1:])  # Keep only rows with at least some data
+
+    earnings_df[needed_cols[1:]] = earnings_df[needed_cols[1:]].apply(pd.to_numeric, errors="coerce")
+
+    data = []
+    for _, row in earnings_df.iterrows():
+        total_revenue = row.get("Total Revenue", 0) or 0
+        net_income = row.get("Net Income", 0) or 0
+        operating_income = row.get("Operating Income", 0) or 0
+        margin = (operating_income / total_revenue * 100) if total_revenue else 0
+
+        quarter_str = row["Quarter"].strftime("%Y-%m-%d") if isinstance(row["Quarter"], pd.Timestamp) else str(row["Quarter"])
+
+        data.append({
+            "Quarter": quarter_str,
+            "Total Revenue": round(total_revenue / 1e6, 2),
+            "Net Income": round(net_income / 1e6, 2),
+            "Operating Margin": round(margin, 2)
+        })
+
+    return JSONResponse(content={"company": ticker, "data": data})
+
 @app.get("/soy-price-data")
 def get_soy_price_data(ticker: str):
     end = datetime.today()
@@ -138,7 +179,7 @@ def get_soy_price_data(ticker: str):
     prices = data['Close'].tolist()
     return {"dates": dates, "prices": prices}
 
-"""@app.get("/fertilizer-data")
+@app.get("/fertilizer-data")
 def get_fertilizer_data():
     commodities = [
         "urea", "triple-superphosphate", "rock-phosphate",
@@ -177,7 +218,7 @@ def get_fertilizer_data():
     pivot_df = df.pivot_table(index="Month", columns="Commodity", values="Price").reset_index()
     pivot_df["Month"] = pivot_df["Month"].dt.strftime("%Y-%m")
 
-    return pivot_df.to_dict(orient="list")"""
+    return pivot_df.to_dict(orient="list")
 
 @app.get("/exim-data")
 def get_exim_data():
@@ -240,3 +281,14 @@ def get_mills():
     
     mill_geojson = mill_gdf.to_json()
     return JSONResponse(content=json.loads(mill_geojson))
+
+@app.get("/aqueduct")
+def get_shapefile():
+    auqeduct = gpd.read_file("aqueduct.gpkg")
+
+    for col in auqeduct.columns:
+        if auqeduct[col].dtype.name.startswith("datetime"):
+            auqeduct[col] = auqeduct[col].astype(str)
+
+    aq_geojson = auqeduct.to_crs(epsg=4326).to_json()
+    return JSONResponse(content=json.loads(aq_geojson))
