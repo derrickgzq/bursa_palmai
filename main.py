@@ -249,6 +249,24 @@ def serve_index():
     with open("index.html", "r") as f:
         return HTMLResponse(f.read())
 
+@app.get("/weather_stations")
+async def weather_stations():
+    response = requests.get('https://api.data.gov.my/weather/forecast')
+    wfcast_json = response.json()
+    wfcast_df = pd.json_normalize(wfcast_json)
+
+    wfcast_df = wfcast_df[['date', 'summary_forecast', 'min_temp', 'max_temp', 'location.location_name']]
+    wfcast_df.rename(columns={'location.location_name': 'location_name'}, inplace=True)
+    points_df = pd.read_csv('weather_station_base.csv')
+
+    rain_table = wfcast_df.merge(points_df, on='location_name', how='left').drop_duplicates(subset=['location_name', 'date'])
+    grouped = rain_table.groupby(['location_name', 'Latitude', 'Longitude']).apply(
+        lambda x: "<br>".join(f"{row['date']}: {row['summary_forecast']}" for _, row in x.iterrows())
+    ).reset_index(name='forecast_with_dates')
+
+    wf_result = grouped.to_dict(orient='records')
+    return JSONResponse(content=wf_result)
+
 @app.get("/rsposhapefile")
 def get_shapefile():
     rspo_gdf = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")

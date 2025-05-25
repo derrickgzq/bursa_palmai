@@ -743,6 +743,40 @@ document.addEventListener("DOMContentLoaded", function () {
       //rfrlayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
+    fetch("http://127.0.0.1:8000/weather_stations")
+    .then(res => res.json())
+    .then(stationData => {
+      stationData.forEach(station => {
+        const lat = station.Latitude;
+        const lon = station.Longitude;
+        const name = station.location_name;
+        const forecast = station.forecast_with_dates;
+
+        // Optional: use cross icon
+        const crossIcon = L.divIcon({
+          className: 'custom-cross-icon',
+          html: '<div style="color: yellow; font-weight: bold; font-size: 18px;">+</div>',
+          iconSize: [15, 15],
+          iconAnchor: [5, 5]
+        });
+
+        const marker = L.marker([lat, lon], { icon: crossIcon });
+
+        const tooltipContent = `
+          <b>${name}</b><br>
+          <div style="font-size: 12px;">${forecast}</div>
+        `;
+
+        marker.bindTooltip(tooltipContent, {
+          direction: 'top',
+          permanent: false, // only shows on hover
+          className: 'leaflet-tooltip',
+          sticky: true     // follows the cursor
+        });
+
+        marker.addTo(map);
+      });
+    });
     fetch("http://127.0.0.1:8000/aqueduct")
     .then(res => res.json())
     .then(geojson => {

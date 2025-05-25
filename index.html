@@ -27,16 +27,16 @@
 
   <!-- Main content -->
   <div class="flex-1 p-6 max-w-5xl mx-auto">
-    <!-- Tab Contents -->
-    <section id="mainpage" class="tab-content">
-      <header class="text-center mb-8">
-        <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
-        <p class="text-lg text-gray-700">An AI, data-powered Bursa Malaysia Plantation Dashboard App</p>
-        <canvas id="bubbleChart"></canvas>
-      </header>
-    </section>
+  <!-- Tab Contents -->
+  <section id="mainpage" class="tab-content">
+    <header class="text-center mb-8">
+      <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
+      <p class="text-lg text-gray-700">An AI, data-powered Bursa Malaysia Plantation Dashboard App</p>
+      <canvas id="bubbleChart"></canvas>
+    </header>
+  </section>
 
-    <section id="company" class="tab-content hidden">
+  <section id="company" class="tab-content hidden">
     <div x-show="activeTab === 'company'" x-init="initCompanyTab()" class="p-6 bg-white rounded-lg shadow-md">        
       <!-- Header Section -->
       <div class="mb-6">
@@ -85,21 +85,21 @@
     </div>
   </section>
 
-    <section id="commodities" class="tab-content hidden">
-      <div class="flex flex-col space-y-8">
-        <!-- Soybean Chart -->
-        <div class="h-[600px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Soybean Futures</h3>
-          <canvas id="soy-price-chart" class="w-full h-full"></canvas>
-        </div>
-
-        <!-- Fertilizer Chart -->
-        <div class="h-[600px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Fertilizer Prices</h3>
-          <canvas id="fert-chart" class="w-full h-full"></canvas>
-        </div>
+  <section id="commodities" class="tab-content hidden">
+    <div class="flex flex-col space-y-8">
+      <!-- Soybean Chart -->
+      <div class="h-[600px]">
+        <h3 class="text-lg font-semibold text-green-600 mb-2">Soybean Futures</h3>
+        <canvas id="soy-price-chart" class="w-full h-full"></canvas>
       </div>
-    </section>
+
+      <!-- Fertilizer Chart -->
+      <div class="h-[600px]">
+        <h3 class="text-lg font-semibold text-green-600 mb-2">Fertilizer Prices</h3>
+        <canvas id="fert-chart" class="w-full h-full"></canvas>
+      </div>
+    </div>
+  </section>
 
     <section id="mpobstats" class="tab-content hidden">
       <!-- Section Title -->
@@ -114,25 +114,46 @@
       <!-- Charts Section -->
       <div class="space-y-10">
         
-        <!-- Chart 1: Coastal Flood Risk -->
-        <div>
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Coastal Flood Risk Composition</h3>
-          <canvas id="cfr-bar-chart"></canvas>
-        </div>
-
-        <!-- Chart 2: Riverine Flood Risk -->
-        <div>
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Riverine Flood Risk Composition</h3>
-          <canvas id="rfr-bar-chart"></canvas>
-        </div>
-
-        <!-- Chart 3: Drought Risk -->
-        <div>
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Drought Risk Composition</h3>
-          <canvas id="drr-bar-chart"></canvas>
-        </div>
+      <!-- Chart 1: Coastal Flood Risk -->
+      <div>
+        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+          Coastal Flood Risk Composition
+          <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+          </span>
+        </h3>
+        <canvas id="cfr-bar-chart"></canvas>
       </div>
-    </section>
+
+      <!-- Chart 2: Riverine Flood Risk -->
+      <div>
+        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+          Riverine Flood Risk Composition
+          <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+          </span>
+        </h3>
+        <canvas id="rfr-bar-chart"></canvas>
+      </div>
+
+      <!-- Chart 3: Drought Risk -->
+      <div>
+        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+          Drought Risk Composition
+          <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+            </svg>
+          </span>
+        </h3>
+        <canvas id="drr-bar-chart"></canvas>
+      </div>
+    </div>
+  </section>
 
     <section id="exportimport" class="tab-content hidden">
       <div class="flex flex-col space-y-8">
