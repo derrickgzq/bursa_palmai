@@ -1,0 +1,696 @@
+,gfw_fid,company,plantation,rfr_label,pct_overlap
+0,126,Benta Wawasan Sdn Bhd,Benta Wawasan Sdn Bhd,Extremely High (more than 1 in 100),85.21
+1,126,Benta Wawasan Sdn Bhd,Benta Wawasan Sdn Bhd,"High (6 in 1,000 to 1 in 100)",14.79
+2,127,Boustead Plantations Berhad,Balau,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+3,128,Boustead Plantations Berhad,Balau,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+4,129,Boustead Plantations Berhad,Batu Pekaka,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+5,130,Boustead Plantations Berhad,Bawan,"High (6 in 1,000 to 1 in 100)",100.0
+6,131,Boustead Plantations Berhad,Bebar,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+7,132,Boustead Plantations Berhad,Bekoh,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+8,133,Boustead Plantations Berhad,Bukit Limau,"High (6 in 1,000 to 1 in 100)",100.0
+9,134,Boustead Plantations Berhad,Bukit Mertajam,"High (6 in 1,000 to 1 in 100)",40.86
+10,134,Boustead Plantations Berhad,Bukit Mertajam,"Medium - High (2 in 1,000 to 6 in 1,000)",59.14
+11,135,Boustead Plantations Berhad,Bukit Segamaha,"High (6 in 1,000 to 1 in 100)",100.0
+12,136,Boustead Plantations Berhad,Chamek,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+13,137,Boustead Plantations Berhad,ELDRED,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+14,138,Boustead Plantations Berhad,G&G,"High (6 in 1,000 to 1 in 100)",100.0
+15,139,Boustead Plantations Berhad,JIH,"High (6 in 1,000 to 1 in 100)",100.0
+16,140,Boustead Plantations Berhad,JIH,"High (6 in 1,000 to 1 in 100)",100.0
+17,141,Boustead Plantations Berhad,Kawananan,Extremely High (more than 1 in 100),37.29
+18,141,Boustead Plantations Berhad,Kawananan,"Medium - High (2 in 1,000 to 6 in 1,000)",62.71
+19,142,Boustead Plantations Berhad,Kelimut,"High (6 in 1,000 to 1 in 100)",100.0
+20,143,Boustead Plantations Berhad,Kelimut,"High (6 in 1,000 to 1 in 100)",100.0
+21,144,Boustead Plantations Berhad,Ketengah Perwira,"High (6 in 1,000 to 1 in 100)",100.0
+22,145,Boustead Plantations Berhad,Ketengah Perwira,"High (6 in 1,000 to 1 in 100)",100.0
+23,146,Boustead Plantations Berhad,KTS,"High (6 in 1,000 to 1 in 100)",100.0
+24,147,Boustead Plantations Berhad,Kuala Muda,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+25,148,Boustead Plantations Berhad,Kuala Muda,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+26,149,Boustead Plantations Berhad,Kulai Young,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+27,150,Boustead Plantations Berhad,Lembah Paitan,Extremely High (more than 1 in 100),100.0
+28,151,Boustead Plantations Berhad,Lepan Kabu,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+29,152,Boustead Plantations Berhad,Loagan Bunut,"High (6 in 1,000 to 1 in 100)",100.0
+30,153,Boustead Plantations Berhad,Malakoff,"High (6 in 1,000 to 1 in 100)",86.85
+31,153,Boustead Plantations Berhad,Malakoff,"Medium - High (2 in 1,000 to 6 in 1,000)",13.15
+32,154,Boustead Plantations Berhad,Malakoff,"High (6 in 1,000 to 1 in 100)",100.0
+33,155,Boustead Plantations Berhad,Malaya,"High (6 in 1,000 to 1 in 100)",100.0
+34,156,Boustead Plantations Berhad,Malaya,"High (6 in 1,000 to 1 in 100)",100.0
+35,157,Boustead Plantations Berhad,Maong,"High (6 in 1,000 to 1 in 100)",100.0
+36,158,Boustead Plantations Berhad,Mapai,Extremely High (more than 1 in 100),99.86
+37,158,Boustead Plantations Berhad,Mapai,"High (6 in 1,000 to 1 in 100)",0.14
+38,159,Boustead Plantations Berhad,Nak,"High (6 in 1,000 to 1 in 100)",89.83
+39,160,Boustead Plantations Berhad,Nak,"High (6 in 1,000 to 1 in 100)",100.0
+40,161,Boustead Plantations Berhad,Pedai,"High (6 in 1,000 to 1 in 100)",100.0
+41,162,Boustead Plantations Berhad,Pedai,"High (6 in 1,000 to 1 in 100)",100.0
+42,163,Boustead Plantations Berhad,Resort,"High (6 in 1,000 to 1 in 100)",100.0
+43,164,Boustead Plantations Berhad,Segaria,Extremely High (more than 1 in 100),100.0
+44,165,Boustead Plantations Berhad,Solandra,"High (6 in 1,000 to 1 in 100)",100.0
+45,166,Boustead Plantations Berhad,Stothard,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+46,167,Boustead Plantations Berhad,Stothard,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+47,168,Boustead Plantations Berhad,Sungai-Sungai I,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+48,169,Boustead Plantations Berhad,Sungai-Sungai II,Extremely High (more than 1 in 100),13.72
+49,169,Boustead Plantations Berhad,Sungai-Sungai II,"Medium - High (2 in 1,000 to 6 in 1,000)",86.28
+50,170,Boustead Plantations Berhad,Sungai-Sungai III,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+51,171,Boustead Plantations Berhad,Sungai Jernih,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+52,172,Boustead Plantations Berhad,Sungai Lelak,"High (6 in 1,000 to 1 in 100)",100.0
+53,173,Boustead Plantations Berhad,Sungai Segamaha,"High (6 in 1,000 to 1 in 100)",100.0
+54,174,Boustead Plantations Berhad,Sutera,"High (6 in 1,000 to 1 in 100)",100.0
+55,175,Boustead Plantations Berhad,Tabung Tentera Sabah,"High (6 in 1,000 to 1 in 100)",100.0
+56,176,Boustead Plantations Berhad,Tabung Tentera Terengganu,"High (6 in 1,000 to 1 in 100)",100.0
+57,177,Boustead Plantations Berhad,Taiping Rubber Plantations,"High (6 in 1,000 to 1 in 100)",100.0
+58,178,Boustead Plantations Berhad,Telok Sengat,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+59,218,Carotino / JC Chang Group (Asia Production Unit),Asia Oil Palm Estate 2,"High (6 in 1,000 to 1 in 100)",100.0
+60,219,Carotino / JC Chang Group (Asia Production Unit),Hwa Li Estate 3,Extremely High (more than 1 in 100),5.31
+61,219,Carotino / JC Chang Group (Asia Production Unit),Hwa Li Estate 3,"High (6 in 1,000 to 1 in 100)",94.69
+62,220,Carotino / JC Chang Group (Asia Production Unit),Melewar Estate 2,"High (6 in 1,000 to 1 in 100)",100.0
+63,221,Carotino / JC Chang Group (Carotino Production Unit),Asia Oil Palm Estate 1,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+64,222,Carotino / JC Chang Group (Carotino Production Unit),Hwa Li Estate 1,"High (6 in 1,000 to 1 in 100)",100.0
+65,223,Carotino / JC Chang Group (Carotino Production Unit),Hwa Li Estate 2,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+66,224,Carotino / JC Chang Group (Carotino Production Unit),Maran Estate,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+67,225,Carotino / JC Chang Group (Carotino Production Unit),Pahang Oil Palm Estate 1,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+68,226,Carotino / JC Chang Group (Melewar Production Unit),Gerola Estate,"High (6 in 1,000 to 1 in 100)",100.0
+69,227,Carotino / JC Chang Group (Melewar Production Unit),Melewar Estate 1,"High (6 in 1,000 to 1 in 100)",100.0
+70,228,Carotino / JC Chang Group (Melewar Production Unit),Pahang Oil Palm Estate 2,"High (6 in 1,000 to 1 in 100)",100.0
+71,229,Carotino / JC Chang Group (Melewar Production Unit),Pahang Oil Palm Estate 3,"High (6 in 1,000 to 1 in 100)",100.0
+72,230,Carotino / JC Chang Group (Melewar Production Unit),Tye Yang Estate,"High (6 in 1,000 to 1 in 100)",100.0
+73,231,Carotino / JC Chang Group (Takon Production Unit),Muis Melewar Plantation 1,Extremely High (more than 1 in 100),100.0
+74,232,Carotino / JC Chang Group (Takon Production Unit),Muis Melewar Plantation 2,Extremely High (more than 1 in 100),100.0
+75,233,Carotino / JC Chang Group (Takon Production Unit),Pelita Estate,Extremely High (more than 1 in 100),100.0
+76,234,Carotino / JC Chang Group (Takon Production Unit),Takon Estate,Extremely High (more than 1 in 100),100.0
+77,248,Dara-Lam Soon Sdn Bhd,Sg Merba,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+78,362,APL,BJ Corporation (Lot 20),"High (6 in 1,000 to 1 in 100)",100.0
+79,363,APL,Fortune (Lot 10),"High (6 in 1,000 to 1 in 100)",100.0
+80,364,APL,Grand Performance (Lot 18),"High (6 in 1,000 to 1 in 100)",100.0
+81,365,APL,Incosetia (Lot 16),"High (6 in 1,000 to 1 in 100)",100.0
+82,366,APL,Kronos (Lot 15),"High (6 in 1,000 to 1 in 100)",100.0
+83,367,FELDA Global Ventures Holdings Berhad,Bera Selatan 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+84,368,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"High (6 in 1,000 to 1 in 100)",45.12
+85,368,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"Low - Medium (1 in 1,000 to 2 in 1,000)",33.66
+86,368,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"Medium - High (2 in 1,000 to 6 in 1,000)",21.22
+87,369,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"High (6 in 1,000 to 1 in 100)",1.05
+88,369,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"Low - Medium (1 in 1,000 to 2 in 1,000)",90.66
+89,369,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,"Medium - High (2 in 1,000 to 6 in 1,000)",8.29
+90,370,FELDA Global Ventures Holdings Berhad,Bera Selatan 04,"High (6 in 1,000 to 1 in 100)",10.27
+91,370,FELDA Global Ventures Holdings Berhad,Bera Selatan 04,"Medium - High (2 in 1,000 to 6 in 1,000)",89.73
+92,371,FELDA Global Ventures Holdings Berhad,Bera Selatan 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+93,372,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,"High (6 in 1,000 to 1 in 100)",5.07
+94,372,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,"Medium - High (2 in 1,000 to 6 in 1,000)",94.93
+95,373,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,"High (6 in 1,000 to 1 in 100)",0.02
+96,373,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,"Medium - High (2 in 1,000 to 6 in 1,000)",99.98
+97,374,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,"High (6 in 1,000 to 1 in 100)",18.54
+98,374,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,"Medium - High (2 in 1,000 to 6 in 1,000)",81.46
+99,375,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,"High (6 in 1,000 to 1 in 100)",0.08
+100,375,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,"Medium - High (2 in 1,000 to 6 in 1,000)",99.92
+101,376,FELDA Global Ventures Holdings Berhad,Berabong 01,Extremely High (more than 1 in 100),9.3
+102,376,FELDA Global Ventures Holdings Berhad,Berabong 01,"High (6 in 1,000 to 1 in 100)",90.7
+103,377,FELDA Global Ventures Holdings Berhad,Besout 06,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+104,378,FELDA Global Ventures Holdings Berhad,Besout 07,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+105,379,FELDA Global Ventures Holdings Berhad,Blossom,"High (6 in 1,000 to 1 in 100)",100.0
+106,380,FELDA Global Ventures Holdings Berhad,Bukit Sagu 04,"High (6 in 1,000 to 1 in 100)",100.0
+107,381,FELDA Global Ventures Holdings Berhad,Bukit Sagu 06,"High (6 in 1,000 to 1 in 100)",100.0
+108,382,FELDA Global Ventures Holdings Berhad,Bukit Sagu 07,"High (6 in 1,000 to 1 in 100)",100.0
+109,383,FELDA Global Ventures Holdings Berhad,Bukit Sagu 08,"High (6 in 1,000 to 1 in 100)",100.0
+110,384,FELDA Global Ventures Holdings Berhad,Chador 01,"High (6 in 1,000 to 1 in 100)",100.0
+111,385,FELDA Global Ventures Holdings Berhad,Chegar Perah 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+112,386,FELDA Global Ventures Holdings Berhad,Cherul 03,"High (6 in 1,000 to 1 in 100)",100.0
+113,387,FELDA Global Ventures Holdings Berhad,Cherul 03,"High (6 in 1,000 to 1 in 100)",100.0
+114,388,FELDA Global Ventures Holdings Berhad,Chiku 08,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+115,389,FELDA Global Ventures Holdings Berhad,Chini Timur 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+116,390,FELDA Global Ventures Holdings Berhad,FASSB Jengka 24,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+117,391,FELDA Global Ventures Holdings Berhad,FASSB Kota Gelangi 5,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+118,392,FELDA Global Ventures Holdings Berhad,FASSB Kota Gelangi 6,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+119,393,FELDA Global Ventures Holdings Berhad,FASSB PPPTR,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+120,394,FELDA Global Ventures Holdings Berhad,FASSB Ulu Belitong,"Low - Medium (1 in 1,000 to 2 in 1,000)",78.56
+121,394,FELDA Global Ventures Holdings Berhad,FASSB Ulu Belitong,"Medium - High (2 in 1,000 to 6 in 1,000)",21.44
+122,395,FELDA Global Ventures Holdings Berhad,FICO,"High (6 in 1,000 to 1 in 100)",100.0
+123,396,FELDA Global Ventures Holdings Berhad,HILLCO,"High (6 in 1,000 to 1 in 100)",100.0
+124,397,FELDA Global Ventures Holdings Berhad,Inas Selatan,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+125,398,FELDA Global Ventures Holdings Berhad,Inas Selatan,"Low - Medium (1 in 1,000 to 2 in 1,000)",94.8
+126,398,FELDA Global Ventures Holdings Berhad,Inas Selatan,"Medium - High (2 in 1,000 to 6 in 1,000)",5.2
+127,399,FELDA Global Ventures Holdings Berhad,Jeroco,"High (6 in 1,000 to 1 in 100)",100.0
+128,400,FELDA Global Ventures Holdings Berhad,Kalabakan Selatan 01,Extremely High (more than 1 in 100),100.0
+129,401,FELDA Global Ventures Holdings Berhad,Kalabakan Tengah 01,Extremely High (more than 1 in 100),100.0
+130,402,FELDA Global Ventures Holdings Berhad,Kalabakan Utara 01,Extremely High (more than 1 in 100),100.0
+131,403,FELDA Global Ventures Holdings Berhad,Kechau 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+132,404,FELDA Global Ventures Holdings Berhad,Kechau 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+133,405,FELDA Global Ventures Holdings Berhad,Kechau 03,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+134,406,FELDA Global Ventures Holdings Berhad,Kechau 03,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+135,407,FELDA Global Ventures Holdings Berhad,Kechau 06,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+136,408,FELDA Global Ventures Holdings Berhad,Kechau 07,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+137,409,FELDA Global Ventures Holdings Berhad,Kechau 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+138,410,FELDA Global Ventures Holdings Berhad,Kechau 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+139,411,FELDA Global Ventures Holdings Berhad,Kechau 10,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+140,412,FELDA Global Ventures Holdings Berhad,Kechau 11,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+141,413,FELDA Global Ventures Holdings Berhad,Keratong 11,"High (6 in 1,000 to 1 in 100)",100.0
+142,414,FELDA Global Ventures Holdings Berhad,Kledang 02,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+143,415,FELDA Global Ventures Holdings Berhad,Kledang 02,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+144,416,FELDA Global Ventures Holdings Berhad,Korosah,"High (6 in 1,000 to 1 in 100)",100.0
+145,417,FELDA Global Ventures Holdings Berhad,Krau 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+146,418,FELDA Global Ventures Holdings Berhad,Krau 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+147,419,FELDA Global Ventures Holdings Berhad,Krau 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+148,420,FELDA Global Ventures Holdings Berhad,Kuril,"High (6 in 1,000 to 1 in 100)",100.0
+149,421,FELDA Global Ventures Holdings Berhad,Lepar Hilir 05,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+150,422,FELDA Global Ventures Holdings Berhad,Lepar Hilir 06,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+151,423,FELDA Global Ventures Holdings Berhad,Lepar Hilir 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+152,424,FELDA Global Ventures Holdings Berhad,Lepar Utara 05,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+153,425,FELDA Global Ventures Holdings Berhad,Lepar Utara 07,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+154,426,FELDA Global Ventures Holdings Berhad,Lepar Utara 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+155,427,FELDA Global Ventures Holdings Berhad,Lepar Utara 09,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+156,428,FELDA Global Ventures Holdings Berhad,Lepar Utara 09,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+157,429,FELDA Global Ventures Holdings Berhad,Lepar Utara 11,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+158,430,FELDA Global Ventures Holdings Berhad,Lepar Utara 14,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+159,431,FELDA Global Ventures Holdings Berhad,Maokil 06,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+160,432,FELDA Global Ventures Holdings Berhad,Maokil 07,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+161,433,FELDA Global Ventures Holdings Berhad,Materis,"High (6 in 1,000 to 1 in 100)",100.0
+162,434,FELDA Global Ventures Holdings Berhad,Mengkarak 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+163,435,FELDA Global Ventures Holdings Berhad,Mengkarak 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+164,436,FELDA Global Ventures Holdings Berhad,Mengkarak 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+165,437,FELDA Global Ventures Holdings Berhad,Merchong,"High (6 in 1,000 to 1 in 100)",36.04
+166,437,FELDA Global Ventures Holdings Berhad,Merchong,"Medium - High (2 in 1,000 to 6 in 1,000)",63.96
+167,438,FELDA Global Ventures Holdings Berhad,Nitar Timur,"Low - Medium (1 in 1,000 to 2 in 1,000)",97.69
+168,438,FELDA Global Ventures Holdings Berhad,Nitar Timur,"Medium - High (2 in 1,000 to 6 in 1,000)",2.31
+169,439,FELDA Global Ventures Holdings Berhad,Orico,"High (6 in 1,000 to 1 in 100)",100.0
+170,440,FELDA Global Ventures Holdings Berhad,Paloh,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+171,441,FELDA Global Ventures Holdings Berhad,Palong 17,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+172,442,FELDA Global Ventures Holdings Berhad,Palong 18,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+173,443,FELDA Global Ventures Holdings Berhad,Palong 21,"Low - Medium (1 in 1,000 to 2 in 1,000)",87.46
+174,443,FELDA Global Ventures Holdings Berhad,Palong 21,"Medium - High (2 in 1,000 to 6 in 1,000)",12.54
+175,444,FELDA Global Ventures Holdings Berhad,Palong Timur 05,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+176,445,FELDA Global Ventures Holdings Berhad,Palong Timur 06,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+177,446,FELDA Global Ventures Holdings Berhad,Pendirosa,"High (6 in 1,000 to 1 in 100)",100.0
+178,449,FELDA Global Ventures Holdings Berhad,Rantau Abang 01,"High (6 in 1,000 to 1 in 100)",100.0
+179,450,FELDA Global Ventures Holdings Berhad,Rantau Abang 01,"High (6 in 1,000 to 1 in 100)",100.0
+180,451,FELDA Global Ventures Holdings Berhad,Sampadi 01,"High (6 in 1,000 to 1 in 100)",100.0
+181,452,FELDA Global Ventures Holdings Berhad,Sampadi 03,"High (6 in 1,000 to 1 in 100)",100.0
+182,453,FELDA Global Ventures Holdings Berhad,Sampadi 04,"High (6 in 1,000 to 1 in 100)",100.0
+183,454,FELDA Global Ventures Holdings Berhad,Sampadi 05,"High (6 in 1,000 to 1 in 100)",100.0
+184,455,FELDA Global Ventures Holdings Berhad,Sampadi 06,"High (6 in 1,000 to 1 in 100)",100.0
+185,456,FELDA Global Ventures Holdings Berhad,Selancar 06,"High (6 in 1,000 to 1 in 100)",63.61
+186,456,FELDA Global Ventures Holdings Berhad,Selancar 06,"Low - Medium (1 in 1,000 to 2 in 1,000)",36.39
+187,457,FELDA Global Ventures Holdings Berhad,Selancar 08,"High (6 in 1,000 to 1 in 100)",82.42
+188,457,FELDA Global Ventures Holdings Berhad,Selancar 08,"Low - Medium (1 in 1,000 to 2 in 1,000)",17.58
+189,458,FELDA Global Ventures Holdings Berhad,Selancar 09,"High (6 in 1,000 to 1 in 100)",100.0
+190,459,FELDA Global Ventures Holdings Berhad,Selendang 03,Extremely High (more than 1 in 100),100.0
+191,460,FELDA Global Ventures Holdings Berhad,Selendang 04,Extremely High (more than 1 in 100),100.0
+192,461,FELDA Global Ventures Holdings Berhad,Selendang 04,Extremely High (more than 1 in 100),100.0
+193,462,FELDA Global Ventures Holdings Berhad,Semaring 01,"High (6 in 1,000 to 1 in 100)",100.0
+194,463,FELDA Global Ventures Holdings Berhad,Semaring 01,"High (6 in 1,000 to 1 in 100)",100.0
+195,464,FELDA Global Ventures Holdings Berhad,Serting Hilir 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+196,465,FELDA Global Ventures Holdings Berhad,Serting Hilir 08,"Low - Medium (1 in 1,000 to 2 in 1,000)",8.99
+197,465,FELDA Global Ventures Holdings Berhad,Serting Hilir 08,"Medium - High (2 in 1,000 to 6 in 1,000)",91.01
+198,466,FELDA Global Ventures Holdings Berhad,Setiu 01,"High (6 in 1,000 to 1 in 100)",100.0
+199,467,FELDA Global Ventures Holdings Berhad,Setiu 01,"High (6 in 1,000 to 1 in 100)",100.0
+200,468,FELDA Global Ventures Holdings Berhad,SUBOK,"High (6 in 1,000 to 1 in 100)",100.0
+201,469,FELDA Global Ventures Holdings Berhad,SUBOR,"High (6 in 1,000 to 1 in 100)",100.0
+202,470,FELDA Global Ventures Holdings Berhad,Telang,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+203,471,FELDA Global Ventures Holdings Berhad,Telang 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+204,472,FELDA Global Ventures Holdings Berhad,Telang 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+205,473,FELDA Global Ventures Holdings Berhad,Tembangau 03,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+206,474,FELDA Global Ventures Holdings Berhad,Tembangau 05,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+207,475,FELDA Global Ventures Holdings Berhad,Tembangau 06,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+208,476,FELDA Global Ventures Holdings Berhad,Tembangau 07,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+209,477,FELDA Global Ventures Holdings Berhad,Tembangau 08,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+210,478,FELDA Global Ventures Holdings Berhad,Tembangau 09,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+211,479,FELDA Global Ventures Holdings Berhad,Tembangau 09,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+212,480,FELDA Global Ventures Holdings Berhad,Tenggaroh 09,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+213,481,FELDA Global Ventures Holdings Berhad,Tenggaroh 09,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+214,482,FELDA Global Ventures Holdings Berhad,Tenggaroh 11,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+215,483,FELDA Global Ventures Holdings Berhad,Tenggaroh 11,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+216,484,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+217,485,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+218,486,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+219,487,FELDA Global Ventures Holdings Berhad,Tenggaroh 13,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+220,488,FELDA Global Ventures Holdings Berhad,Tenggaroh 13,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+221,489,FELDA Global Ventures Holdings Berhad,Tenggaroh Timur 02,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+222,490,FELDA Global Ventures Holdings Berhad,Terapai 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+223,491,FELDA Global Ventures Holdings Berhad,Terapai 03,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+224,492,FELDA Global Ventures Holdings Berhad,Terapai 03,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+225,493,FELDA Global Ventures Holdings Berhad,Triang 02,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+226,494,FELDA Global Ventures Holdings Berhad,Triang 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+227,495,FELDA Global Ventures Holdings Berhad,Triang 04,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+228,496,FELDA Global Ventures Holdings Berhad,Triang Selatan 01,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+229,497,FELDA Global Ventures Holdings Berhad,Umas 05,Extremely High (more than 1 in 100),100.0
+230,498,FELDA Global Ventures Holdings Berhad,Umas 06,Extremely High (more than 1 in 100),100.0
+231,499,FELDA Global Ventures Holdings Berhad,"Wilayah Sahabat Barat, Timur, Utara, Selatan",Extremely High (more than 1 in 100),99.99
+232,500,FELDA Global Ventures Holdings Berhad,Yapid Mas,"High (6 in 1,000 to 1 in 100)",100.0
+233,501,FELDA Global Ventures Holdings Berhad,Yapid Mas,"High (6 in 1,000 to 1 in 100)",100.0
+234,502,FELDA Global Ventures Holdings Berhad,Yapid Mas,"High (6 in 1,000 to 1 in 100)",90.89
+235,502,FELDA Global Ventures Holdings Berhad,Yapid Mas,"Medium - High (2 in 1,000 to 6 in 1,000)",9.11
+236,503,FGVP(M)SB,Aring 02,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+237,504,FGVP(M)SB,Aring 03,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+238,505,FGVP(M)SB,Aring 04,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+239,506,FGVP(M)SB,Aring 05,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+240,507,FGVP(M)SB,Aring 06,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+241,508,FGVP(M)SB,Aring 08,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+242,509,FGVP(M)SB,Aring 10,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+243,510,FGVP(M)SB,Chiku 04,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+244,534,Genting Plantations Berhad,GBSE PKD Plantation,"High (6 in 1,000 to 1 in 100)",38.16
+245,534,Genting Plantations Berhad,GBSE PKD Plantation,"Medium - High (2 in 1,000 to 6 in 1,000)",61.84
+246,535,Genting Plantations Berhad,GKBE Plantation,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+247,536,Genting Plantations Berhad,GSME Plantation,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+248,537,Genting Plantations Berhad,KBND Plantation,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+249,539,Genting Plantations Berhad,Tanah Merah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+250,540,Genting SDC Sdn Bhd,Indah Plantation,"High (6 in 1,000 to 1 in 100)",100.0
+251,541,Genting SDC Sdn Bhd,Jambongan Plantation,Extremely High (more than 1 in 100),100.0
+252,542,Genting SDC Sdn Bhd,Mewah Plantation,"High (6 in 1,000 to 1 in 100)",100.0
+253,543,Genting SDC Sdn Bhd,Sabapalm Plantation,"High (6 in 1,000 to 1 in 100)",19.87
+254,543,Genting SDC Sdn Bhd,Sabapalm Plantation,"Medium - High (2 in 1,000 to 6 in 1,000)",80.13
+255,544,Genting SDC Sdn Bhd,Tanjung Plantation,"High (6 in 1,000 to 1 in 100)",100.0
+256,545,Genting SDC Sdn Bhd,TrusHidup Plantation,"High (6 in 1,000 to 1 in 100)",100.0
+257,638,Hap Seng Plantations (Kota Marudu) Sdn Bhd,"Pelipikan Estate
+",Extremely High (more than 1 in 100),100.0
+258,639,Hap Seng Plantations (Ladang Kawa) Sdn Bhd,Kawa Estate,Extremely High (more than 1 in 100),100.0
+259,640,Hap Seng Plantations (River Estates) Sdn Bhd,Sungai Segama Group of Estates (SSGOE),"High (6 in 1,000 to 1 in 100)",100.0
+260,641,Hap Seng Plantations (River Estates) Sdn Bhd,Tomanggong Group of Estates (TMGOE),"High (6 in 1,000 to 1 in 100)",100.0
+261,642,Jeroco Plantations Sdn Bhd,Jeroco Group of Estates (JGOE),Extremely High (more than 1 in 100),95.06
+262,642,Jeroco Plantations Sdn Bhd,Jeroco Group of Estates (JGOE),"High (6 in 1,000 to 1 in 100)",4.94
+263,654,Ikatan Kayangan Sdn Bhd,Ikatan Kayangan Sdn Bhd,"High (6 in 1,000 to 1 in 100)",41.85
+264,654,Ikatan Kayangan Sdn Bhd,Ikatan Kayangan Sdn Bhd,"Medium - High (2 in 1,000 to 6 in 1,000)",58.15
+265,666,Innoprise Plantations Berhad,Innoprise Plantations Berhad,Extremely High (more than 1 in 100),14.23
+266,666,Innoprise Plantations Berhad,Innoprise Plantations Berhad,"High (6 in 1,000 to 1 in 100)",85.77
+267,667,Baturong,Baturong 1,Extremely High (more than 1 in 100),100.0
+268,668,Baturong,Baturong 2,Extremely High (more than 1 in 100),100.0
+269,669,Baturong,Baturong 3,Extremely High (more than 1 in 100),100.0
+270,670,HTC,Cantawan,Extremely High (more than 1 in 100),86.57
+271,670,HTC,Cantawan,"High (6 in 1,000 to 1 in 100)",13.43
+272,671,HTC,Halusah,"High (6 in 1,000 to 1 in 100)",100.0
+273,672,HTC,Tas,"High (6 in 1,000 to 1 in 100)",100.0
+274,673,IOI Corporation Bhd,Bahau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+275,674,IOI Corporation Bhd,Bertam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+276,675,IOI Corporation Bhd,Bkt Serampang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+277,678,IOI Corporation Bhd,Bukit Dinding,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+278,679,IOI Corporation Bhd,Bukit Leelau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+279,680,IOI Corporation Bhd,Detas,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+280,681,IOI Corporation Bhd,Gomali,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+281,682,IOI Corporation Bhd,IOI Corporation Bhd,"High (6 in 1,000 to 1 in 100)",100.0
+282,683,IOI Corporation Bhd,Jasin Lalang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+283,684,IOI Corporation Bhd,Kahang,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+284,686,IOI Corporation Bhd,Kuala Jelei,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+285,687,IOI Corporation Bhd,Kuala Jelei,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+286,688,IOI Corporation Bhd,Laukin,"High (6 in 1,000 to 1 in 100)",100.0
+287,689,IOI Corporation Bhd,Laukin A,"High (6 in 1,000 to 1 in 100)",100.0
+288,690,IOI Corporation Bhd,Leepang A,"High (6 in 1,000 to 1 in 100)",100.0
+289,691,IOI Corporation Bhd,Mamor,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+290,692,IOI Corporation Bhd,Mekassar,"High (6 in 1,000 to 1 in 100)",58.6
+291,692,IOI Corporation Bhd,Mekassar,"Medium - High (2 in 1,000 to 6 in 1,000)",41.4
+292,693,IOI Corporation Bhd,Merchong,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+293,694,IOI Corporation Bhd,Pamol Barat,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+294,695,IOI Corporation Bhd,Pamol Timur,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+295,696,IOI Corporation Bhd,Paya Lang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+296,697,IOI Corporation Bhd,Pukin,"High (6 in 1,000 to 1 in 100)",47.03
+297,697,IOI Corporation Bhd,Pukin,"Low - Medium (1 in 1,000 to 2 in 1,000)",52.97
+298,698,IOI Corporation Bhd,Regent,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+299,699,IOI Corporation Bhd,Regent,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+300,700,IOI Corporation Bhd,Sagil,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+301,701,IOI Corporation Bhd,Sakilan,"High (6 in 1,000 to 1 in 100)",100.0
+302,702,IOI Corporation Bhd,Segamat,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+303,703,IOI Corporation Bhd,Segamat,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+304,704,IOI Corporation Bhd,Sejap,"High (6 in 1,000 to 1 in 100)",100.0
+305,705,IOI Corporation Bhd,Shahzan IOI 1,"High (6 in 1,000 to 1 in 100)",100.0
+306,706,IOI Corporation Bhd,Shahzan IOI 2,"High (6 in 1,000 to 1 in 100)",100.0
+307,708,IOI Corporation Bhd,Swee Lam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+308,709,IOI Corporation Bhd,Tambang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+309,710,IOI Corporation Bhd,Tambang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+310,711,IOI Corporation Bhd,Tegai,"High (6 in 1,000 to 1 in 100)",100.0
+311,712,IOI Corporation Bhd,Unijaya,"Low - Medium (1 in 1,000 to 2 in 1,000)",99.41
+312,712,IOI Corporation Bhd,Unijaya,"Medium - High (2 in 1,000 to 6 in 1,000)",0.59
+313,713,IOI Corporation Bhd,Unijaya,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+314,714,Ladang Sabah,Labuk,"High (6 in 1,000 to 1 in 100)",100.0
+315,715,Ladang Sabah,Luangmanis,"High (6 in 1,000 to 1 in 100)",100.0
+316,716,Ladang Sabah,Moynod,"High (6 in 1,000 to 1 in 100)",100.0
+317,717,Ladang Sabah,Sungai Sapi,"High (6 in 1,000 to 1 in 100)",100.0
+318,718,Ladang Sabah,Terusan Baru,"High (6 in 1,000 to 1 in 100)",100.0
+319,719,Ladang Sabah,Terusan Baru Div,"High (6 in 1,000 to 1 in 100)",100.0
+320,720,Ladang Sabah,Terusan Baru Div,"High (6 in 1,000 to 1 in 100)",100.0
+321,721,Leepang,Leepang 1,Extremely High (more than 1 in 100),100.0
+322,722,Leepang,Leepang 2,Extremely High (more than 1 in 100),3.65
+323,722,Leepang,Leepang 2,"High (6 in 1,000 to 1 in 100)",96.35
+324,723,Leepang,Leepang 3,"High (6 in 1,000 to 1 in 100)",100.0
+325,724,Leepang,Leepang 4,"High (6 in 1,000 to 1 in 100)",100.0
+326,725,Leepang,Leepang 5,Extremely High (more than 1 in 100),61.74
+327,725,Leepang,Leepang 5,"High (6 in 1,000 to 1 in 100)",38.26
+328,726,Linbar,Linbar 1,"High (6 in 1,000 to 1 in 100)",100.0
+329,727,Linbar,Linbar 2,"High (6 in 1,000 to 1 in 100)",100.0
+330,728,Mayvin,Mayvin 1,"High (6 in 1,000 to 1 in 100)",100.0
+331,729,Mayvin,Mayvin 2,"High (6 in 1,000 to 1 in 100)",100.0
+332,730,Mayvin,Mayvin 3,"High (6 in 1,000 to 1 in 100)",100.0
+333,731,Mayvin,Mayvin 5,"High (6 in 1,000 to 1 in 100)",100.0
+334,732,Mayvin,Mayvin 6,"High (6 in 1,000 to 1 in 100)",100.0
+335,733,Morisem,Morisem 1,"High (6 in 1,000 to 1 in 100)",100.0
+336,734,Morisem,Morisem 2,Extremely High (more than 1 in 100),44.24
+337,734,Morisem,Morisem 2,"High (6 in 1,000 to 1 in 100)",55.76
+338,735,Morisem,Morisem 3,Extremely High (more than 1 in 100),1.17
+339,735,Morisem,Morisem 3,"High (6 in 1,000 to 1 in 100)",98.83
+340,736,Morisem,Morisem 4,Extremely High (more than 1 in 100),2.35
+341,736,Morisem,Morisem 4,"High (6 in 1,000 to 1 in 100)",97.65
+342,737,Morisem,Morisem 5,Extremely High (more than 1 in 100),61.38
+343,737,Morisem,Morisem 5,"High (6 in 1,000 to 1 in 100)",38.62
+344,738,Palmco,Bimbingan 1,"High (6 in 1,000 to 1 in 100)",100.0
+345,739,Palmco,Bimbingan 2,"High (6 in 1,000 to 1 in 100)",100.0
+346,740,Palmco,Tangkulap,"High (6 in 1,000 to 1 in 100)",100.0
+347,741,Pamol,Bayok,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+348,742,Pamol,Meliau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+349,743,Pamol,Nangoh,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+350,744,Pamol,Rungus,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+351,745,Pamol,Sugut,"High (6 in 1,000 to 1 in 100)",8.81
+352,745,Pamol,Sugut,"Medium - High (2 in 1,000 to 6 in 1,000)",91.19
+353,746,Pamol,Tandakon,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+354,747,Pamol,Ulu,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+355,748,Permodalan,Permodalan 1,Extremely High (more than 1 in 100),100.0
+356,749,Permodalan,Permodalan 2,Extremely High (more than 1 in 100),100.0
+357,750,Permodalan,Permodalan 3,Extremely High (more than 1 in 100),100.0
+358,751,Permodalan,Permodalan 4,Extremely High (more than 1 in 100),100.0
+359,752,Syarimo,Syarimo 1,"High (6 in 1,000 to 1 in 100)",100.0
+360,753,Syarimo,Syarimo 2,"High (6 in 1,000 to 1 in 100)",100.0
+361,754,Syarimo,Syarimo 3,"High (6 in 1,000 to 1 in 100)",100.0
+362,755,Syarimo,Syarimo 4,"High (6 in 1,000 to 1 in 100)",100.0
+363,756,Syarimo,Syarimo 5,"High (6 in 1,000 to 1 in 100)",100.0
+364,757,Syarimo,Syarimo 6,"High (6 in 1,000 to 1 in 100)",100.0
+365,758,Syarimo,Syarimo 7,"High (6 in 1,000 to 1 in 100)",100.0
+366,759,Syarimo,Syarimo 8,"High (6 in 1,000 to 1 in 100)",100.0
+367,760,Syarimo,Syarimo 9,"High (6 in 1,000 to 1 in 100)",100.0
+368,761,Unico Desa,Fasgro,"High (6 in 1,000 to 1 in 100)",100.0
+369,762,Unico Desa,Segaco,"High (6 in 1,000 to 1 in 100)",100.0
+370,763,Unico Desa,Supercrop,"High (6 in 1,000 to 1 in 100)",100.0
+371,764,Unico Desa,Topcrop,"High (6 in 1,000 to 1 in 100)",100.0
+372,765,Unico Desa,Tutico,"High (6 in 1,000 to 1 in 100)",100.0
+373,766,Unico Desa,Unico Est 1,Extremely High (more than 1 in 100),81.79
+374,766,Unico Desa,Unico Est 1,"High (6 in 1,000 to 1 in 100)",18.21
+375,767,Unico Desa,Unico Est 2,Extremely High (more than 1 in 100),100.0
+376,768,Unico Desa,Unico Est 3,Extremely High (more than 1 in 100),77.28
+377,768,Unico Desa,Unico Est 3,"High (6 in 1,000 to 1 in 100)",22.72
+378,769,Unico Desa,Unico Est 4,Extremely High (more than 1 in 100),41.47
+379,769,Unico Desa,Unico Est 4,"High (6 in 1,000 to 1 in 100)",58.53
+380,770,Unico Desa,Unico Est 5,Extremely High (more than 1 in 100),2.43
+381,770,Unico Desa,Unico Est 5,"High (6 in 1,000 to 1 in 100)",97.57
+382,771,Unico Desa,Unico Est 7,"High (6 in 1,000 to 1 in 100)",100.0
+383,772,Unico Desa,Unico POM,"High (6 in 1,000 to 1 in 100)",100.0
+384,807,Kulim Berhad,Basir Ismail,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+385,808,Kulim Berhad,Bukit Kelompok,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+386,809,Kulim Berhad,Bukit Layang,"Low - Medium (1 in 1,000 to 2 in 1,000)",99.01
+387,810,Kulim Berhad,Bukit Payung,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+388,811,Kulim Berhad,Enggang,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+389,812,Kulim Berhad,Kemedak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+390,813,Kulim Berhad,Kuala Kabong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+391,814,Kulim Berhad,Labis Bahru,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+392,815,Kulim Berhad,Mungka,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+393,816,Kulim Berhad,Mutiara,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+394,817,Kulim Berhad,Palong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+395,818,Kulim Berhad,Pasak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+396,819,Kulim Berhad,Pasir Logok,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+397,820,Kulim Berhad,Pasir Panjang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+398,821,Kulim Berhad,Rem,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+399,822,Kulim Berhad,Rengam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+400,823,Kulim Berhad,Sedenak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+401,824,Kulim Berhad,Selai,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+402,825,Kulim Berhad,Sepang Loi,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+403,826,Kulim Berhad,Sg Papan,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+404,827,Kulim Berhad,Sg Sembrong,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+405,828,Kulim Berhad,Sg Tawing,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+406,829,Kulim Berhad,Siang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+407,830,Kulim Berhad,Sindora,"Low - Medium (1 in 1,000 to 2 in 1,000)",8.96
+408,830,Kulim Berhad,Sindora,"Medium - High (2 in 1,000 to 6 in 1,000)",91.04
+409,831,Kulim Berhad,Tereh Selatan,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+410,832,Kulim Berhad,Tereh Utara,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+411,833,Kulim Berhad,Tunjuk Laut,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+412,834,Kulim Berhad,Ulu Tiram,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+413,835,Kulim Berhad,UMAC,"High (6 in 1,000 to 1 in 100)",100.0
+414,841,Keresa Plantations Sdn Bhd,Jiba Estate,"High (6 in 1,000 to 1 in 100)",100.0
+415,842,Keresa Plantations Sdn Bhd,Sujan Estate,"High (6 in 1,000 to 1 in 100)",100.0
+416,843,Keresa Plantations Sdn Bhd,Sungai Kubud Estate,"High (6 in 1,000 to 1 in 100)",100.0
+417,845,Abedon Sdn Bhd,Bukit Sekong Estate,"High (6 in 1,000 to 1 in 100)",100.0
+418,846,Abedon Sdn Bhd,Tanaki Estate,"High (6 in 1,000 to 1 in 100)",100.0
+419,847,Kretam Holdings Berhad,Kretam Holdings Berhad,Extremely High (more than 1 in 100),100.0
+420,848,Syarikat Kretam Plantation Sdn Bhd,Bode Estate,"High (6 in 1,000 to 1 in 100)",100.0
+421,849,Syarikat Kretam Plantation Sdn Bhd,Masang Estate,"High (6 in 1,000 to 1 in 100)",100.0
+422,850,Syarikat Kretam Plantation Sdn Bhd,Sapagaya Estate,"High (6 in 1,000 to 1 in 100)",100.0
+423,851,Winpalm Development Sdn Bhd,Winpalm,"High (6 in 1,000 to 1 in 100)",100.0
+424,852,Bornion Estate Sdn Bhd,Bornion,"High (6 in 1,000 to 1 in 100)",100.0
+425,855,Golden Sphere Sdn Bhd,Lungmanis,Extremely High (more than 1 in 100),100.0
+426,856,Golden Sphere Sdn Bhd,Rimmer,Extremely High (more than 1 in 100),100.0
+427,857,Golden Sphere Sdn Bhd,TUNGKU,Extremely High (more than 1 in 100),70.34
+428,857,Golden Sphere Sdn Bhd,TUNGKU,"High (6 in 1,000 to 1 in 100)",29.66
+429,858,Kuala Lumpur Kepong Berhad,Allagar,"High (6 in 1,000 to 1 in 100)",100.0
+430,859,Kuala Lumpur Kepong Berhad,Ayer Hitam,"Low - Medium (1 in 1,000 to 2 in 1,000)",0.06
+431,859,Kuala Lumpur Kepong Berhad,Ayer Hitam,"Medium - High (2 in 1,000 to 6 in 1,000)",99.94
+432,860,Kuala Lumpur Kepong Berhad,Ban Heng,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+433,861,Kuala Lumpur Kepong Berhad,Batang Jelai,"Low - Medium (1 in 1,000 to 2 in 1,000)",75.32
+434,861,Kuala Lumpur Kepong Berhad,Batang Jelai,"Medium - High (2 in 1,000 to 6 in 1,000)",24.68
+435,862,Kuala Lumpur Kepong Berhad,Batu Lintang,"High (6 in 1,000 to 1 in 100)",100.0
+436,863,Kuala Lumpur Kepong Berhad,Buntar,"High (6 in 1,000 to 1 in 100)",100.0
+437,864,Kuala Lumpur Kepong Berhad,Changkat Asa,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+438,865,Kuala Lumpur Kepong Berhad,Changkat Chermin,"High (6 in 1,000 to 1 in 100)",29.48
+439,865,Kuala Lumpur Kepong Berhad,Changkat Chermin,"Low - Medium (1 in 1,000 to 2 in 1,000)",70.52
+440,866,Kuala Lumpur Kepong Berhad,Fraser,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+441,867,Kuala Lumpur Kepong Berhad,Glenealy,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+442,868,Kuala Lumpur Kepong Berhad,Gunung Pertanian,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+443,869,Kuala Lumpur Kepong Berhad,Jeram Padang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+444,870,Kuala Lumpur Kepong Berhad,Kekayaan,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+445,871,Kuala Lumpur Kepong Berhad,Kerilla,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+446,872,Kuala Lumpur Kepong Berhad,Kerling,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+447,873,Kuala Lumpur Kepong Berhad,Kombok,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+448,874,Kuala Lumpur Kepong Berhad,Kuala Kangsar,"High (6 in 1,000 to 1 in 100)",36.11
+449,874,Kuala Lumpur Kepong Berhad,Kuala Kangsar,"Low - Medium (1 in 1,000 to 2 in 1,000)",63.89
+450,875,Kuala Lumpur Kepong Berhad,Ladang Lekir,"High (6 in 1,000 to 1 in 100)",44.64
+451,875,Kuala Lumpur Kepong Berhad,Ladang Lekir,"Low - Medium (1 in 1,000 to 2 in 1,000)",55.36
+452,876,Kuala Lumpur Kepong Berhad,Ladang Raja Hitam,"High (6 in 1,000 to 1 in 100)",100.0
+453,877,Kuala Lumpur Kepong Berhad,Landak,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+454,878,Kuala Lumpur Kepong Berhad,NEW POGOH,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+455,879,Kuala Lumpur Kepong Berhad,Paloh,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+456,880,Kuala Lumpur Kepong Berhad,Pasir Gajah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+457,881,Kuala Lumpur Kepong Berhad,Pelam,"High (6 in 1,000 to 1 in 100)",13.82
+458,881,Kuala Lumpur Kepong Berhad,Pelam,"Medium - High (2 in 1,000 to 6 in 1,000)",86.18
+459,882,Kuala Lumpur Kepong Berhad,Renjok,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+460,883,Kuala Lumpur Kepong Berhad,See Sun,"Low - Medium (1 in 1,000 to 2 in 1,000)",90.39
+461,883,Kuala Lumpur Kepong Berhad,See Sun,"Medium - High (2 in 1,000 to 6 in 1,000)",9.61
+462,884,Kuala Lumpur Kepong Berhad,Serapoh,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+463,885,Kuala Lumpur Kepong Berhad,Subur,"High (6 in 1,000 to 1 in 100)",100.0
+464,886,Kuala Lumpur Kepong Berhad,Sungai Bekok,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+465,887,Kuala Lumpur Kepong Berhad,Sungai Gapi,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+466,888,Kuala Lumpur Kepong Berhad,Sungai Kawang,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+467,889,Kuala Lumpur Kepong Berhad,Sungai Penggeli,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+468,890,Kuala Lumpur Kepong Berhad,Sungai Sokor,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+469,891,Kuala Lumpur Kepong Berhad,TUAN,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+470,892,Kuala Lumpur Kepong Berhad,Tuan Mee,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+471,893,Kuala Lumpur Kepong Berhad,Ulu Pedas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+472,894,Kuala Lumpur Kepong Berhad,VOULES,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+473,895,Kulumpang Development Corporation Sdn Bhd,Pang Burong,Extremely High (more than 1 in 100),100.0
+474,896,Kulumpang Development Corporation Sdn Bhd,Pangeran,Extremely High (more than 1 in 100),100.0
+475,897,Kulumpang Development Corporation Sdn Bhd,Pinang,Extremely High (more than 1 in 100),100.0
+476,898,Kulumpang Development Corporation Sdn Bhd,Ringlet,Extremely High (more than 1 in 100),100.0
+477,899,Kulumpang Development Corporation Sdn Bhd,Sigalong,Extremely High (more than 1 in 100),100.0
+478,900,Kulumpang Development Corporation Sdn Bhd,TUNDONG,Extremely High (more than 1 in 100),100.0
+479,901,Kung Hing Company (KDC),Jatika,Extremely High (more than 1 in 100),100.0
+480,913,Sabah Cocoa Sdn Bhd,Bukit Tabin,Extremely High (more than 1 in 100),100.0
+481,914,Sabah Cocoa Sdn Bhd,Sungai Silabukan,Extremely High (more than 1 in 100),100.0
+482,915,Segar Usaha Sdn Bhd,Segar Usaha,"High (6 in 1,000 to 1 in 100)",100.0
+483,916,Sri Kunak Sdn Bhd,Sri Kunak,Extremely High (more than 1 in 100),100.0
+484,920,Kwantas Corporation Berhad,Haranky 1,"High (6 in 1,000 to 1 in 100)",100.0
+485,921,Kwantas Corporation Berhad,Kwantas Corporation Berhad,"High (6 in 1,000 to 1 in 100)",100.0
+486,922,Kwantas Corporation Berhad,Kwantas Pelita,"High (6 in 1,000 to 1 in 100)",100.0
+487,923,Kwantas Corporation Berhad,Mewah 1,"High (6 in 1,000 to 1 in 100)",100.0
+488,924,Kwantas Corporation Berhad,Pintasan 1,"High (6 in 1,000 to 1 in 100)",100.0
+489,925,Lam Soon Plantations Sdn Bhd,Lam Soon,"High (6 in 1,000 to 1 in 100)",100.0
+490,942,Kilang Kelapa Sawit Pinangah Sdn Bhd,Pinangah Estate,Extremely High (more than 1 in 100),100.0
+491,943,N.Y Hiew (Holdings) Sdn Bhd,Balung Estate,Extremely High (more than 1 in 100),100.0
+492,944,N.Y Hiew (Holdings) Sdn Bhd,Kalumpang Estate,Extremely High (more than 1 in 100),100.0
+493,945,N.Y Hiew (Holdings) Sdn Bhd,Sabahan Estate,Extremely High (more than 1 in 100),100.0
+494,946,N.Y Hiew (Holdings) Sdn Bhd,Sapang Estate,Extremely High (more than 1 in 100),100.0
+495,1247,Hibumas Sdn Bhd,Hibumas 1,Extremely High (more than 1 in 100),11.19
+496,1247,Hibumas Sdn Bhd,Hibumas 1,"High (6 in 1,000 to 1 in 100)",12.84
+497,1247,Hibumas Sdn Bhd,Hibumas 1,"Medium - High (2 in 1,000 to 6 in 1,000)",75.97
+498,1248,Jebawang Sdn Bhd,Jebawang,Extremely High (more than 1 in 100),28.05
+499,1248,Jebawang Sdn Bhd,Jebawang,"Medium - High (2 in 1,000 to 6 in 1,000)",71.95
+500,1249,Kaminsky Sdn Bhd,Kaminsky,"High (6 in 1,000 to 1 in 100)",100.0
+501,1250,Kiabau Plantations Sdn Bhd,Kiabau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+502,1251,Reka Halus Sdn Bhd,Reka Halus,"High (6 in 1,000 to 1 in 100)",100.0
+503,1252,Ribubonus Sdn Bhd,Ribubonus,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+504,1253,Sabahmas Plantations Sdn Bhd,Sabahmas 5,"High (6 in 1,000 to 1 in 100)",100.0
+505,1254,Sabahmas Plantations Sdn Bhd,Sabahmas 6,"High (6 in 1,000 to 1 in 100)",100.0
+506,1255,Sabahmas Plantations Sdn Bhd,Sabahmas 7,"High (6 in 1,000 to 1 in 100)",100.0
+507,1256,Sapi Plantations Sdn Bhd,Sapi 1,"High (6 in 1,000 to 1 in 100)",100.0
+508,1257,Sapi Plantations Sdn Bhd,Sapi 2,"High (6 in 1,000 to 1 in 100)",100.0
+509,1258,Sapi Plantations Sdn Bhd,Sapi Sugut,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+510,1259,Sapi Plantations Sdn Bhd,Terusan 1,"High (6 in 1,000 to 1 in 100)",100.0
+511,1260,Sapi Plantations Sdn Bhd,Terusan 2,"High (6 in 1,000 to 1 in 100)",73.75
+512,1260,Sapi Plantations Sdn Bhd,Terusan 2,"Medium - High (2 in 1,000 to 6 in 1,000)",26.25
+513,1261,Saremas Sdn Bhd,Saremas 1,"High (6 in 1,000 to 1 in 100)",100.0
+514,1262,Saremas Sdn Bhd,Saremas 2,"High (6 in 1,000 to 1 in 100)",100.0
+515,1263,Saremas Sdn Bhd,Suai,"High (6 in 1,000 to 1 in 100)",100.0
+516,1264,Segarmas Plantations Sdn Bhd,Segarmas,"High (6 in 1,000 to 1 in 100)",100.0
+517,1265,Sekar Imej Sdn Bhd,Sekar Imej,Extremely High (more than 1 in 100),5.15
+518,1265,Sekar Imej Sdn Bhd,Sekar Imej,"Medium - High (2 in 1,000 to 6 in 1,000)",94.85
+519,1266,Sri Kamusan Sdn Bhd,Sri Kamusan,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+520,1490,Sawit Kinabalu Sdn Bhd,Sawit Kinabalu Sdn Bhd,Extremely High (more than 1 in 100),63.91
+521,1490,Sawit Kinabalu Sdn Bhd,Sawit Kinabalu Sdn Bhd,"High (6 in 1,000 to 1 in 100)",32.23
+522,1490,Sawit Kinabalu Sdn Bhd,Sawit Kinabalu Sdn Bhd,"Medium - High (2 in 1,000 to 6 in 1,000)",3.86
+523,1567,Sime Darby Plantation Berhad,E.Anak Kulim,"High (6 in 1,000 to 1 in 100)",100.0
+524,1568,Sime Darby Plantation Berhad,E.Bagan Datoh,"Low (0 to 1 in 1,000)",53.72
+525,1568,Sime Darby Plantation Berhad,E.Bagan Datoh,"Low - Medium (1 in 1,000 to 2 in 1,000)",46.28
+526,1569,Sime Darby Plantation Berhad,E.Bayu,"High (6 in 1,000 to 1 in 100)",100.0
+527,1570,Sime Darby Plantation Berhad,E.Belian,"High (6 in 1,000 to 1 in 100)",100.0
+528,1571,Sime Darby Plantation Berhad,E.Bikam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+529,1572,Sime Darby Plantation Berhad,E.Binuang,Extremely High (more than 1 in 100),100.0
+530,1573,Sime Darby Plantation Berhad,E.Bkt Cherakah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+531,1574,Sime Darby Plantation Berhad,E.Bkt Kerayong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+532,1575,Sime Darby Plantation Berhad,E.Bkt Talang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+533,1576,Sime Darby Plantation Berhad,E.Bkt. Pilah,"Low - Medium (1 in 1,000 to 2 in 1,000)",91.96
+534,1576,Sime Darby Plantation Berhad,E.Bkt. Pilah,"Medium - High (2 in 1,000 to 6 in 1,000)",8.04
+535,1577,Sime Darby Plantation Berhad,E.Bkt. Selarong,"High (6 in 1,000 to 1 in 100)",31.96
+536,1577,Sime Darby Plantation Berhad,E.Bkt. Selarong,"Medium - High (2 in 1,000 to 6 in 1,000)",68.04
+537,1578,Sime Darby Plantation Berhad,E.Bradwall,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+538,1579,Sime Darby Plantation Berhad,E.Bukit Asahan,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+539,1580,Sime Darby Plantation Berhad,E.Bukit Badak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+540,1581,Sime Darby Plantation Berhad,E.Bukit Benut,"Low - Medium (1 in 1,000 to 2 in 1,000)",75.58
+541,1581,Sime Darby Plantation Berhad,E.Bukit Benut,"Medium - High (2 in 1,000 to 6 in 1,000)",24.42
+542,1582,Sime Darby Plantation Berhad,E.Bukit Hijau,"High (6 in 1,000 to 1 in 100)",0.0
+543,1582,Sime Darby Plantation Berhad,E.Bukit Hijau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+544,1583,Sime Darby Plantation Berhad,E.Bukit Lagong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+545,1584,Sime Darby Plantation Berhad,E.Bukit Paloh,"Low - Medium (1 in 1,000 to 2 in 1,000)",23.71
+546,1584,Sime Darby Plantation Berhad,E.Bukit Paloh,"Medium - High (2 in 1,000 to 6 in 1,000)",76.29
+547,1585,Sime Darby Plantation Berhad,E.Bukit Pelandok,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+548,1586,Sime Darby Plantation Berhad,E.Bukit Puteri,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+549,1587,Sime Darby Plantation Berhad,E.Bukit Rajah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+550,1588,Sime Darby Plantation Berhad,E.Cenas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+551,1589,Sime Darby Plantation Berhad,E.CEP Niyor,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+552,1590,Sime Darby Plantation Berhad,E.CEP Rengam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+553,1591,Sime Darby Plantation Berhad,E.Cha'ah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+554,1592,Sime Darby Plantation Berhad,E.Chartquest,"High (6 in 1,000 to 1 in 100)",100.0
+555,1593,Sime Darby Plantation Berhad,E.Chenor,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+556,1594,Sime Darby Plantation Berhad,E.Chersonese,"High (6 in 1,000 to 1 in 100)",100.0
+557,1595,Sime Darby Plantation Berhad,E.Cluny,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+558,1596,Sime Darby Plantation Berhad,E.Damai,"High (6 in 1,000 to 1 in 100)",100.0
+559,1597,Sime Darby Plantation Berhad,E.Derawan,"High (6 in 1,000 to 1 in 100)",100.0
+560,1598,Sime Darby Plantation Berhad,E.Diamond Jubilee,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+561,1599,Sime Darby Plantation Berhad,E.Dulang,"High (6 in 1,000 to 1 in 100)",100.0
+562,1600,Sime Darby Plantation Berhad,E.Dusun Durian,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+563,1601,Sime Darby Plantation Berhad,E.East,"Low - Medium (1 in 1,000 to 2 in 1,000)",99.99
+564,1602,Sime Darby Plantation Berhad,E.Elmina,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+565,1603,Sime Darby Plantation Berhad,E.Elphil,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+566,1604,Sime Darby Plantation Berhad,E.Flemington,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+567,1605,Sime Darby Plantation Berhad,E.Giram,Extremely High (more than 1 in 100),100.0
+568,1606,Sime Darby Plantation Berhad,E.Glengowrie,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+569,1607,Sime Darby Plantation Berhad,E.Gunung Mas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+570,1608,Sime Darby Plantation Berhad,E.Holyrood,"High (6 in 1,000 to 1 in 100)",100.0
+571,1609,Sime Darby Plantation Berhad,E.Imam,Extremely High (more than 1 in 100),100.0
+572,1610,Sime Darby Plantation Berhad,E.Jabor,"High (6 in 1,000 to 1 in 100)",100.0
+573,1611,Sime Darby Plantation Berhad,E.Jelata Bumi,Extremely High (more than 1 in 100),100.0
+574,1612,Sime Darby Plantation Berhad,E.Jentar,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+575,1613,Sime Darby Plantation Berhad,E.Jentayu,"High (6 in 1,000 to 1 in 100)",58.93
+576,1613,Sime Darby Plantation Berhad,E.Jentayu,"Medium - High (2 in 1,000 to 6 in 1,000)",41.07
+577,1614,Sime Darby Plantation Berhad,E.Kalumpong,"High (6 in 1,000 to 1 in 100)",100.0
+578,1615,Sime Darby Plantation Berhad,E.Kamuning,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+579,1616,Sime Darby Plantation Berhad,E.Kelida,"High (6 in 1,000 to 1 in 100)",100.0
+580,1617,Sime Darby Plantation Berhad,E.Kempas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+581,1618,Sime Darby Plantation Berhad,E.Kempas Klebang,"Low - Medium (1 in 1,000 to 2 in 1,000)",49.48
+582,1618,Sime Darby Plantation Berhad,E.Kempas Klebang,"Medium - High (2 in 1,000 to 6 in 1,000)",50.52
+583,1619,Sime Darby Plantation Berhad,E.Kemuning,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+584,1620,Sime Darby Plantation Berhad,E.Kerdau,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+585,1621,Sime Darby Plantation Berhad,E.Kinta Kellas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+586,1622,Sime Darby Plantation Berhad,E.Koh Foh,"Low - Medium (1 in 1,000 to 2 in 1,000)",31.87
+587,1622,Sime Darby Plantation Berhad,E.Koh Foh,"Medium - High (2 in 1,000 to 6 in 1,000)",68.13
+588,1623,Sime Darby Plantation Berhad,E.Kulai,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+589,1624,Sime Darby Plantation Berhad,E.Labu,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+590,1625,Sime Darby Plantation Berhad,E.Lambak/Elaeis,"Low - Medium (1 in 1,000 to 2 in 1,000)",6.61
+591,1625,Sime Darby Plantation Berhad,E.Lambak/Elaeis,"Medium - High (2 in 1,000 to 6 in 1,000)",93.39
+592,1626,Sime Darby Plantation Berhad,E.Lanadron,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+593,1627,Sime Darby Plantation Berhad,E.Lavang,"High (6 in 1,000 to 1 in 100)",100.0
+594,1628,Sime Darby Plantation Berhad,E.Lavang (SE),"High (6 in 1,000 to 1 in 100)",100.0
+595,1629,Sime Darby Plantation Berhad,E.Layang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+596,1630,Sime Darby Plantation Berhad,E.Melalap,Extremely High (more than 1 in 100),100.0
+597,1631,Sime Darby Plantation Berhad,E.Mentakab,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+598,1632,Sime Darby Plantation Berhad,E.Merotai,Extremely High (more than 1 in 100),100.0
+599,1633,Sime Darby Plantation Berhad,E.Mostyn,Extremely High (more than 1 in 100),100.0
+600,1634,Sime Darby Plantation Berhad,E.Muar River,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+601,1635,Sime Darby Plantation Berhad,E.New Labu,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+602,1636,Sime Darby Plantation Berhad,E.North Labis,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+603,1637,Sime Darby Plantation Berhad,E.Padang Buluh,"High (6 in 1,000 to 1 in 100)",45.59
+604,1637,Sime Darby Plantation Berhad,E.Padang Buluh,"Medium - High (2 in 1,000 to 6 in 1,000)",54.41
+605,1638,Sime Darby Plantation Berhad,E.Pagoh,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+606,1639,Sime Darby Plantation Berhad,E.PD Lukut,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+607,1640,Sime Darby Plantation Berhad,E.Pekaka,"High (6 in 1,000 to 1 in 100)",100.0
+608,1641,Sime Darby Plantation Berhad,E.Pekan,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+609,1642,Sime Darby Plantation Berhad,E.Pengkalan Bukit,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+610,1643,Sime Darby Plantation Berhad,E.Peroh,"High (6 in 1,000 to 1 in 100)",100.0
+611,1644,Sime Darby Plantation Berhad,E.Pertang,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+612,1645,Sime Darby Plantation Berhad,E.Rajawali,"High (6 in 1,000 to 1 in 100)",100.0
+613,1646,Sime Darby Plantation Berhad,E.Rasan,"High (6 in 1,000 to 1 in 100)",100.0
+614,1647,Sime Darby Plantation Berhad,E.Ruai,"High (6 in 1,000 to 1 in 100)",100.0
+615,1648,Sime Darby Plantation Berhad,E.Sabak Bernam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+616,1649,Sime Darby Plantation Berhad,E.Sabrang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+617,1650,Sime Darby Plantation Berhad,E.Sahua,"High (6 in 1,000 to 1 in 100)",100.0
+618,1651,Sime Darby Plantation Berhad,E.Salak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+619,1652,Sime Darby Plantation Berhad,E.Samudera,"High (6 in 1,000 to 1 in 100)",100.0
+620,1653,Sime Darby Plantation Berhad,E.Sapong,Extremely High (more than 1 in 100),100.0
+621,1654,Sime Darby Plantation Berhad,E.Segaliud,"High (6 in 1,000 to 1 in 100)",100.0
+622,1655,Sime Darby Plantation Berhad,E.Semarak,"High (6 in 1,000 to 1 in 100)",100.0
+623,1656,Sime Darby Plantation Berhad,E.Sembrong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+624,1657,Sime Darby Plantation Berhad,E.Sengkang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+625,1658,Sime Darby Plantation Berhad,E.Sentosa,"High (6 in 1,000 to 1 in 100)",100.0
+626,1659,Sime Darby Plantation Berhad,E.Sepang,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+627,1660,Sime Darby Plantation Berhad,E.Seri Intan,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+628,1661,Sime Darby Plantation Berhad,E.Seri Pulai,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+629,1662,Sime Darby Plantation Berhad,E.Serkam,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+630,1663,Sime Darby Plantation Berhad,E.Sg Mai,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+631,1664,Sime Darby Plantation Berhad,E.Sg Samak,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+632,1665,Sime Darby Plantation Berhad,E.Sg. Sebaling,"Medium - High (2 in 1,000 to 6 in 1,000)",100.0
+633,1666,Sime Darby Plantation Berhad,E.Sg. Senarut,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+634,1667,Sime Darby Plantation Berhad,E.Sg.Dingin,"High (6 in 1,000 to 1 in 100)",64.9
+635,1667,Sime Darby Plantation Berhad,E.Sg.Dingin,"Medium - High (2 in 1,000 to 6 in 1,000)",35.1
+636,1668,Sime Darby Plantation Berhad,E.Sg.Simpang Kiri,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+637,1669,Sime Darby Plantation Berhad,E.Sg.Wangi,"High (6 in 1,000 to 1 in 100)",100.0
+638,1670,Sime Darby Plantation Berhad,E.Siliau,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+639,1671,Sime Darby Plantation Berhad,E.Sogomana,"High (6 in 1,000 to 1 in 100)",100.0
+640,1672,Sime Darby Plantation Berhad,E.Somme,"High (6 in 1,000 to 1 in 100)",100.0
+641,1673,Sime Darby Plantation Berhad,E.St. Helier,"Low - Medium (1 in 1,000 to 2 in 1,000)",93.37
+642,1673,Sime Darby Plantation Berhad,E.St. Helier,"Medium - High (2 in 1,000 to 6 in 1,000)",6.63
+643,1674,Sime Darby Plantation Berhad,E.Sua Betong,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+644,1675,Sime Darby Plantation Berhad,E.Sungai Baru,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+645,1676,Sime Darby Plantation Berhad,E.Sungai Gemas,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+646,1677,Sime Darby Plantation Berhad,E.Sungang,Extremely High (more than 1 in 100),100.0
+647,1678,Sime Darby Plantation Berhad,E.Sungei Buloh,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+648,1679,Sime Darby Plantation Berhad,E.Table,Extremely High (more than 1 in 100),100.0
+649,1680,Sime Darby Plantation Berhad,E.Takau,"High (6 in 1,000 to 1 in 100)",100.0
+650,1681,Sime Darby Plantation Berhad,E.Tali Ayer,"High (6 in 1,000 to 1 in 100)",100.0
+651,1682,Sime Darby Plantation Berhad,E.Tampin Linggi,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+652,1683,Sime Darby Plantation Berhad,E.Tanah Merah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+653,1684,Sime Darby Plantation Berhad,E.Tangkah,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+654,1685,Sime Darby Plantation Berhad,E.Tennamaram,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+655,1686,Sime Darby Plantation Berhad,E.Tiger,Extremely High (more than 1 in 100),100.0
+656,1687,Sime Darby Plantation Berhad,E.Tigowis,"High (6 in 1,000 to 1 in 100)",100.0
+657,1688,Sime Darby Plantation Berhad,E.Tingkayu,Extremely High (more than 1 in 100),100.0
+658,1689,Sime Darby Plantation Berhad,E.Tun Dr. Ismail,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+659,1690,Sime Darby Plantation Berhad,E.Tun Tan Siew Sin,"High (6 in 1,000 to 1 in 100)",100.0
+660,1691,Sime Darby Plantation Berhad,E.Tunku,"High (6 in 1,000 to 1 in 100)",100.0
+661,1692,Sime Darby Plantation Berhad,E.Ulu Remis,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+662,1693,Sime Darby Plantation Berhad,E.Welch,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+663,1694,Sime Darby Plantation Berhad,E.West,"Low - Medium (1 in 1,000 to 2 in 1,000)",99.91
+664,1695,Sime Darby Plantation Berhad,E.Yong Peng,"Low - Medium (1 in 1,000 to 2 in 1,000)",100.0
+665,1791,TDM Plantation Sdn Bhd,TDM Plantation Sdn Bhd,"High (6 in 1,000 to 1 in 100)",100.0
+666,1792,Era Harum Sdn Bhd,Wise Mission 2,Extremely High (more than 1 in 100),100.0
+667,1794,Ladang Siagil Sdn Bhd,Ladang Siagil,Extremely High (more than 1 in 100),100.0
+668,1795,Melur Beribu Sdn Bhd,Melur Beribu,Extremely High (more than 1 in 100),100.0
+669,1796,Sugil Hasil Sdn Bhd,Wise Mission 3,Extremely High (more than 1 in 100),100.0
+670,1797,Teck Guan Holdings Andum Sdn Bhd,Andum Sandakan,"High (6 in 1,000 to 1 in 100)",100.0
+671,1798,Teck Guan Holdings Andum Sdn Bhd,Andum Sandakan,"High (6 in 1,000 to 1 in 100)",100.0
+672,1799,Teck Guan Holdings Branko Sdn Bhd,Serundong,Extremely High (more than 1 in 100),100.0
+673,1800,Teck Guan Holdings Happy Valley Sdn Bhd,Happy Valley,"High (6 in 1,000 to 1 in 100)",100.0
+674,1801,Teck Guan Holdings Happy Valley Sdn Bhd,Happy Valley,"High (6 in 1,000 to 1 in 100)",100.0
+675,1802,Teck Guan Holdings Sdn Bhd,Kokorotus,"High (6 in 1,000 to 1 in 100)",100.0
+676,1803,Teck Guan Holdings Sdn Bhd,Semporna,Extremely High (more than 1 in 100),100.0
+677,1804,Teck Guan Holdings Sdn Bhd,Sepagaya,Extremely High (more than 1 in 100),100.0
+678,1805,Teck Guan Holdings Sdn Bhd,Tabanac,Extremely High (more than 1 in 100),100.0
+679,1806,Teck Guan Holdings Sdn Bhd,Taliwas,Extremely High (more than 1 in 100),0.31
+680,1806,Teck Guan Holdings Sdn Bhd,Taliwas,"High (6 in 1,000 to 1 in 100)",99.69
+681,1807,Teck Guan Holdings Sdn Bhd,Teck Guan Holdings Sdn Bhd,Extremely High (more than 1 in 100),100.0
+682,1808,Teck Guan Holdings Sdn Bhd,Teck Guan Holdings Sdn Bhd,Extremely High (more than 1 in 100),100.0
+683,1810,Tian Siang Holdings Sdn Bhd,Tian Siang Holdings Sdn Bhd,"High (6 in 1,000 to 1 in 100)",100.0
+684,1816,TSH Resources Berhad,GMT,"High (6 in 1,000 to 1 in 100)",100.0
+685,1817,TSH Resources Berhad,Landquest,Extremely High (more than 1 in 100),100.0
+686,1819,TSH Resources Berhad,LKSK,Extremely High (more than 1 in 100),100.0
+687,1820,TSH Resources Berhad,Maju Sawit,Extremely High (more than 1 in 100),100.0
+688,1823,TSH Resources Berhad,OYH,"High (6 in 1,000 to 1 in 100)",100.0
+689,1825,TSH Resources Berhad,Sabahan,Extremely High (more than 1 in 100),100.0
+690,1828,TSH Resources Berhad,Wakuba,Extremely High (more than 1 in 100),100.0
+691,1846,Sudirman Bin Sapie,Sudirman Bin Sapie,"High (6 in 1,000 to 1 in 100)",81.06
+692,1846,Sudirman Bin Sapie,Sudirman Bin Sapie,"Low - Medium (1 in 1,000 to 2 in 1,000)",12.57
+693,1846,Sudirman Bin Sapie,Sudirman Bin Sapie,"Medium - High (2 in 1,000 to 6 in 1,000)",6.37

@@ -77,7 +77,7 @@ def get_market_cap_data():
     result = []
     for name, ticker in companies.items():
         try:
-            stock = yf.Ticker(ticker)
+            stock = yf.Ticker(ticker, proxy="")
             info = stock.info
             market_cap = info.get("marketCap", None)
             if market_cap:
@@ -172,7 +172,7 @@ def get_company_earnings(ticker):
 def get_soy_price_data(ticker: str):
     end = datetime.today()
     start = end - timedelta(days=180)  # last 6 months
-    data = yf.download("ZL=F", start=start, end=end)
+    data = yf.download("ZL=F", start=start, end=end, progress=False, proxy="")
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
     data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
@@ -284,7 +284,7 @@ def get_mills():
 
 @app.get("/aqueduct")
 def get_shapefile():
-    auqeduct = gpd.read_file("aqueduct.gpkg")
+    auqeduct = gpd.read_file("aqueduct/aqueduct.gpkg")
 
     for col in auqeduct.columns:
         if auqeduct[col].dtype.name.startswith("datetime"):
@@ -292,3 +292,148 @@ def get_shapefile():
 
     aq_geojson = auqeduct.to_crs(epsg=4326).to_json()
     return JSONResponse(content=json.loads(aq_geojson))
+
+@app.get("/cfr-bar-top6")
+def cfr_bar_top6():
+    df = pd.read_csv("cfr_summary.csv")
+
+    label_order = [
+        "No Risk",
+        "Low (0 to 9 in 1,000,000)",
+        "Low - Medium (9 in 1,000,000 to 7 in 100,000)",
+        "Medium - High (7 in 100,000 to 3 in 10,000)",
+        "High (3 in 10,000 to 2 in 1,000)",
+        "Extremely High (more than 2 in 1,000)"
+    ]
+
+    color_map = {
+        "No Risk": "#00cc66",
+        "Low (0 to 9 in 1,000,000)": "#ccff33",
+        "Low - Medium (9 in 1,000,000 to 7 in 100,000)": "#ffff66",
+        "Medium - High (7 in 100,000 to 3 in 10,000)": "#ffcc00",
+        "High (3 in 10,000 to 2 in 1,000)": "#ff6600",
+        "Extremely High (more than 2 in 1,000)": "#cc0000"
+    }
+
+    counts = (df.groupby(["company", "cfr_label"]).size().reset_index(name="count"))
+
+    total_counts = (
+        counts.groupby("company")["count"]
+        .sum()
+        .reset_index(name="total")
+        .sort_values(by="total", ascending=False)
+    )
+
+    top6 = total_counts.head(6)["company"].tolist()
+
+    filtered = counts[counts["company"].isin(top6)]
+    pivoted = filtered.pivot(index="company", columns="cfr_label", values="count").fillna(0)
+    pivoted = pivoted.reindex(columns=label_order, fill_value=0)
+
+    chart_data = {
+        "labels": pivoted.index.tolist(),
+        "datasets": [
+            {
+                "label": label,
+                "data": pivoted[label].tolist(),
+                "backgroundColor": color_map.get(label, "#cccccc")
+            }
+            for label in label_order if label in pivoted.columns
+        ]
+    }
+    return JSONResponse(content=chart_data)
+
+@app.get("/rfr-bar-top6")
+def rfr_bar_top6():
+    df = pd.read_csv("rfr_summary.csv")
+
+    label_order = [
+    "No Risk",
+    "Low (0 to 1 in 1,000)",
+    "Low - Medium (1 in 1,000 to 2 in 1,000)",
+    "Medium - High (2 in 1,000 to 6 in 1,000)",
+    "High (6 in 1,000 to 1 in 100)",
+    "Extremely High (more than 1 in 100)"
+    ]
+
+    color_map = {
+        "No Risk": "#00cc66",                                # green
+        "Low (0 to 1 in 1,000)": "#ccff33",                   # light green-yellow
+        "Low - Medium (1 in 1,000 to 2 in 1,000)": "#ffff66", # yellow
+        "Medium - High (2 in 1,000 to 6 in 1,000)": "#ffcc00",# orange-yellow
+        "High (6 in 1,000 to 1 in 100)": "#ff6600",           # orange
+        "Extremely High (more than 1 in 100)": "#cc0000"      # red
+    }
+
+    counts = (df.groupby(["company", "rfr_label"]).size().reset_index(name="count"))
+
+    total_counts = (
+        counts.groupby("company")["count"]
+        .sum()
+        .reset_index(name="total")
+        .sort_values(by="total", ascending=False)
+    )
+
+    top6 = total_counts.head(6)["company"].tolist()
+
+    filtered = counts[counts["company"].isin(top6)]
+    pivoted = filtered.pivot(index="company", columns="rfr_label", values="count").fillna(0)
+    pivoted = pivoted.reindex(columns=label_order, fill_value=0)
+
+    chart_data = {
+        "labels": pivoted.index.tolist(),
+        "datasets": [
+            {
+                "label": label,
+                "data": pivoted[label].tolist(),
+                "backgroundColor": color_map.get(label, "#cccccc")
+            }
+            for label in label_order if label in pivoted.columns
+        ]
+    }
+    return JSONResponse(content=chart_data)
+
+@app.get("/drr-bar-top6")
+def drr_bar_top6():
+    df = pd.read_csv("drr_summary.csv")
+
+    label_order = [
+    "No Risk",
+    "Low (0-0.4)",
+    "Medium (0.4-0.6)",
+    "High (0.6 and above)"]
+
+    color_map = {
+        "No Risk": "#00cc66",             # green
+        "Low (0-0.4)": "#ccff33",      # light green-yellow
+        "Medium (0.4-0.6)": "#ffff66", # yellow
+        "High (0.6 and above)": "#d12323" # red
+    }
+
+    counts = (df.groupby(["company", "drr_label"]).size().reset_index(name="count"))
+
+    total_counts = (
+        counts.groupby("company")["count"]
+        .sum()
+        .reset_index(name="total")
+        .sort_values(by="total", ascending=False)
+    )
+
+    top6 = total_counts.head(6)["company"].tolist()
+
+    filtered = counts[counts["company"].isin(top6)]
+    pivoted = filtered.pivot(index="company", columns="drr_label", values="count").fillna(0)
+    pivoted = pivoted.reindex(columns=label_order, fill_value=0)
+
+    chart_data = {
+        "labels": pivoted.index.tolist(),
+        "datasets": [
+            {
+                "label": label,
+                "data": pivoted[label].tolist(),
+                "backgroundColor": color_map.get(label, "#cccccc")
+            }
+            for label in label_order if label in pivoted.columns
+        ]
+    }
+    return JSONResponse(content=chart_data)

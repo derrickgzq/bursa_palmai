@@ -1,0 +1,618 @@
+,gfw_fid,company,plantation,drr_label,pct_overlap
+0,126,Benta Wawasan Sdn Bhd,Benta Wawasan Sdn Bhd,Medium (0.4-0.6),100.0
+1,127,Boustead Plantations Berhad,Balau,Medium (0.4-0.6),100.0
+2,128,Boustead Plantations Berhad,Balau,Medium (0.4-0.6),100.0
+3,129,Boustead Plantations Berhad,Batu Pekaka,Medium (0.4-0.6),100.0
+4,130,Boustead Plantations Berhad,Bawan,Medium (0.4-0.6),100.0
+5,131,Boustead Plantations Berhad,Bebar,Medium (0.4-0.6),100.0
+6,132,Boustead Plantations Berhad,Bekoh,Medium (0.4-0.6),100.0
+7,133,Boustead Plantations Berhad,Bukit Limau,Medium (0.4-0.6),100.0
+8,134,Boustead Plantations Berhad,Bukit Mertajam,Medium (0.4-0.6),100.0
+9,135,Boustead Plantations Berhad,Bukit Segamaha,Medium (0.4-0.6),100.0
+10,136,Boustead Plantations Berhad,Chamek,Medium (0.4-0.6),100.0
+11,137,Boustead Plantations Berhad,ELDRED,Medium (0.4-0.6),100.0
+12,138,Boustead Plantations Berhad,G&G,Medium (0.4-0.6),100.0
+13,139,Boustead Plantations Berhad,JIH,Medium (0.4-0.6),100.0
+14,140,Boustead Plantations Berhad,JIH,Medium (0.4-0.6),100.0
+15,141,Boustead Plantations Berhad,Kawananan,Medium (0.4-0.6),100.0
+16,142,Boustead Plantations Berhad,Kelimut,Medium (0.4-0.6),100.0
+17,143,Boustead Plantations Berhad,Kelimut,Medium (0.4-0.6),100.0
+18,144,Boustead Plantations Berhad,Ketengah Perwira,Medium (0.4-0.6),100.0
+19,145,Boustead Plantations Berhad,Ketengah Perwira,Medium (0.4-0.6),100.0
+20,146,Boustead Plantations Berhad,KTS,Medium (0.4-0.6),100.0
+21,147,Boustead Plantations Berhad,Kuala Muda,Medium (0.4-0.6),100.0
+22,148,Boustead Plantations Berhad,Kuala Muda,Medium (0.4-0.6),100.0
+23,149,Boustead Plantations Berhad,Kulai Young,Medium (0.4-0.6),100.0
+24,150,Boustead Plantations Berhad,Lembah Paitan,Medium (0.4-0.6),100.0
+25,151,Boustead Plantations Berhad,Lepan Kabu,Medium (0.4-0.6),100.0
+26,152,Boustead Plantations Berhad,Loagan Bunut,Medium (0.4-0.6),100.0
+27,153,Boustead Plantations Berhad,Malakoff,Medium (0.4-0.6),100.0
+28,154,Boustead Plantations Berhad,Malakoff,Medium (0.4-0.6),100.0
+29,155,Boustead Plantations Berhad,Malaya,Medium (0.4-0.6),100.0
+30,156,Boustead Plantations Berhad,Malaya,Medium (0.4-0.6),100.0
+31,157,Boustead Plantations Berhad,Maong,Medium (0.4-0.6),100.0
+32,158,Boustead Plantations Berhad,Mapai,Medium (0.4-0.6),100.0
+33,159,Boustead Plantations Berhad,Nak,Medium (0.4-0.6),89.83
+34,160,Boustead Plantations Berhad,Nak,Medium (0.4-0.6),100.0
+35,161,Boustead Plantations Berhad,Pedai,Medium (0.4-0.6),100.0
+36,162,Boustead Plantations Berhad,Pedai,Medium (0.4-0.6),100.0
+37,163,Boustead Plantations Berhad,Resort,Medium (0.4-0.6),100.0
+38,164,Boustead Plantations Berhad,Segaria,Medium (0.4-0.6),100.0
+39,165,Boustead Plantations Berhad,Solandra,Medium (0.4-0.6),100.0
+40,166,Boustead Plantations Berhad,Stothard,Medium (0.4-0.6),100.0
+41,167,Boustead Plantations Berhad,Stothard,Medium (0.4-0.6),100.0
+42,168,Boustead Plantations Berhad,Sungai-Sungai I,Medium (0.4-0.6),100.0
+43,169,Boustead Plantations Berhad,Sungai-Sungai II,Medium (0.4-0.6),100.0
+44,170,Boustead Plantations Berhad,Sungai-Sungai III,Medium (0.4-0.6),100.0
+45,171,Boustead Plantations Berhad,Sungai Jernih,Medium (0.4-0.6),100.0
+46,172,Boustead Plantations Berhad,Sungai Lelak,Medium (0.4-0.6),100.0
+47,173,Boustead Plantations Berhad,Sungai Segamaha,Medium (0.4-0.6),100.0
+48,174,Boustead Plantations Berhad,Sutera,Medium (0.4-0.6),100.0
+49,175,Boustead Plantations Berhad,Tabung Tentera Sabah,Medium (0.4-0.6),100.0
+50,176,Boustead Plantations Berhad,Tabung Tentera Terengganu,Medium (0.4-0.6),100.0
+51,177,Boustead Plantations Berhad,Taiping Rubber Plantations,Medium (0.4-0.6),100.0
+52,178,Boustead Plantations Berhad,Telok Sengat,Medium (0.4-0.6),100.0
+53,218,Carotino / JC Chang Group (Asia Production Unit),Asia Oil Palm Estate 2,Medium (0.4-0.6),100.0
+54,219,Carotino / JC Chang Group (Asia Production Unit),Hwa Li Estate 3,Medium (0.4-0.6),100.0
+55,220,Carotino / JC Chang Group (Asia Production Unit),Melewar Estate 2,Medium (0.4-0.6),100.0
+56,221,Carotino / JC Chang Group (Carotino Production Unit),Asia Oil Palm Estate 1,Medium (0.4-0.6),100.0
+57,222,Carotino / JC Chang Group (Carotino Production Unit),Hwa Li Estate 1,Medium (0.4-0.6),100.0
+58,223,Carotino / JC Chang Group (Carotino Production Unit),Hwa Li Estate 2,Medium (0.4-0.6),100.0
+59,224,Carotino / JC Chang Group (Carotino Production Unit),Maran Estate,Medium (0.4-0.6),100.0
+60,225,Carotino / JC Chang Group (Carotino Production Unit),Pahang Oil Palm Estate 1,Medium (0.4-0.6),100.0
+61,226,Carotino / JC Chang Group (Melewar Production Unit),Gerola Estate,Medium (0.4-0.6),100.0
+62,227,Carotino / JC Chang Group (Melewar Production Unit),Melewar Estate 1,Medium (0.4-0.6),100.0
+63,228,Carotino / JC Chang Group (Melewar Production Unit),Pahang Oil Palm Estate 2,Medium (0.4-0.6),100.0
+64,229,Carotino / JC Chang Group (Melewar Production Unit),Pahang Oil Palm Estate 3,Medium (0.4-0.6),100.0
+65,230,Carotino / JC Chang Group (Melewar Production Unit),Tye Yang Estate,Medium (0.4-0.6),100.0
+66,231,Carotino / JC Chang Group (Takon Production Unit),Muis Melewar Plantation 1,Medium (0.4-0.6),100.0
+67,232,Carotino / JC Chang Group (Takon Production Unit),Muis Melewar Plantation 2,Medium (0.4-0.6),100.0
+68,233,Carotino / JC Chang Group (Takon Production Unit),Pelita Estate,Medium (0.4-0.6),100.0
+69,234,Carotino / JC Chang Group (Takon Production Unit),Takon Estate,Medium (0.4-0.6),100.0
+70,248,Dara-Lam Soon Sdn Bhd,Sg Merba,Medium (0.4-0.6),100.0
+71,362,APL,BJ Corporation (Lot 20),Medium (0.4-0.6),100.0
+72,363,APL,Fortune (Lot 10),Medium (0.4-0.6),100.0
+73,364,APL,Grand Performance (Lot 18),Medium (0.4-0.6),100.0
+74,365,APL,Incosetia (Lot 16),Medium (0.4-0.6),100.0
+75,366,APL,Kronos (Lot 15),Medium (0.4-0.6),100.0
+76,367,FELDA Global Ventures Holdings Berhad,Bera Selatan 01,Medium (0.4-0.6),100.0
+77,368,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,Medium (0.4-0.6),100.0
+78,369,FELDA Global Ventures Holdings Berhad,Bera Selatan 03,Medium (0.4-0.6),100.0
+79,370,FELDA Global Ventures Holdings Berhad,Bera Selatan 04,Medium (0.4-0.6),100.0
+80,371,FELDA Global Ventures Holdings Berhad,Bera Selatan 04,Medium (0.4-0.6),100.0
+81,372,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,Medium (0.4-0.6),100.0
+82,373,FELDA Global Ventures Holdings Berhad,Bera Selatan 05,Medium (0.4-0.6),100.0
+83,374,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,Medium (0.4-0.6),100.0
+84,375,FELDA Global Ventures Holdings Berhad,Bera Selatan 07,Medium (0.4-0.6),100.0
+85,376,FELDA Global Ventures Holdings Berhad,Berabong 01,Medium (0.4-0.6),100.0
+86,377,FELDA Global Ventures Holdings Berhad,Besout 06,Medium (0.4-0.6),100.0
+87,378,FELDA Global Ventures Holdings Berhad,Besout 07,Medium (0.4-0.6),100.0
+88,379,FELDA Global Ventures Holdings Berhad,Blossom,Medium (0.4-0.6),100.0
+89,380,FELDA Global Ventures Holdings Berhad,Bukit Sagu 04,Medium (0.4-0.6),100.0
+90,381,FELDA Global Ventures Holdings Berhad,Bukit Sagu 06,Medium (0.4-0.6),100.0
+91,382,FELDA Global Ventures Holdings Berhad,Bukit Sagu 07,Medium (0.4-0.6),100.0
+92,383,FELDA Global Ventures Holdings Berhad,Bukit Sagu 08,Medium (0.4-0.6),100.0
+93,384,FELDA Global Ventures Holdings Berhad,Chador 01,Medium (0.4-0.6),100.0
+94,385,FELDA Global Ventures Holdings Berhad,Chegar Perah 02,Medium (0.4-0.6),100.0
+95,386,FELDA Global Ventures Holdings Berhad,Cherul 03,Medium (0.4-0.6),100.0
+96,387,FELDA Global Ventures Holdings Berhad,Cherul 03,Medium (0.4-0.6),100.0
+97,388,FELDA Global Ventures Holdings Berhad,Chiku 08,Medium (0.4-0.6),100.0
+98,389,FELDA Global Ventures Holdings Berhad,Chini Timur 04,Medium (0.4-0.6),100.0
+99,390,FELDA Global Ventures Holdings Berhad,FASSB Jengka 24,Medium (0.4-0.6),100.0
+100,391,FELDA Global Ventures Holdings Berhad,FASSB Kota Gelangi 5,Medium (0.4-0.6),100.0
+101,392,FELDA Global Ventures Holdings Berhad,FASSB Kota Gelangi 6,Medium (0.4-0.6),100.0
+102,393,FELDA Global Ventures Holdings Berhad,FASSB PPPTR,Medium (0.4-0.6),100.0
+103,394,FELDA Global Ventures Holdings Berhad,FASSB Ulu Belitong,Medium (0.4-0.6),100.0
+104,395,FELDA Global Ventures Holdings Berhad,FICO,Medium (0.4-0.6),100.0
+105,396,FELDA Global Ventures Holdings Berhad,HILLCO,Medium (0.4-0.6),100.0
+106,397,FELDA Global Ventures Holdings Berhad,Inas Selatan,Medium (0.4-0.6),100.0
+107,398,FELDA Global Ventures Holdings Berhad,Inas Selatan,Medium (0.4-0.6),100.0
+108,399,FELDA Global Ventures Holdings Berhad,Jeroco,Medium (0.4-0.6),100.0
+109,400,FELDA Global Ventures Holdings Berhad,Kalabakan Selatan 01,Medium (0.4-0.6),100.0
+110,401,FELDA Global Ventures Holdings Berhad,Kalabakan Tengah 01,Medium (0.4-0.6),100.0
+111,402,FELDA Global Ventures Holdings Berhad,Kalabakan Utara 01,Medium (0.4-0.6),100.0
+112,403,FELDA Global Ventures Holdings Berhad,Kechau 02,Medium (0.4-0.6),100.0
+113,404,FELDA Global Ventures Holdings Berhad,Kechau 02,Medium (0.4-0.6),100.0
+114,405,FELDA Global Ventures Holdings Berhad,Kechau 03,Medium (0.4-0.6),100.0
+115,406,FELDA Global Ventures Holdings Berhad,Kechau 03,Medium (0.4-0.6),100.0
+116,407,FELDA Global Ventures Holdings Berhad,Kechau 06,Medium (0.4-0.6),100.0
+117,408,FELDA Global Ventures Holdings Berhad,Kechau 07,Medium (0.4-0.6),100.0
+118,409,FELDA Global Ventures Holdings Berhad,Kechau 08,Medium (0.4-0.6),100.0
+119,410,FELDA Global Ventures Holdings Berhad,Kechau 08,Medium (0.4-0.6),100.0
+120,411,FELDA Global Ventures Holdings Berhad,Kechau 10,Medium (0.4-0.6),100.0
+121,412,FELDA Global Ventures Holdings Berhad,Kechau 11,Medium (0.4-0.6),100.0
+122,413,FELDA Global Ventures Holdings Berhad,Keratong 11,Medium (0.4-0.6),100.0
+123,414,FELDA Global Ventures Holdings Berhad,Kledang 02,Medium (0.4-0.6),100.0
+124,415,FELDA Global Ventures Holdings Berhad,Kledang 02,Medium (0.4-0.6),100.0
+125,416,FELDA Global Ventures Holdings Berhad,Korosah,Medium (0.4-0.6),100.0
+126,417,FELDA Global Ventures Holdings Berhad,Krau 02,Medium (0.4-0.6),100.0
+127,418,FELDA Global Ventures Holdings Berhad,Krau 04,Medium (0.4-0.6),100.0
+128,419,FELDA Global Ventures Holdings Berhad,Krau 04,Medium (0.4-0.6),100.0
+129,420,FELDA Global Ventures Holdings Berhad,Kuril,Medium (0.4-0.6),100.0
+130,421,FELDA Global Ventures Holdings Berhad,Lepar Hilir 05,Medium (0.4-0.6),100.0
+131,422,FELDA Global Ventures Holdings Berhad,Lepar Hilir 06,Medium (0.4-0.6),100.0
+132,423,FELDA Global Ventures Holdings Berhad,Lepar Hilir 08,Medium (0.4-0.6),100.0
+133,424,FELDA Global Ventures Holdings Berhad,Lepar Utara 05,Medium (0.4-0.6),100.0
+134,425,FELDA Global Ventures Holdings Berhad,Lepar Utara 07,Medium (0.4-0.6),100.0
+135,426,FELDA Global Ventures Holdings Berhad,Lepar Utara 08,Medium (0.4-0.6),100.0
+136,427,FELDA Global Ventures Holdings Berhad,Lepar Utara 09,Medium (0.4-0.6),100.0
+137,428,FELDA Global Ventures Holdings Berhad,Lepar Utara 09,Medium (0.4-0.6),100.0
+138,429,FELDA Global Ventures Holdings Berhad,Lepar Utara 11,Medium (0.4-0.6),100.0
+139,430,FELDA Global Ventures Holdings Berhad,Lepar Utara 14,Medium (0.4-0.6),100.0
+140,431,FELDA Global Ventures Holdings Berhad,Maokil 06,Medium (0.4-0.6),100.0
+141,432,FELDA Global Ventures Holdings Berhad,Maokil 07,Medium (0.4-0.6),100.0
+142,433,FELDA Global Ventures Holdings Berhad,Materis,Medium (0.4-0.6),100.0
+143,434,FELDA Global Ventures Holdings Berhad,Mengkarak 01,Medium (0.4-0.6),100.0
+144,435,FELDA Global Ventures Holdings Berhad,Mengkarak 01,Medium (0.4-0.6),100.0
+145,436,FELDA Global Ventures Holdings Berhad,Mengkarak 02,Medium (0.4-0.6),100.0
+146,437,FELDA Global Ventures Holdings Berhad,Merchong,Medium (0.4-0.6),100.0
+147,438,FELDA Global Ventures Holdings Berhad,Nitar Timur,Medium (0.4-0.6),100.0
+148,439,FELDA Global Ventures Holdings Berhad,Orico,Medium (0.4-0.6),100.0
+149,440,FELDA Global Ventures Holdings Berhad,Paloh,Medium (0.4-0.6),100.0
+150,441,FELDA Global Ventures Holdings Berhad,Palong 17,Medium (0.4-0.6),100.0
+151,442,FELDA Global Ventures Holdings Berhad,Palong 18,Medium (0.4-0.6),100.0
+152,443,FELDA Global Ventures Holdings Berhad,Palong 21,Medium (0.4-0.6),100.0
+153,444,FELDA Global Ventures Holdings Berhad,Palong Timur 05,Medium (0.4-0.6),100.0
+154,445,FELDA Global Ventures Holdings Berhad,Palong Timur 06,Medium (0.4-0.6),100.0
+155,446,FELDA Global Ventures Holdings Berhad,Pendirosa,Medium (0.4-0.6),100.0
+156,449,FELDA Global Ventures Holdings Berhad,Rantau Abang 01,Medium (0.4-0.6),100.0
+157,450,FELDA Global Ventures Holdings Berhad,Rantau Abang 01,Medium (0.4-0.6),100.0
+158,451,FELDA Global Ventures Holdings Berhad,Sampadi 01,Medium (0.4-0.6),100.0
+159,452,FELDA Global Ventures Holdings Berhad,Sampadi 03,Medium (0.4-0.6),100.0
+160,453,FELDA Global Ventures Holdings Berhad,Sampadi 04,Medium (0.4-0.6),100.0
+161,454,FELDA Global Ventures Holdings Berhad,Sampadi 05,Medium (0.4-0.6),100.0
+162,455,FELDA Global Ventures Holdings Berhad,Sampadi 06,Medium (0.4-0.6),100.0
+163,456,FELDA Global Ventures Holdings Berhad,Selancar 06,Medium (0.4-0.6),100.0
+164,457,FELDA Global Ventures Holdings Berhad,Selancar 08,Medium (0.4-0.6),100.0
+165,458,FELDA Global Ventures Holdings Berhad,Selancar 09,Medium (0.4-0.6),100.0
+166,459,FELDA Global Ventures Holdings Berhad,Selendang 03,Medium (0.4-0.6),100.0
+167,460,FELDA Global Ventures Holdings Berhad,Selendang 04,Medium (0.4-0.6),100.0
+168,461,FELDA Global Ventures Holdings Berhad,Selendang 04,Medium (0.4-0.6),100.0
+169,462,FELDA Global Ventures Holdings Berhad,Semaring 01,Medium (0.4-0.6),100.0
+170,463,FELDA Global Ventures Holdings Berhad,Semaring 01,Medium (0.4-0.6),100.0
+171,464,FELDA Global Ventures Holdings Berhad,Serting Hilir 08,Medium (0.4-0.6),100.0
+172,465,FELDA Global Ventures Holdings Berhad,Serting Hilir 08,Medium (0.4-0.6),100.0
+173,466,FELDA Global Ventures Holdings Berhad,Setiu 01,Medium (0.4-0.6),100.0
+174,467,FELDA Global Ventures Holdings Berhad,Setiu 01,Medium (0.4-0.6),100.0
+175,468,FELDA Global Ventures Holdings Berhad,SUBOK,Medium (0.4-0.6),100.0
+176,469,FELDA Global Ventures Holdings Berhad,SUBOR,Medium (0.4-0.6),100.0
+177,470,FELDA Global Ventures Holdings Berhad,Telang,Medium (0.4-0.6),100.0
+178,471,FELDA Global Ventures Holdings Berhad,Telang 01,Medium (0.4-0.6),100.0
+179,472,FELDA Global Ventures Holdings Berhad,Telang 01,Medium (0.4-0.6),100.0
+180,473,FELDA Global Ventures Holdings Berhad,Tembangau 03,Medium (0.4-0.6),100.0
+181,474,FELDA Global Ventures Holdings Berhad,Tembangau 05,Medium (0.4-0.6),100.0
+182,475,FELDA Global Ventures Holdings Berhad,Tembangau 06,Medium (0.4-0.6),100.0
+183,476,FELDA Global Ventures Holdings Berhad,Tembangau 07,Medium (0.4-0.6),100.0
+184,477,FELDA Global Ventures Holdings Berhad,Tembangau 08,Medium (0.4-0.6),100.0
+185,478,FELDA Global Ventures Holdings Berhad,Tembangau 09,Medium (0.4-0.6),100.0
+186,479,FELDA Global Ventures Holdings Berhad,Tembangau 09,Medium (0.4-0.6),100.0
+187,480,FELDA Global Ventures Holdings Berhad,Tenggaroh 09,Medium (0.4-0.6),100.0
+188,481,FELDA Global Ventures Holdings Berhad,Tenggaroh 09,Medium (0.4-0.6),100.0
+189,482,FELDA Global Ventures Holdings Berhad,Tenggaroh 11,Medium (0.4-0.6),100.0
+190,483,FELDA Global Ventures Holdings Berhad,Tenggaroh 11,Medium (0.4-0.6),100.0
+191,484,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,Medium (0.4-0.6),100.0
+192,485,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,Medium (0.4-0.6),100.0
+193,486,FELDA Global Ventures Holdings Berhad,Tenggaroh 12,Medium (0.4-0.6),100.0
+194,487,FELDA Global Ventures Holdings Berhad,Tenggaroh 13,Medium (0.4-0.6),100.0
+195,488,FELDA Global Ventures Holdings Berhad,Tenggaroh 13,Medium (0.4-0.6),100.0
+196,489,FELDA Global Ventures Holdings Berhad,Tenggaroh Timur 02,Medium (0.4-0.6),100.0
+197,490,FELDA Global Ventures Holdings Berhad,Terapai 01,Medium (0.4-0.6),100.0
+198,491,FELDA Global Ventures Holdings Berhad,Terapai 03,Medium (0.4-0.6),100.0
+199,492,FELDA Global Ventures Holdings Berhad,Terapai 03,Medium (0.4-0.6),100.0
+200,493,FELDA Global Ventures Holdings Berhad,Triang 02,Medium (0.4-0.6),100.0
+201,494,FELDA Global Ventures Holdings Berhad,Triang 04,Medium (0.4-0.6),100.0
+202,495,FELDA Global Ventures Holdings Berhad,Triang 04,Medium (0.4-0.6),100.0
+203,496,FELDA Global Ventures Holdings Berhad,Triang Selatan 01,Medium (0.4-0.6),100.0
+204,497,FELDA Global Ventures Holdings Berhad,Umas 05,Medium (0.4-0.6),100.0
+205,498,FELDA Global Ventures Holdings Berhad,Umas 06,Medium (0.4-0.6),100.0
+206,499,FELDA Global Ventures Holdings Berhad,"Wilayah Sahabat Barat, Timur, Utara, Selatan",Medium (0.4-0.6),99.99
+207,500,FELDA Global Ventures Holdings Berhad,Yapid Mas,Medium (0.4-0.6),100.0
+208,501,FELDA Global Ventures Holdings Berhad,Yapid Mas,Medium (0.4-0.6),100.0
+209,502,FELDA Global Ventures Holdings Berhad,Yapid Mas,Medium (0.4-0.6),100.0
+210,503,FGVP(M)SB,Aring 02,Medium (0.4-0.6),100.0
+211,504,FGVP(M)SB,Aring 03,Medium (0.4-0.6),100.0
+212,505,FGVP(M)SB,Aring 04,Medium (0.4-0.6),100.0
+213,506,FGVP(M)SB,Aring 05,Medium (0.4-0.6),100.0
+214,507,FGVP(M)SB,Aring 06,Medium (0.4-0.6),100.0
+215,508,FGVP(M)SB,Aring 08,Medium (0.4-0.6),100.0
+216,509,FGVP(M)SB,Aring 10,Medium (0.4-0.6),100.0
+217,510,FGVP(M)SB,Chiku 04,Medium (0.4-0.6),100.0
+218,534,Genting Plantations Berhad,GBSE PKD Plantation,Medium (0.4-0.6),100.0
+219,535,Genting Plantations Berhad,GKBE Plantation,Medium (0.4-0.6),100.0
+220,536,Genting Plantations Berhad,GSME Plantation,Medium (0.4-0.6),100.0
+221,537,Genting Plantations Berhad,KBND Plantation,Medium (0.4-0.6),100.0
+222,539,Genting Plantations Berhad,Tanah Merah,Medium (0.4-0.6),100.0
+223,540,Genting SDC Sdn Bhd,Indah Plantation,Medium (0.4-0.6),100.0
+224,541,Genting SDC Sdn Bhd,Jambongan Plantation,Medium (0.4-0.6),100.0
+225,542,Genting SDC Sdn Bhd,Mewah Plantation,Medium (0.4-0.6),100.0
+226,543,Genting SDC Sdn Bhd,Sabapalm Plantation,Medium (0.4-0.6),100.0
+227,544,Genting SDC Sdn Bhd,Tanjung Plantation,Medium (0.4-0.6),100.0
+228,545,Genting SDC Sdn Bhd,TrusHidup Plantation,Medium (0.4-0.6),100.0
+229,638,Hap Seng Plantations (Kota Marudu) Sdn Bhd,"Pelipikan Estate
+",Medium (0.4-0.6),100.0
+230,639,Hap Seng Plantations (Ladang Kawa) Sdn Bhd,Kawa Estate,Medium (0.4-0.6),100.0
+231,640,Hap Seng Plantations (River Estates) Sdn Bhd,Sungai Segama Group of Estates (SSGOE),Medium (0.4-0.6),100.0
+232,641,Hap Seng Plantations (River Estates) Sdn Bhd,Tomanggong Group of Estates (TMGOE),Medium (0.4-0.6),100.0
+233,642,Jeroco Plantations Sdn Bhd,Jeroco Group of Estates (JGOE),Medium (0.4-0.6),100.0
+234,654,Ikatan Kayangan Sdn Bhd,Ikatan Kayangan Sdn Bhd,Medium (0.4-0.6),100.0
+235,666,Innoprise Plantations Berhad,Innoprise Plantations Berhad,Medium (0.4-0.6),100.0
+236,667,Baturong,Baturong 1,Medium (0.4-0.6),100.0
+237,668,Baturong,Baturong 2,Medium (0.4-0.6),100.0
+238,669,Baturong,Baturong 3,Medium (0.4-0.6),100.0
+239,670,HTC,Cantawan,Medium (0.4-0.6),100.0
+240,671,HTC,Halusah,Medium (0.4-0.6),100.0
+241,672,HTC,Tas,Medium (0.4-0.6),100.0
+242,673,IOI Corporation Bhd,Bahau,Medium (0.4-0.6),100.0
+243,674,IOI Corporation Bhd,Bertam,Medium (0.4-0.6),100.0
+244,675,IOI Corporation Bhd,Bkt Serampang,Medium (0.4-0.6),100.0
+245,678,IOI Corporation Bhd,Bukit Dinding,Medium (0.4-0.6),100.0
+246,679,IOI Corporation Bhd,Bukit Leelau,Medium (0.4-0.6),100.0
+247,680,IOI Corporation Bhd,Detas,Medium (0.4-0.6),100.0
+248,681,IOI Corporation Bhd,Gomali,Medium (0.4-0.6),100.0
+249,682,IOI Corporation Bhd,IOI Corporation Bhd,Medium (0.4-0.6),100.0
+250,683,IOI Corporation Bhd,Jasin Lalang,Medium (0.4-0.6),100.0
+251,684,IOI Corporation Bhd,Kahang,Medium (0.4-0.6),100.0
+252,686,IOI Corporation Bhd,Kuala Jelei,Medium (0.4-0.6),100.0
+253,687,IOI Corporation Bhd,Kuala Jelei,Medium (0.4-0.6),100.0
+254,688,IOI Corporation Bhd,Laukin,Medium (0.4-0.6),100.0
+255,689,IOI Corporation Bhd,Laukin A,Medium (0.4-0.6),100.0
+256,690,IOI Corporation Bhd,Leepang A,Medium (0.4-0.6),100.0
+257,691,IOI Corporation Bhd,Mamor,Medium (0.4-0.6),100.0
+258,692,IOI Corporation Bhd,Mekassar,Medium (0.4-0.6),100.0
+259,693,IOI Corporation Bhd,Merchong,Medium (0.4-0.6),100.0
+260,694,IOI Corporation Bhd,Pamol Barat,Medium (0.4-0.6),100.0
+261,695,IOI Corporation Bhd,Pamol Timur,Medium (0.4-0.6),100.0
+262,696,IOI Corporation Bhd,Paya Lang,Medium (0.4-0.6),100.0
+263,697,IOI Corporation Bhd,Pukin,Medium (0.4-0.6),100.0
+264,698,IOI Corporation Bhd,Regent,Medium (0.4-0.6),100.0
+265,699,IOI Corporation Bhd,Regent,Medium (0.4-0.6),100.0
+266,700,IOI Corporation Bhd,Sagil,Medium (0.4-0.6),100.0
+267,701,IOI Corporation Bhd,Sakilan,Medium (0.4-0.6),100.0
+268,702,IOI Corporation Bhd,Segamat,Medium (0.4-0.6),100.0
+269,703,IOI Corporation Bhd,Segamat,Medium (0.4-0.6),100.0
+270,704,IOI Corporation Bhd,Sejap,Medium (0.4-0.6),100.0
+271,705,IOI Corporation Bhd,Shahzan IOI 1,Medium (0.4-0.6),100.0
+272,706,IOI Corporation Bhd,Shahzan IOI 2,Medium (0.4-0.6),100.0
+273,708,IOI Corporation Bhd,Swee Lam,Medium (0.4-0.6),100.0
+274,709,IOI Corporation Bhd,Tambang,Medium (0.4-0.6),100.0
+275,710,IOI Corporation Bhd,Tambang,Medium (0.4-0.6),100.0
+276,711,IOI Corporation Bhd,Tegai,Medium (0.4-0.6),100.0
+277,712,IOI Corporation Bhd,Unijaya,Medium (0.4-0.6),100.0
+278,713,IOI Corporation Bhd,Unijaya,Medium (0.4-0.6),100.0
+279,714,Ladang Sabah,Labuk,Medium (0.4-0.6),100.0
+280,715,Ladang Sabah,Luangmanis,Medium (0.4-0.6),100.0
+281,716,Ladang Sabah,Moynod,Medium (0.4-0.6),100.0
+282,717,Ladang Sabah,Sungai Sapi,Medium (0.4-0.6),100.0
+283,718,Ladang Sabah,Terusan Baru,Medium (0.4-0.6),100.0
+284,719,Ladang Sabah,Terusan Baru Div,Medium (0.4-0.6),100.0
+285,720,Ladang Sabah,Terusan Baru Div,Medium (0.4-0.6),100.0
+286,721,Leepang,Leepang 1,Medium (0.4-0.6),100.0
+287,722,Leepang,Leepang 2,Medium (0.4-0.6),100.0
+288,723,Leepang,Leepang 3,Medium (0.4-0.6),100.0
+289,724,Leepang,Leepang 4,Medium (0.4-0.6),100.0
+290,725,Leepang,Leepang 5,Medium (0.4-0.6),100.0
+291,726,Linbar,Linbar 1,Medium (0.4-0.6),100.0
+292,727,Linbar,Linbar 2,Medium (0.4-0.6),100.0
+293,728,Mayvin,Mayvin 1,Medium (0.4-0.6),100.0
+294,729,Mayvin,Mayvin 2,Medium (0.4-0.6),100.0
+295,730,Mayvin,Mayvin 3,Medium (0.4-0.6),100.0
+296,731,Mayvin,Mayvin 5,Medium (0.4-0.6),100.0
+297,732,Mayvin,Mayvin 6,Medium (0.4-0.6),100.0
+298,733,Morisem,Morisem 1,Medium (0.4-0.6),100.0
+299,734,Morisem,Morisem 2,Medium (0.4-0.6),100.0
+300,735,Morisem,Morisem 3,Medium (0.4-0.6),100.0
+301,736,Morisem,Morisem 4,Medium (0.4-0.6),100.0
+302,737,Morisem,Morisem 5,Medium (0.4-0.6),100.0
+303,738,Palmco,Bimbingan 1,Medium (0.4-0.6),100.0
+304,739,Palmco,Bimbingan 2,Medium (0.4-0.6),100.0
+305,740,Palmco,Tangkulap,Medium (0.4-0.6),100.0
+306,741,Pamol,Bayok,Medium (0.4-0.6),100.0
+307,742,Pamol,Meliau,Medium (0.4-0.6),100.0
+308,743,Pamol,Nangoh,Medium (0.4-0.6),100.0
+309,744,Pamol,Rungus,Medium (0.4-0.6),100.0
+310,745,Pamol,Sugut,Medium (0.4-0.6),100.0
+311,746,Pamol,Tandakon,Medium (0.4-0.6),100.0
+312,747,Pamol,Ulu,Medium (0.4-0.6),100.0
+313,748,Permodalan,Permodalan 1,Medium (0.4-0.6),100.0
+314,749,Permodalan,Permodalan 2,Medium (0.4-0.6),100.0
+315,750,Permodalan,Permodalan 3,Medium (0.4-0.6),100.0
+316,751,Permodalan,Permodalan 4,Medium (0.4-0.6),100.0
+317,752,Syarimo,Syarimo 1,Medium (0.4-0.6),100.0
+318,753,Syarimo,Syarimo 2,Medium (0.4-0.6),100.0
+319,754,Syarimo,Syarimo 3,Medium (0.4-0.6),100.0
+320,755,Syarimo,Syarimo 4,Medium (0.4-0.6),100.0
+321,756,Syarimo,Syarimo 5,Medium (0.4-0.6),100.0
+322,757,Syarimo,Syarimo 6,Medium (0.4-0.6),100.0
+323,758,Syarimo,Syarimo 7,Medium (0.4-0.6),100.0
+324,759,Syarimo,Syarimo 8,Medium (0.4-0.6),100.0
+325,760,Syarimo,Syarimo 9,Medium (0.4-0.6),100.0
+326,761,Unico Desa,Fasgro,Medium (0.4-0.6),100.0
+327,762,Unico Desa,Segaco,Medium (0.4-0.6),100.0
+328,763,Unico Desa,Supercrop,Medium (0.4-0.6),100.0
+329,764,Unico Desa,Topcrop,Medium (0.4-0.6),100.0
+330,765,Unico Desa,Tutico,Medium (0.4-0.6),100.0
+331,766,Unico Desa,Unico Est 1,Medium (0.4-0.6),100.0
+332,767,Unico Desa,Unico Est 2,Medium (0.4-0.6),100.0
+333,768,Unico Desa,Unico Est 3,Medium (0.4-0.6),100.0
+334,769,Unico Desa,Unico Est 4,Medium (0.4-0.6),100.0
+335,770,Unico Desa,Unico Est 5,Medium (0.4-0.6),100.0
+336,771,Unico Desa,Unico Est 7,Medium (0.4-0.6),100.0
+337,772,Unico Desa,Unico POM,Medium (0.4-0.6),100.0
+338,807,Kulim Berhad,Basir Ismail,Medium (0.4-0.6),100.0
+339,808,Kulim Berhad,Bukit Kelompok,Medium (0.4-0.6),100.0
+340,809,Kulim Berhad,Bukit Layang,Medium (0.4-0.6),99.01
+341,810,Kulim Berhad,Bukit Payung,Medium (0.4-0.6),100.0
+342,811,Kulim Berhad,Enggang,Medium (0.4-0.6),100.0
+343,812,Kulim Berhad,Kemedak,Medium (0.4-0.6),100.0
+344,813,Kulim Berhad,Kuala Kabong,Medium (0.4-0.6),100.0
+345,814,Kulim Berhad,Labis Bahru,Medium (0.4-0.6),100.0
+346,815,Kulim Berhad,Mungka,Medium (0.4-0.6),100.0
+347,816,Kulim Berhad,Mutiara,Medium (0.4-0.6),100.0
+348,817,Kulim Berhad,Palong,Medium (0.4-0.6),100.0
+349,818,Kulim Berhad,Pasak,Medium (0.4-0.6),100.0
+350,819,Kulim Berhad,Pasir Logok,Medium (0.4-0.6),100.0
+351,820,Kulim Berhad,Pasir Panjang,Medium (0.4-0.6),100.0
+352,821,Kulim Berhad,Rem,Medium (0.4-0.6),100.0
+353,822,Kulim Berhad,Rengam,Medium (0.4-0.6),100.0
+354,823,Kulim Berhad,Sedenak,Medium (0.4-0.6),100.0
+355,824,Kulim Berhad,Selai,Medium (0.4-0.6),100.0
+356,825,Kulim Berhad,Sepang Loi,Medium (0.4-0.6),100.0
+357,826,Kulim Berhad,Sg Papan,Medium (0.4-0.6),100.0
+358,827,Kulim Berhad,Sg Sembrong,Medium (0.4-0.6),100.0
+359,828,Kulim Berhad,Sg Tawing,Medium (0.4-0.6),100.0
+360,829,Kulim Berhad,Siang,Medium (0.4-0.6),100.0
+361,830,Kulim Berhad,Sindora,Medium (0.4-0.6),100.0
+362,831,Kulim Berhad,Tereh Selatan,Medium (0.4-0.6),100.0
+363,832,Kulim Berhad,Tereh Utara,Medium (0.4-0.6),100.0
+364,833,Kulim Berhad,Tunjuk Laut,Medium (0.4-0.6),100.0
+365,834,Kulim Berhad,Ulu Tiram,Medium (0.4-0.6),100.0
+366,835,Kulim Berhad,UMAC,Medium (0.4-0.6),100.0
+367,841,Keresa Plantations Sdn Bhd,Jiba Estate,Medium (0.4-0.6),100.0
+368,842,Keresa Plantations Sdn Bhd,Sujan Estate,Medium (0.4-0.6),100.0
+369,843,Keresa Plantations Sdn Bhd,Sungai Kubud Estate,Medium (0.4-0.6),100.0
+370,845,Abedon Sdn Bhd,Bukit Sekong Estate,Medium (0.4-0.6),100.0
+371,846,Abedon Sdn Bhd,Tanaki Estate,Medium (0.4-0.6),100.0
+372,847,Kretam Holdings Berhad,Kretam Holdings Berhad,Medium (0.4-0.6),100.0
+373,848,Syarikat Kretam Plantation Sdn Bhd,Bode Estate,Medium (0.4-0.6),100.0
+374,849,Syarikat Kretam Plantation Sdn Bhd,Masang Estate,Medium (0.4-0.6),100.0
+375,850,Syarikat Kretam Plantation Sdn Bhd,Sapagaya Estate,Medium (0.4-0.6),100.0
+376,851,Winpalm Development Sdn Bhd,Winpalm,Medium (0.4-0.6),100.0
+377,852,Bornion Estate Sdn Bhd,Bornion,Medium (0.4-0.6),100.0
+378,855,Golden Sphere Sdn Bhd,Lungmanis,Medium (0.4-0.6),100.0
+379,856,Golden Sphere Sdn Bhd,Rimmer,Medium (0.4-0.6),100.0
+380,857,Golden Sphere Sdn Bhd,TUNGKU,Medium (0.4-0.6),100.0
+381,858,Kuala Lumpur Kepong Berhad,Allagar,Medium (0.4-0.6),100.0
+382,859,Kuala Lumpur Kepong Berhad,Ayer Hitam,Medium (0.4-0.6),100.0
+383,860,Kuala Lumpur Kepong Berhad,Ban Heng,Medium (0.4-0.6),100.0
+384,861,Kuala Lumpur Kepong Berhad,Batang Jelai,Medium (0.4-0.6),100.0
+385,862,Kuala Lumpur Kepong Berhad,Batu Lintang,Medium (0.4-0.6),100.0
+386,863,Kuala Lumpur Kepong Berhad,Buntar,Medium (0.4-0.6),100.0
+387,864,Kuala Lumpur Kepong Berhad,Changkat Asa,Medium (0.4-0.6),100.0
+388,865,Kuala Lumpur Kepong Berhad,Changkat Chermin,Medium (0.4-0.6),100.0
+389,866,Kuala Lumpur Kepong Berhad,Fraser,Medium (0.4-0.6),100.0
+390,867,Kuala Lumpur Kepong Berhad,Glenealy,Medium (0.4-0.6),100.0
+391,868,Kuala Lumpur Kepong Berhad,Gunung Pertanian,Medium (0.4-0.6),100.0
+392,869,Kuala Lumpur Kepong Berhad,Jeram Padang,Medium (0.4-0.6),100.0
+393,870,Kuala Lumpur Kepong Berhad,Kekayaan,Medium (0.4-0.6),100.0
+394,871,Kuala Lumpur Kepong Berhad,Kerilla,Medium (0.4-0.6),100.0
+395,872,Kuala Lumpur Kepong Berhad,Kerling,Medium (0.4-0.6),100.0
+396,873,Kuala Lumpur Kepong Berhad,Kombok,Medium (0.4-0.6),100.0
+397,874,Kuala Lumpur Kepong Berhad,Kuala Kangsar,Medium (0.4-0.6),100.0
+398,875,Kuala Lumpur Kepong Berhad,Ladang Lekir,Medium (0.4-0.6),100.0
+399,876,Kuala Lumpur Kepong Berhad,Ladang Raja Hitam,Medium (0.4-0.6),100.0
+400,877,Kuala Lumpur Kepong Berhad,Landak,Medium (0.4-0.6),100.0
+401,878,Kuala Lumpur Kepong Berhad,NEW POGOH,Medium (0.4-0.6),100.0
+402,879,Kuala Lumpur Kepong Berhad,Paloh,Medium (0.4-0.6),100.0
+403,880,Kuala Lumpur Kepong Berhad,Pasir Gajah,Medium (0.4-0.6),100.0
+404,881,Kuala Lumpur Kepong Berhad,Pelam,Medium (0.4-0.6),100.0
+405,882,Kuala Lumpur Kepong Berhad,Renjok,Medium (0.4-0.6),100.0
+406,883,Kuala Lumpur Kepong Berhad,See Sun,Medium (0.4-0.6),100.0
+407,884,Kuala Lumpur Kepong Berhad,Serapoh,Medium (0.4-0.6),100.0
+408,885,Kuala Lumpur Kepong Berhad,Subur,Medium (0.4-0.6),100.0
+409,886,Kuala Lumpur Kepong Berhad,Sungai Bekok,Medium (0.4-0.6),100.0
+410,887,Kuala Lumpur Kepong Berhad,Sungai Gapi,Medium (0.4-0.6),100.0
+411,888,Kuala Lumpur Kepong Berhad,Sungai Kawang,Medium (0.4-0.6),100.0
+412,889,Kuala Lumpur Kepong Berhad,Sungai Penggeli,Medium (0.4-0.6),100.0
+413,890,Kuala Lumpur Kepong Berhad,Sungai Sokor,Medium (0.4-0.6),100.0
+414,891,Kuala Lumpur Kepong Berhad,TUAN,Medium (0.4-0.6),100.0
+415,892,Kuala Lumpur Kepong Berhad,Tuan Mee,Medium (0.4-0.6),100.0
+416,893,Kuala Lumpur Kepong Berhad,Ulu Pedas,Medium (0.4-0.6),100.0
+417,894,Kuala Lumpur Kepong Berhad,VOULES,Medium (0.4-0.6),100.0
+418,895,Kulumpang Development Corporation Sdn Bhd,Pang Burong,Medium (0.4-0.6),100.0
+419,896,Kulumpang Development Corporation Sdn Bhd,Pangeran,Medium (0.4-0.6),100.0
+420,897,Kulumpang Development Corporation Sdn Bhd,Pinang,Medium (0.4-0.6),100.0
+421,898,Kulumpang Development Corporation Sdn Bhd,Ringlet,Medium (0.4-0.6),100.0
+422,899,Kulumpang Development Corporation Sdn Bhd,Sigalong,Medium (0.4-0.6),100.0
+423,900,Kulumpang Development Corporation Sdn Bhd,TUNDONG,Medium (0.4-0.6),100.0
+424,901,Kung Hing Company (KDC),Jatika,Medium (0.4-0.6),100.0
+425,913,Sabah Cocoa Sdn Bhd,Bukit Tabin,Medium (0.4-0.6),100.0
+426,914,Sabah Cocoa Sdn Bhd,Sungai Silabukan,Medium (0.4-0.6),100.0
+427,915,Segar Usaha Sdn Bhd,Segar Usaha,Medium (0.4-0.6),100.0
+428,916,Sri Kunak Sdn Bhd,Sri Kunak,Medium (0.4-0.6),100.0
+429,920,Kwantas Corporation Berhad,Haranky 1,Medium (0.4-0.6),100.0
+430,921,Kwantas Corporation Berhad,Kwantas Corporation Berhad,Medium (0.4-0.6),100.0
+431,922,Kwantas Corporation Berhad,Kwantas Pelita,Medium (0.4-0.6),100.0
+432,923,Kwantas Corporation Berhad,Mewah 1,Medium (0.4-0.6),100.0
+433,924,Kwantas Corporation Berhad,Pintasan 1,Medium (0.4-0.6),100.0
+434,925,Lam Soon Plantations Sdn Bhd,Lam Soon,Medium (0.4-0.6),100.0
+435,942,Kilang Kelapa Sawit Pinangah Sdn Bhd,Pinangah Estate,Medium (0.4-0.6),100.0
+436,943,N.Y Hiew (Holdings) Sdn Bhd,Balung Estate,Medium (0.4-0.6),100.0
+437,944,N.Y Hiew (Holdings) Sdn Bhd,Kalumpang Estate,Medium (0.4-0.6),100.0
+438,945,N.Y Hiew (Holdings) Sdn Bhd,Sabahan Estate,Medium (0.4-0.6),100.0
+439,946,N.Y Hiew (Holdings) Sdn Bhd,Sapang Estate,Medium (0.4-0.6),100.0
+440,1247,Hibumas Sdn Bhd,Hibumas 1,Medium (0.4-0.6),100.0
+441,1248,Jebawang Sdn Bhd,Jebawang,Medium (0.4-0.6),100.0
+442,1249,Kaminsky Sdn Bhd,Kaminsky,Medium (0.4-0.6),100.0
+443,1250,Kiabau Plantations Sdn Bhd,Kiabau,Medium (0.4-0.6),100.0
+444,1251,Reka Halus Sdn Bhd,Reka Halus,Medium (0.4-0.6),100.0
+445,1252,Ribubonus Sdn Bhd,Ribubonus,Medium (0.4-0.6),100.0
+446,1253,Sabahmas Plantations Sdn Bhd,Sabahmas 5,Medium (0.4-0.6),100.0
+447,1254,Sabahmas Plantations Sdn Bhd,Sabahmas 6,Medium (0.4-0.6),100.0
+448,1255,Sabahmas Plantations Sdn Bhd,Sabahmas 7,Medium (0.4-0.6),100.0
+449,1256,Sapi Plantations Sdn Bhd,Sapi 1,Medium (0.4-0.6),100.0
+450,1257,Sapi Plantations Sdn Bhd,Sapi 2,Medium (0.4-0.6),100.0
+451,1258,Sapi Plantations Sdn Bhd,Sapi Sugut,Medium (0.4-0.6),100.0
+452,1259,Sapi Plantations Sdn Bhd,Terusan 1,Medium (0.4-0.6),100.0
+453,1260,Sapi Plantations Sdn Bhd,Terusan 2,Medium (0.4-0.6),100.0
+454,1261,Saremas Sdn Bhd,Saremas 1,Medium (0.4-0.6),100.0
+455,1262,Saremas Sdn Bhd,Saremas 2,Medium (0.4-0.6),100.0
+456,1263,Saremas Sdn Bhd,Suai,Medium (0.4-0.6),100.0
+457,1264,Segarmas Plantations Sdn Bhd,Segarmas,Medium (0.4-0.6),100.0
+458,1265,Sekar Imej Sdn Bhd,Sekar Imej,Medium (0.4-0.6),100.0
+459,1266,Sri Kamusan Sdn Bhd,Sri Kamusan,Medium (0.4-0.6),100.0
+460,1490,Sawit Kinabalu Sdn Bhd,Sawit Kinabalu Sdn Bhd,Medium (0.4-0.6),100.0
+461,1567,Sime Darby Plantation Berhad,E.Anak Kulim,Medium (0.4-0.6),100.0
+462,1568,Sime Darby Plantation Berhad,E.Bagan Datoh,Medium (0.4-0.6),100.0
+463,1569,Sime Darby Plantation Berhad,E.Bayu,Medium (0.4-0.6),100.0
+464,1570,Sime Darby Plantation Berhad,E.Belian,Medium (0.4-0.6),100.0
+465,1571,Sime Darby Plantation Berhad,E.Bikam,Medium (0.4-0.6),100.0
+466,1572,Sime Darby Plantation Berhad,E.Binuang,Medium (0.4-0.6),100.0
+467,1573,Sime Darby Plantation Berhad,E.Bkt Cherakah,Medium (0.4-0.6),100.0
+468,1574,Sime Darby Plantation Berhad,E.Bkt Kerayong,Medium (0.4-0.6),100.0
+469,1575,Sime Darby Plantation Berhad,E.Bkt Talang,Medium (0.4-0.6),100.0
+470,1576,Sime Darby Plantation Berhad,E.Bkt. Pilah,Medium (0.4-0.6),100.0
+471,1577,Sime Darby Plantation Berhad,E.Bkt. Selarong,Medium (0.4-0.6),100.0
+472,1578,Sime Darby Plantation Berhad,E.Bradwall,Medium (0.4-0.6),100.0
+473,1579,Sime Darby Plantation Berhad,E.Bukit Asahan,Medium (0.4-0.6),100.0
+474,1580,Sime Darby Plantation Berhad,E.Bukit Badak,Medium (0.4-0.6),100.0
+475,1581,Sime Darby Plantation Berhad,E.Bukit Benut,Medium (0.4-0.6),100.0
+476,1582,Sime Darby Plantation Berhad,E.Bukit Hijau,Medium (0.4-0.6),100.0
+477,1583,Sime Darby Plantation Berhad,E.Bukit Lagong,Medium (0.4-0.6),100.0
+478,1584,Sime Darby Plantation Berhad,E.Bukit Paloh,Medium (0.4-0.6),100.0
+479,1585,Sime Darby Plantation Berhad,E.Bukit Pelandok,Medium (0.4-0.6),100.0
+480,1586,Sime Darby Plantation Berhad,E.Bukit Puteri,Medium (0.4-0.6),100.0
+481,1587,Sime Darby Plantation Berhad,E.Bukit Rajah,Medium (0.4-0.6),100.0
+482,1588,Sime Darby Plantation Berhad,E.Cenas,Medium (0.4-0.6),100.0
+483,1589,Sime Darby Plantation Berhad,E.CEP Niyor,Medium (0.4-0.6),100.0
+484,1590,Sime Darby Plantation Berhad,E.CEP Rengam,Medium (0.4-0.6),100.0
+485,1591,Sime Darby Plantation Berhad,E.Cha'ah,Medium (0.4-0.6),100.0
+486,1592,Sime Darby Plantation Berhad,E.Chartquest,Medium (0.4-0.6),100.0
+487,1593,Sime Darby Plantation Berhad,E.Chenor,Medium (0.4-0.6),100.0
+488,1594,Sime Darby Plantation Berhad,E.Chersonese,Medium (0.4-0.6),100.0
+489,1595,Sime Darby Plantation Berhad,E.Cluny,Medium (0.4-0.6),100.0
+490,1596,Sime Darby Plantation Berhad,E.Damai,Medium (0.4-0.6),100.0
+491,1597,Sime Darby Plantation Berhad,E.Derawan,Medium (0.4-0.6),100.0
+492,1598,Sime Darby Plantation Berhad,E.Diamond Jubilee,Medium (0.4-0.6),100.0
+493,1599,Sime Darby Plantation Berhad,E.Dulang,Medium (0.4-0.6),100.0
+494,1600,Sime Darby Plantation Berhad,E.Dusun Durian,Medium (0.4-0.6),100.0
+495,1601,Sime Darby Plantation Berhad,E.East,Medium (0.4-0.6),99.99
+496,1602,Sime Darby Plantation Berhad,E.Elmina,Medium (0.4-0.6),100.0
+497,1603,Sime Darby Plantation Berhad,E.Elphil,Medium (0.4-0.6),100.0
+498,1604,Sime Darby Plantation Berhad,E.Flemington,Medium (0.4-0.6),100.0
+499,1605,Sime Darby Plantation Berhad,E.Giram,Medium (0.4-0.6),100.0
+500,1606,Sime Darby Plantation Berhad,E.Glengowrie,Medium (0.4-0.6),100.0
+501,1607,Sime Darby Plantation Berhad,E.Gunung Mas,Medium (0.4-0.6),100.0
+502,1608,Sime Darby Plantation Berhad,E.Holyrood,Medium (0.4-0.6),100.0
+503,1609,Sime Darby Plantation Berhad,E.Imam,Medium (0.4-0.6),100.0
+504,1610,Sime Darby Plantation Berhad,E.Jabor,Medium (0.4-0.6),100.0
+505,1611,Sime Darby Plantation Berhad,E.Jelata Bumi,Medium (0.4-0.6),100.0
+506,1612,Sime Darby Plantation Berhad,E.Jentar,Medium (0.4-0.6),100.0
+507,1613,Sime Darby Plantation Berhad,E.Jentayu,Medium (0.4-0.6),100.0
+508,1614,Sime Darby Plantation Berhad,E.Kalumpong,Medium (0.4-0.6),100.0
+509,1615,Sime Darby Plantation Berhad,E.Kamuning,Medium (0.4-0.6),100.0
+510,1616,Sime Darby Plantation Berhad,E.Kelida,Medium (0.4-0.6),100.0
+511,1617,Sime Darby Plantation Berhad,E.Kempas,Medium (0.4-0.6),100.0
+512,1618,Sime Darby Plantation Berhad,E.Kempas Klebang,Medium (0.4-0.6),100.0
+513,1619,Sime Darby Plantation Berhad,E.Kemuning,Medium (0.4-0.6),100.0
+514,1620,Sime Darby Plantation Berhad,E.Kerdau,Medium (0.4-0.6),100.0
+515,1621,Sime Darby Plantation Berhad,E.Kinta Kellas,Medium (0.4-0.6),100.0
+516,1622,Sime Darby Plantation Berhad,E.Koh Foh,Medium (0.4-0.6),100.0
+517,1623,Sime Darby Plantation Berhad,E.Kulai,Medium (0.4-0.6),100.0
+518,1624,Sime Darby Plantation Berhad,E.Labu,Medium (0.4-0.6),100.0
+519,1625,Sime Darby Plantation Berhad,E.Lambak/Elaeis,Medium (0.4-0.6),100.0
+520,1626,Sime Darby Plantation Berhad,E.Lanadron,Medium (0.4-0.6),100.0
+521,1627,Sime Darby Plantation Berhad,E.Lavang,Medium (0.4-0.6),100.0
+522,1628,Sime Darby Plantation Berhad,E.Lavang (SE),Medium (0.4-0.6),100.0
+523,1629,Sime Darby Plantation Berhad,E.Layang,Medium (0.4-0.6),100.0
+524,1630,Sime Darby Plantation Berhad,E.Melalap,Medium (0.4-0.6),100.0
+525,1631,Sime Darby Plantation Berhad,E.Mentakab,Medium (0.4-0.6),100.0
+526,1632,Sime Darby Plantation Berhad,E.Merotai,Medium (0.4-0.6),100.0
+527,1633,Sime Darby Plantation Berhad,E.Mostyn,Medium (0.4-0.6),100.0
+528,1634,Sime Darby Plantation Berhad,E.Muar River,Medium (0.4-0.6),100.0
+529,1635,Sime Darby Plantation Berhad,E.New Labu,Medium (0.4-0.6),100.0
+530,1636,Sime Darby Plantation Berhad,E.North Labis,Medium (0.4-0.6),100.0
+531,1637,Sime Darby Plantation Berhad,E.Padang Buluh,Medium (0.4-0.6),100.0
+532,1638,Sime Darby Plantation Berhad,E.Pagoh,Medium (0.4-0.6),100.0
+533,1639,Sime Darby Plantation Berhad,E.PD Lukut,Medium (0.4-0.6),100.0
+534,1640,Sime Darby Plantation Berhad,E.Pekaka,Medium (0.4-0.6),100.0
+535,1641,Sime Darby Plantation Berhad,E.Pekan,Medium (0.4-0.6),100.0
+536,1642,Sime Darby Plantation Berhad,E.Pengkalan Bukit,Medium (0.4-0.6),100.0
+537,1643,Sime Darby Plantation Berhad,E.Peroh,Medium (0.4-0.6),100.0
+538,1644,Sime Darby Plantation Berhad,E.Pertang,Medium (0.4-0.6),100.0
+539,1645,Sime Darby Plantation Berhad,E.Rajawali,Medium (0.4-0.6),100.0
+540,1646,Sime Darby Plantation Berhad,E.Rasan,Medium (0.4-0.6),100.0
+541,1647,Sime Darby Plantation Berhad,E.Ruai,Medium (0.4-0.6),100.0
+542,1648,Sime Darby Plantation Berhad,E.Sabak Bernam,Medium (0.4-0.6),100.0
+543,1649,Sime Darby Plantation Berhad,E.Sabrang,Medium (0.4-0.6),100.0
+544,1650,Sime Darby Plantation Berhad,E.Sahua,Medium (0.4-0.6),100.0
+545,1651,Sime Darby Plantation Berhad,E.Salak,Medium (0.4-0.6),100.0
+546,1652,Sime Darby Plantation Berhad,E.Samudera,Medium (0.4-0.6),100.0
+547,1653,Sime Darby Plantation Berhad,E.Sapong,Medium (0.4-0.6),100.0
+548,1654,Sime Darby Plantation Berhad,E.Segaliud,Medium (0.4-0.6),100.0
+549,1655,Sime Darby Plantation Berhad,E.Semarak,Medium (0.4-0.6),100.0
+550,1656,Sime Darby Plantation Berhad,E.Sembrong,Medium (0.4-0.6),100.0
+551,1657,Sime Darby Plantation Berhad,E.Sengkang,Medium (0.4-0.6),100.0
+552,1658,Sime Darby Plantation Berhad,E.Sentosa,Medium (0.4-0.6),100.0
+553,1659,Sime Darby Plantation Berhad,E.Sepang,Medium (0.4-0.6),100.0
+554,1660,Sime Darby Plantation Berhad,E.Seri Intan,Medium (0.4-0.6),100.0
+555,1661,Sime Darby Plantation Berhad,E.Seri Pulai,Medium (0.4-0.6),100.0
+556,1662,Sime Darby Plantation Berhad,E.Serkam,Medium (0.4-0.6),100.0
+557,1663,Sime Darby Plantation Berhad,E.Sg Mai,Medium (0.4-0.6),100.0
+558,1664,Sime Darby Plantation Berhad,E.Sg Samak,Medium (0.4-0.6),100.0
+559,1665,Sime Darby Plantation Berhad,E.Sg. Sebaling,Medium (0.4-0.6),100.0
+560,1666,Sime Darby Plantation Berhad,E.Sg. Senarut,Medium (0.4-0.6),100.0
+561,1667,Sime Darby Plantation Berhad,E.Sg.Dingin,Medium (0.4-0.6),100.0
+562,1668,Sime Darby Plantation Berhad,E.Sg.Simpang Kiri,Medium (0.4-0.6),100.0
+563,1669,Sime Darby Plantation Berhad,E.Sg.Wangi,Medium (0.4-0.6),100.0
+564,1670,Sime Darby Plantation Berhad,E.Siliau,Medium (0.4-0.6),100.0
+565,1671,Sime Darby Plantation Berhad,E.Sogomana,Medium (0.4-0.6),100.0
+566,1672,Sime Darby Plantation Berhad,E.Somme,Medium (0.4-0.6),100.0
+567,1673,Sime Darby Plantation Berhad,E.St. Helier,Medium (0.4-0.6),100.0
+568,1674,Sime Darby Plantation Berhad,E.Sua Betong,Medium (0.4-0.6),100.0
+569,1675,Sime Darby Plantation Berhad,E.Sungai Baru,Medium (0.4-0.6),100.0
+570,1676,Sime Darby Plantation Berhad,E.Sungai Gemas,Medium (0.4-0.6),100.0
+571,1677,Sime Darby Plantation Berhad,E.Sungang,Medium (0.4-0.6),100.0
+572,1678,Sime Darby Plantation Berhad,E.Sungei Buloh,Medium (0.4-0.6),100.0
+573,1679,Sime Darby Plantation Berhad,E.Table,Medium (0.4-0.6),100.0
+574,1680,Sime Darby Plantation Berhad,E.Takau,Medium (0.4-0.6),100.0
+575,1681,Sime Darby Plantation Berhad,E.Tali Ayer,Medium (0.4-0.6),100.0
+576,1682,Sime Darby Plantation Berhad,E.Tampin Linggi,Medium (0.4-0.6),100.0
+577,1683,Sime Darby Plantation Berhad,E.Tanah Merah,Medium (0.4-0.6),100.0
+578,1684,Sime Darby Plantation Berhad,E.Tangkah,Medium (0.4-0.6),100.0
+579,1685,Sime Darby Plantation Berhad,E.Tennamaram,Medium (0.4-0.6),100.0
+580,1686,Sime Darby Plantation Berhad,E.Tiger,Medium (0.4-0.6),100.0
+581,1687,Sime Darby Plantation Berhad,E.Tigowis,Medium (0.4-0.6),100.0
+582,1688,Sime Darby Plantation Berhad,E.Tingkayu,Medium (0.4-0.6),100.0
+583,1689,Sime Darby Plantation Berhad,E.Tun Dr. Ismail,Medium (0.4-0.6),100.0
+584,1690,Sime Darby Plantation Berhad,E.Tun Tan Siew Sin,Medium (0.4-0.6),100.0
+585,1691,Sime Darby Plantation Berhad,E.Tunku,Medium (0.4-0.6),100.0
+586,1692,Sime Darby Plantation Berhad,E.Ulu Remis,Medium (0.4-0.6),100.0
+587,1693,Sime Darby Plantation Berhad,E.Welch,Medium (0.4-0.6),100.0
+588,1694,Sime Darby Plantation Berhad,E.West,Medium (0.4-0.6),99.91
+589,1695,Sime Darby Plantation Berhad,E.Yong Peng,Medium (0.4-0.6),100.0
+590,1791,TDM Plantation Sdn Bhd,TDM Plantation Sdn Bhd,Medium (0.4-0.6),100.0
+591,1792,Era Harum Sdn Bhd,Wise Mission 2,Medium (0.4-0.6),100.0
+592,1794,Ladang Siagil Sdn Bhd,Ladang Siagil,Medium (0.4-0.6),100.0
+593,1795,Melur Beribu Sdn Bhd,Melur Beribu,Medium (0.4-0.6),100.0
+594,1796,Sugil Hasil Sdn Bhd,Wise Mission 3,Medium (0.4-0.6),100.0
+595,1797,Teck Guan Holdings Andum Sdn Bhd,Andum Sandakan,Medium (0.4-0.6),100.0
+596,1798,Teck Guan Holdings Andum Sdn Bhd,Andum Sandakan,Medium (0.4-0.6),100.0
+597,1799,Teck Guan Holdings Branko Sdn Bhd,Serundong,Medium (0.4-0.6),100.0
+598,1800,Teck Guan Holdings Happy Valley Sdn Bhd,Happy Valley,Medium (0.4-0.6),100.0
+599,1801,Teck Guan Holdings Happy Valley Sdn Bhd,Happy Valley,Medium (0.4-0.6),100.0
+600,1802,Teck Guan Holdings Sdn Bhd,Kokorotus,Medium (0.4-0.6),100.0
+601,1803,Teck Guan Holdings Sdn Bhd,Semporna,Medium (0.4-0.6),100.0
+602,1804,Teck Guan Holdings Sdn Bhd,Sepagaya,Medium (0.4-0.6),100.0
+603,1805,Teck Guan Holdings Sdn Bhd,Tabanac,Medium (0.4-0.6),100.0
+604,1806,Teck Guan Holdings Sdn Bhd,Taliwas,Medium (0.4-0.6),100.0
+605,1807,Teck Guan Holdings Sdn Bhd,Teck Guan Holdings Sdn Bhd,Medium (0.4-0.6),100.0
+606,1808,Teck Guan Holdings Sdn Bhd,Teck Guan Holdings Sdn Bhd,Medium (0.4-0.6),100.0
+607,1810,Tian Siang Holdings Sdn Bhd,Tian Siang Holdings Sdn Bhd,Medium (0.4-0.6),100.0
+608,1816,TSH Resources Berhad,GMT,Medium (0.4-0.6),100.0
+609,1817,TSH Resources Berhad,Landquest,Medium (0.4-0.6),100.0
+610,1819,TSH Resources Berhad,LKSK,Medium (0.4-0.6),100.0
+611,1820,TSH Resources Berhad,Maju Sawit,Medium (0.4-0.6),100.0
+612,1823,TSH Resources Berhad,OYH,Medium (0.4-0.6),100.0
+613,1825,TSH Resources Berhad,Sabahan,Medium (0.4-0.6),100.0
+614,1828,TSH Resources Berhad,Wakuba,Medium (0.4-0.6),100.0
+615,1846,Sudirman Bin Sapie,Sudirman Bin Sapie,Medium (0.4-0.6),100.0
