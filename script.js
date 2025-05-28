@@ -279,6 +279,134 @@ function drawEarningsChart(data) {
   });
 }
 
+//Plantation area chart
+// Utility to get colors
+function getColor(index) {
+  const colors = [
+    "rgba(34, 197, 94, 0.7)",
+    "rgba(59, 130, 246, 0.7)",
+    "rgba(234, 179, 8, 0.7)"
+  ];
+  return colors[index % colors.length];
+}
+
+// Fetch planted area data
+async function fetchPlantedAreaData(company) {
+  const response = await fetch(`http://localhost:8000/plt-area?company=${company}`);
+  const result = await response.json();
+  return result.data;
+}
+
+// Build pie chart for the latest year
+function buildPlantedAreaPieChart(data, company) {
+  const ctx = document.getElementById("plt-area-chart").getContext("2d");
+
+  // Extract latest year
+  const latestYear = Math.max(...data.map(d => d.Year));
+  const filtered = data.filter(d => d.Year === latestYear);
+
+  const labels = filtered.map(d => d.Category);
+  const values = filtered.map(d => d.Value);
+  const colors = labels.map((_, i) => getColor(i));
+
+  // Destroy old chart
+  if (window.plantedAreaChart) window.plantedAreaChart.destroy();
+
+  // Create new chart
+  window.plantedAreaChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderColor: "#fff",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: "black" }
+        },
+        title: {
+          display: true,
+          text: `${nameMap[company]} Planted Area (${latestYear})`,
+          color: "black"
+        }
+      }
+    }
+  });
+}
+//Oil extraction rates chart
+// Fetch extraction rate data
+async function fetchExtractionRateData(company) {
+  const response = await fetch(`http://localhost:8000/ext-rates?company=${company}`);
+  const result = await response.json();
+  return result.data;
+}
+
+// Build extraction rate bar chart
+function buildExtractionRateChart(data, company) {
+  const ctx = document.getElementById("ext-rates-chart").getContext("2d");
+
+  const years = [...new Set(data.map(d => d.Date))].sort();
+  const categories = [...new Set(data.map(d => d.Category))];
+
+  const datasets = categories.map((category, i) => ({
+    label: category,
+    data: years.map(year => {
+      const item = data.find(d => d.Date === year && d.Category === category);
+      return item ? Number(item.Value) : 0;
+    }),
+    borderColor: getColor(i),
+    backgroundColor: getColor(i),
+    fill: false,
+    tension: 0.3,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+  }));
+
+  if (window.extractionRateChart) window.extractionRateChart.destroy();
+
+  window.extractionRateChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: 'Year' },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: 'Extraction Rate (%)' },
+          grid: { display: false }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: 'black' }
+        },
+        title: {
+          display: true,
+          text: `${nameMap[company]} Extraction Rates by Year`,
+          color: 'black'
+        }
+      }
+    }
+  });
+}
+
 // When dropdown changes
 companySelect.addEventListener("change", async (e) => {
   const [companyCode, shareCode] = e.target.value.split("|");
@@ -301,6 +429,12 @@ companySelect.addEventListener("change", async (e) => {
 
   const earningsData = await fetchEarnings(shareCode);
   drawEarningsChart(earningsData, shareCode);
+
+  const areaData = await fetchPlantedAreaData(companyCode);
+  buildPlantedAreaPieChart(areaData, companyCode);
+
+  const extData = await fetchExtractionRateData(companyCode);
+  buildExtractionRateChart(extData, companyCode);
 });
 
 // Initialize first load
@@ -325,6 +459,12 @@ async function initCompanyTab() {
   setTimeout(() => {
     drawEarningsChart(earningsData, shareCode);
   }, 100); 
+
+  const areaData = await fetchPlantedAreaData(companyCode);
+  buildPlantedAreaPieChart(areaData, companyCode);
+
+  const extData = await fetchExtractionRateData(companyCode);
+  buildExtractionRateChart(extData, companyCode);
 }
 
 // Tab click handler - no longer needed for resizing, but kept for initialization

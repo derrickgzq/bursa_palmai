@@ -110,6 +110,40 @@ def get_prod_data(company: str = Query(..., regex = "^(KLK|IOI|SDG|FGV)$")):
     data = df.to_dict(orient = "records")
     return JSONResponse(content = {"company": company, "data": data})
 
+@app.get("/plt-area")
+def get_plt_area(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
+    csv_file = "plt_area.csv"
+
+    if not os.path.exists(csv_file):
+        raise HTTPException(status_code=404, detail="CSV file not found")
+
+    df = pd.read_csv(csv_file, delimiter = '|')
+    
+    # Filter by company (case-insensitive match)
+    filtered_df = df[df["Company"].str.upper() == company.upper()]
+    if filtered_df.empty:
+        raise HTTPException(status_code=404, detail=f"No data found for company '{company}'")
+
+    data = filtered_df.to_dict(orient="records")
+    return JSONResponse(content={"company": company, "data": data})
+
+@app.get("/ext-rates")
+def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
+    csv_file = "extraction_rates.csv"
+
+    if not os.path.exists(csv_file):
+        raise HTTPException(status_code=404, detail="CSV file not found")
+
+    df = pd.read_csv(csv_file, delimiter='|')
+
+    # Filter by company (case-insensitive match)
+    filtered_df = df[df["Company"].str.upper() == company.upper()]
+    if filtered_df.empty:
+        raise HTTPException(status_code=404, detail=f"No data found for company '{company}'")
+
+    data = filtered_df.to_dict(orient="records")
+    return JSONResponse(content={"company": company, "data": data})
+
 @app.get("/company-summary")
 def get_company_description(ticker):
     stock = yf.Ticker(ticker)
