@@ -1,59 +1,42 @@
-
 //STARTING OF JAVASCRIPT FROM HERE
 // MAINPAGE
-function createHeatmap(data) {
-  const ctx = document.getElementById('bubbleChart').getContext('2d');
-  
-  const labels = data.map(item => item.company);
-  const values = data.map(item => item.market_cap_billion);
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
+fetch('http://127.0.0.1:8000/marketcap-data')
+      .then(response => response.json())
+      .then(data => {
+        // Convert to AnyChart heatmap data format
+        const heatmapData = data.map((item, index) => ({
+          x: item.company,
+          y: "Market Cap",
+          heat: item.market_cap_billion
+        }));
 
-  new Chart(ctx, {
-    type: 'matrix',
-    data: {
-      datasets: [{
-        label: 'Market Cap',
-        data: data.map((item, i) => ({
-          x: i,
-          y: 1,
-          v: item.market_cap_billion
-        })),
-        backgroundColor: function(ctx) {
-          const value = ctx.dataset.data[ctx.dataIndex].v;
-          const ratio = (value - minValue) / (maxValue - minValue);
-          return `rgba(34, 197, 94, ${0.3 + 0.7 * ratio})`;
-        },
-        width: ({chart}) => (chart.chartArea.width - 20) / data.length,
-        height: 50
-      }]
-    },
-    options: {
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: ctx => `${labels[ctx.raw.x]}: ${ctx.raw.v} Billion MYR`
-          }
-        },
-        legend: { display: false }
-      },
-      scales: {
-        x: {
-          labels: labels,
-          type: 'category',
-          offset: true,
-          grid: { display: false },
-          ticks: { autoSkip: false }
-        },
-        y: {
-          min: 0,
-          max: 2,
-          display: false
-        }
-      }
-    }
-  });
-}
+        anychart.onDocumentReady(function () {
+          // Create a heatmap chart
+          var chart = anychart.heatMap(heatmapData);
+
+          // Set chart title and container
+          chart.title("Market Cap by Company (Billion MYR)");
+
+          // Configure color scale
+          chart.colorScale()
+            .ranges([
+              { less: 1, color: "#d4f4dd" },
+              { from: 1, to: 5, color: "#34d399" },
+              { greater: 5, color: "#059669" }
+            ]);
+
+          // Tooltip customization
+          chart.tooltip().format(function () {
+            return this.x + ": " + this.heat + " Billion MYR";
+          });
+
+          chart.container("heatmap");
+          chart.draw();
+        });
+      })
+      .catch(error => {
+        console.error("Failed to load market cap data:", error);
+      });
 // MAINPAGE
 
 // COMPANY
@@ -367,14 +350,21 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
       tab.classList.toggle("dark:text-green-400", tab.dataset.tab === tabId);
     });
 
-    if (tabId === "company") {
-      const [companyCode, shareCode] = companySelect.value.split("|");
-      companyTitle.textContent = nameMap[companyCode];
+    if (tabId === "mainpage") {
+    initMainpage(); // Initialize heatmap when mainpage tab is shown
+  } else if (tabId === "company") {
+    const [companyCode, shareCode] = companySelect.value.split("|");
+    companyTitle.textContent = nameMap[companyCode];
 
-      fetchCompanyData(companyCode).then(data => buildBarChart(data, companyCode));
-      fetchPriceData(shareCode).then(data => drawPriceChart(data, shareCode));
-    }
+    fetchCompanyData(companyCode).then(data => buildBarChart(data, companyCode));
+    fetchPriceData(shareCode).then(data => drawPriceChart(data, shareCode));
+    fetchEarnings(shareCode).then(data => drawEarningsChart(data, shareCode));
+  } else if (tabId === "mpobstats" && map) {
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
   }
+}
 //SIDEBAR
 
 //COMMODITIES

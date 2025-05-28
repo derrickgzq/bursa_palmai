@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class = "">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bursa PalmAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Load AnyChart FIRST to prevent conflicts -->
+  <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
+  <!-- Then load Chart.js with namespace protection -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Protect Chart.js from AnyChart namespace conflicts
+    window.ChartJS = Chart;
+  </script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body class="font-sans bg-gray-50 text-black min-h-screen flex">
@@ -32,7 +40,7 @@
     <header class="text-center mb-8">
       <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
       <p class="text-lg text-gray-700">An AI, data-powered Bursa Malaysia Plantation Dashboard App</p>
-      <canvas id="bubbleChart"></canvas>
+      <div id="treemap" style="width: 800px; height: 600px;"></div>    
     </header>
   </section>
 
@@ -181,7 +189,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.0/dist/chartjs-chart-matrix.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
