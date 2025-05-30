@@ -36,11 +36,55 @@
   <!-- Main content -->
   <div class="flex-1 p-6 max-w-5xl mx-auto">
   <!-- Tab Contents -->
-  <section id="mainpage" class="tab-content">
-    <header class="text-center mb-8">
-      <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
-      <p class="text-lg text-gray-700">An AI, data-powered Bursa Malaysia Plantation Dashboard App</p>
-      <div id="treemap" style="width: 800px; height: 600px;"></div>    
+  <section id="mainpage" class="tab-content px-4">
+  <header class="text-center mb-8">
+    <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
+    <p class="text-lg text-gray-700 mb-6">
+      An AI, data-powered Bursa Malaysia Plantation Dashboard App
+    </p>
+
+    <!-- Chart Row -->
+    <div class="flex flex-wrap justify-center gap-6 mb-8">
+      <!-- Treemap container -->
+      <div class="w-full md:w-[48%] border rounded-lg shadow">
+        <div id="treemap" class="h-[400px]"></div>
+      </div>
+
+      <!-- KLCI Chart container -->
+      <div class="w-full md:w-[48%] border rounded-lg shadow">
+        <div class="relative h-[400px]">
+          <canvas id="klciChart" class="absolute inset-0 w-full h-full"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scorecards Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="scoreCards">
+      <!-- Cards will be injected by JS -->
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow text-left">
+        <thead class="bg-green-100 text-green-800">
+          <tr>
+            <th class="px-4 py-2">Company</th>
+            <th class="px-4 py-2">Market Cap</th>
+            <th class="px-4 py-2">Revenue</th>
+            <th class="px-4 py-2">Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-4 py-2 border-t">FGV</td>
+            <td class="px-4 py-2 border-t">4.74B</td>
+            <td class="px-4 py-2 border-t">XX</td>
+            <td class="px-4 py-2 border-t">XX</td>
+          </tr>
+          <!-- Add more rows dynamically -->
+        </tbody>
+      </table>
+      </div>
     </header>
   </section>
 
@@ -123,6 +167,12 @@
       <div class="h-[600px]">
         <h3 class="text-lg font-semibold text-green-600 mb-2">Fertilizer Prices</h3>
         <canvas id="fert-chart" class="w-full h-full"></canvas>
+      </div>
+
+      <!-- Diesel Chart -->
+      <div class="h-[600px]">
+        <h3 class="text-lg font-semibold text-green-600 mb-2">Diesel Prices</h3>
+        <canvas id="diesel-chart" class="w-full h-full"></canvas>
       </div>
     </div>
   </section>

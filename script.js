@@ -1,42 +1,119 @@
 //STARTING OF JAVASCRIPT FROM HERE
 // MAINPAGE
-fetch('http://127.0.0.1:8000/marketcap-data')
-      .then(response => response.json())
-      .then(data => {
-        // Convert to AnyChart heatmap data format
-        const heatmapData = data.map((item, index) => ({
-          x: item.company,
-          y: "Market Cap",
-          heat: item.market_cap_billion
-        }));
+// treemap market cap
+ anychart.onDocumentReady(function() {
+      // Fetch data from API endpoint
+      fetch('http://127.0.0.1:8000/marketcap-data')
+        .then(response => response.json())
+        .then(apiData => {
+          // Transform API data to the exact requested format
+          var data = [
+            { 
+              id: "root", 
+              name: "Market Cap", 
+              children: apiData.map(company => ({
+                id: company.company,
+                name: company.company,
+                value: company.market_cap_billion
+              }))
+            }
+          ];
 
-        anychart.onDocumentReady(function () {
-          // Create a heatmap chart
-          var chart = anychart.heatMap(heatmapData);
+          // Calculate total market cap
+          var total = data[0].children.reduce((sum, company) => sum + company.value, 0);
 
-          // Set chart title and container
-          chart.title("Market Cap by Company (Billion MYR)");
+          // Create and configure chart
+          var chart = anychart.treeMap(data);
 
-          // Configure color scale
-          chart.colorScale()
-            .ranges([
-              { less: 1, color: "#d4f4dd" },
-              { from: 1, to: 5, color: "#34d399" },
-              { greater: 5, color: "#059669" }
-            ]);
+          // SET COLORS HERE INSTEAD OF IN DATA
+          chart.colorScale().ranges([
+            { less: 1, color: '#e8f5e9' },   // Very light green
+            { from: 1, to: 5, color: '#a5d6a7' },  // Light green
+            { from: 5, to: 20, color: '#4caf50' }, // Medium green
+            { greater: 20, color: '#2e7d32' }      // Dark green
+          ]);
 
-          // Tooltip customization
-          chart.tooltip().format(function () {
-            return this.x + ": " + this.heat + " Billion MYR";
-          });
-
-          chart.container("heatmap");
+          // Visual settings
+          //chart.title("Market Cap by Company (Total: " + total.toFixed(2) + "B MYR)");
+          //chart.title().fontSize(16).padding(10);
+          
+          // Tooltip configuration
+          chart.tooltip()
+            .format("{%name}: {%value}B MYR")
+            .fontSize(12);
+                    
+          // Clear loading message and render
+          chart.container("treemap");
           chart.draw();
-        });
-      })
-      .catch(error => {
-        console.error("Failed to load market cap data:", error);
-      });
+        })
+    });
+
+//klci chart
+fetch("http://127.0.0.1:8000/klci-data")
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById("klciChart").getContext("2d");
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.dates,
+        datasets: [{
+          label: "KLCI Index",
+          data: data.prices,
+          borderColor: "rgba(11, 118, 18, 0.51)",
+          borderWidth: 2,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true
+          }
+        },
+        scales: {
+          x: {
+            ticks: {autoSkip: true, maxTicksLimit: 15}, grid: {display: false}
+          },
+          y: {
+            beginAtZero: false, grid: {display: false}
+          }
+        }
+      }
+    });
+  })
+  .catch(error => console.error("Error fetching KLCI data:", error));
+    
+//Latest share price
+fetch("http://localhost:8000/api/share-prices")
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("scoreCards");
+    container.innerHTML = "";
+
+    data.forEach((item, index) => {
+      const arrowUp = '<span class="text-green-600">▲</span>';
+      const arrowDown = '<span class="text-red-600">▼</span>';
+      const arrow = item.change > 0 ? arrowUp : item.change < 0 ? arrowDown : "";
+      const color = item.change > 0 ? "text-green-600" : item.change < 0 ? "text-red-600" : "text-gray-600";
+
+      const card = `
+        <div class="bg-white p-4 rounded-lg shadow text-center">
+          <h3 class="text-sm font-semibold text-gray-600">${item.symbol}</h3>
+          <p class="text-2xl font-bold text-green-700">RM ${item.price}</p>
+          <p class="text-sm ${color}">
+            ${arrow} ${item.percent}% (${item.change})
+          </p>
+        </div>
+      `;
+      container.innerHTML += card;
+    });
+  });
 // MAINPAGE
 
 // COMPANY
@@ -632,6 +709,61 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
 
   // Call this on page load or tab click
   renderFertilizerChart();
+
+//diesel chart
+fetch("http://127.0.0.1:8000/fuelprices")
+  .then(response => response.json())
+  .then(data => {
+    // Extract data for chart
+    const labels = data.map(item => item.date);
+    const diesel = data.map(item => parseFloat(item.diesel));
+    const dieselEastMsia = data.map(item => parseFloat(item.diesel_eastmsia));
+
+    const ctx = document.getElementById("diesel-chart").getContext("2d");
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Diesel (West Malaysia)",
+            data: diesel,
+            borderColor: "green",
+            backgroundColor: "rgba(0, 128, 0, 0.2)",
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: "Diesel (East Malaysia)",
+            data: dieselEastMsia,
+            borderColor: "darkgreen",
+            backgroundColor: "rgba(33, 246, 33, 0.8)",
+            fill: true,
+            tension: 0.3,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            title: { display: true, text: "Date" },
+            ticks: { maxRotation: 45, minRotation: 45 }
+          },
+          y: {
+            title: { display: true, text: "Price (RM)" },
+            beginAtZero: false
+          }
+        },
+        plugins: {
+          legend: { position: "top" },
+          tooltip: { mode: "index", intersect: false }
+        },
+      }
+    });
+  })
+  .catch(error => console.error("Error loading fuel price data:", error));
 //COMMODITIES
 
 //EXPORT IMPORT

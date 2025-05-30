@@ -34,35 +34,23 @@ def get_market_cap_data():
         "BLDPLNT": "5069.KL",
         "CEPAT": "8982.KL",
         "CHINTEK": "1929.KL",
-        "DUTALND": "3948.KL",
         "FAREAST": "5029.KL",
         "FGV": "5222.KL",
         "GENP": "2291.KL",
-        "GLBHD": "7382.KL",
-        "GOPENG": "2135.KL",
-        "HARNLEN": "7501.KL",
         "HSPLANT": "5138.KL",
-        "INCKEN": "2607.KL",
-        "INFOTEC": "0253.KL",
         "INNO": "6262.KL",
         "IOICORP": "1961.KL",
         "JPG": "5323.KL",
         "JTIASA": "4383.KL",
         "KLK": "2445.KL",
-        "KLUANG": "2453.KL",
         "KMLOONG": "5027.KL",
         "KRETAM": "1996.KL",
-        "MALPAC": "4936.KL",
-        "MATANG": "0189.KL",
         "MHC": "5026.KL",
         "MKHOP": "5319.KL",
-        "NPC": "5047.KL",
         "NSOP": "2038.KL",
-        "PINEPAC": "1902.KL",
         "PLS": "9695.KL",
         "RSAWIT": "5113.KL",
         "RVIEW": "2542.KL",
-        "SBAGAN": "2569.KL",
         "SDG": "5285.KL",
         "SHCHAN": "4316.KL",
         "SOP": "5126.KL",
@@ -92,6 +80,45 @@ def get_market_cap_data():
         raise HTTPException(status_code=500, detail="Market cap data could not be retrieved.")
 
     return JSONResponse(content=result)
+
+@app.get("/klci-data")
+def get_klci_data():
+    end = datetime.today()
+    start = end - timedelta(days=30)  # last 6 months
+    data = yf.download('^KLSE', start=start, end=end)
+
+    dates = list(data.index.strftime('%Y-%m-%d')) 
+    data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
+    prices = data['Close'].tolist()
+    return {"dates": dates, "prices": prices}
+
+@app.get("/api/share-prices")
+def get_share_prices():
+    stocks = ["1961.KL", "2445.KL", "5285.KL", "5222.KL"]
+    data = []
+
+    for stock in stocks:
+        ticker = yf.Ticker(stock)
+        hist = ticker.history(period="2d")  # get last two days
+        if len(hist) >= 2:
+            latest = hist["Close"].iloc[-1]
+            previous = hist["Close"].iloc[-2]
+            change = latest - previous
+            percent_change = (change / previous) * 100
+            data.append({
+                "symbol": stock.replace(".KL", ""),
+                "price": round(latest, 2),
+                "change": round(change, 2),
+                "percent": round(percent_change, 2)
+            })
+        else:
+            data.append({
+                "symbol": stock.replace(".KL", ""),
+                "price": None,
+                "change": None,
+                "percent": None
+            })
+    return data
 
 @app.get("/prod-data")
 def get_prod_data(company: str = Query(..., regex = "^(KLK|IOI|SDG|FGV)$")):
@@ -253,6 +280,18 @@ def get_fertilizer_data():
     pivot_df["Month"] = pivot_df["Month"].dt.strftime("%Y-%m")
 
     return pivot_df.to_dict(orient="list")
+
+@app.get("/fuelprices")
+def get_fuel_prices():
+    fuel_source = "https://storage.data.gov.my/commodities/fuelprice.csv"
+    df = pd.read_csv(fuel_source)
+
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df_filtered = df[df['date'] > '2022-12-31'][['date', 'diesel', 'diesel_eastmsia']]
+    df_filtered = df_filtered.sort_values(by='date')
+    df_filtered['date'] = df_filtered['date'].dt.strftime('%Y-%m-%d')
+
+    return df_filtered.to_dict(orient='records')
 
 @app.get("/exim-data")
 def get_exim_data():
