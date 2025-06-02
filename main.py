@@ -13,6 +13,10 @@ import os
 import requests
 import geopandas as gpd
 import json
+from shapely.geometry import Point
+from shapely.ops import nearest_points
+from geopy.distance import geodesic
+from typing import List, Dict, Any
 
 app = FastAPI()
 templates = Jinja2Templates(directory = "templates")
@@ -26,6 +30,8 @@ app.add_middleware(
     allow_headers=["*"],                     # Allow all headers
 )
 
+# mainpage
+# market cap aka treemap
 @app.get("/marketcap-data")
 def get_market_cap_data():
     companies = {
@@ -81,6 +87,7 @@ def get_market_cap_data():
 
     return JSONResponse(content=result)
 
+# klci vs fbmplt chart
 @app.get("/klci-data")
 def get_klci_data():
     end = datetime.today()
@@ -92,6 +99,7 @@ def get_klci_data():
     prices = data['Close'].tolist()
     return {"dates": dates, "prices": prices}
 
+# stock share price aka scorecards
 @app.get("/api/share-prices")
 def get_share_prices():
     stocks = ["1961.KL", "2445.KL", "5285.KL", "5222.KL"]
@@ -120,6 +128,45 @@ def get_share_prices():
             })
     return data
 
+# news display
+@app.get("/api/news")
+def get_news():
+    url = "https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to=2025-05-31&from=1999-01-01&language=english&offset=0"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')
+
+    data = []
+    for item in news_items:
+        a_tag = item.find('a', href=True)
+        headline_tag = item.find('span', class_='NewsList_newsListItemHead__dg7eK')
+        description_tag = item.find('span', class_='NewsList_newsList__2fXyv')
+
+        # Try to find image in the sibling div (adjust this if HTML structure changes)
+        img_tag = item.find_previous_sibling('div')
+        if img_tag:
+            img_tag = img_tag.find('img', class_='NewsList_newsImage__j_h0a')
+
+        if a_tag and headline_tag and description_tag:
+            link = a_tag['href']
+            if link.startswith('/'):
+                link = f"https://theedgemalaysia.com{link}"
+            headline = headline_tag.get_text(strip=True)
+            description = description_tag.get_text(strip=True)
+            image_url = img_tag['src'] if img_tag else None
+
+            data.append({
+                'headline': headline,
+                'link': link,
+                'description': description,
+                'image_url': image_url
+            })
+
+    return {"news": data}
+# mainpage
+
+# company
+# company mthly production data
 @app.get("/prod-data")
 def get_prod_data(company: str = Query(..., regex = "^(KLK|IOI|SDG|FGV)$")):
     filename_map = {
@@ -137,6 +184,7 @@ def get_prod_data(company: str = Query(..., regex = "^(KLK|IOI|SDG|FGV)$")):
     data = df.to_dict(orient = "records")
     return JSONResponse(content = {"company": company, "data": data})
 
+# company plantation area
 @app.get("/plt-area")
 def get_plt_area(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
     csv_file = "plt_area.csv"
@@ -154,6 +202,7 @@ def get_plt_area(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
     data = filtered_df.to_dict(orient="records")
     return JSONResponse(content={"company": company, "data": data})
 
+# company oil extraction rates
 @app.get("/ext-rates")
 def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
     csv_file = "extraction_rates.csv"
@@ -171,12 +220,14 @@ def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
     data = filtered_df.to_dict(orient="records")
     return JSONResponse(content={"company": company, "data": data})
 
+# company description summary 
 @app.get("/company-summary")
 def get_company_description(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
     return info.get('longBusinessSummary', '')
 
+# company share price chart 
 @app.get("/price-data")
 def get_company_price_data(ticker: str):
     end = datetime.today()
@@ -188,6 +239,7 @@ def get_company_price_data(ticker: str):
     prices = data['Close'].tolist()
     return {"dates": dates, "prices": prices}
 
+# company earnings
 @app.get("/company-earnings")
 def get_company_earnings(ticker):
     stock = yf.Ticker(ticker)
@@ -228,7 +280,10 @@ def get_company_earnings(ticker):
         })
 
     return JSONResponse(content={"company": ticker, "data": data})
+# company
 
+# commodities
+# soy futures chart
 @app.get("/soy-price-data")
 def get_soy_price_data(ticker: str):
     end = datetime.today()
@@ -240,6 +295,7 @@ def get_soy_price_data(ticker: str):
     prices = data['Close'].tolist()
     return {"dates": dates, "prices": prices}
 
+# fertilizer chart
 @app.get("/fertilizer-data")
 def get_fertilizer_data():
     commodities = [
@@ -281,18 +337,24 @@ def get_fertilizer_data():
 
     return pivot_df.to_dict(orient="list")
 
+# diesel price chart
 @app.get("/fuelprices")
 def get_fuel_prices():
     fuel_source = "https://storage.data.gov.my/commodities/fuelprice.csv"
     df = pd.read_csv(fuel_source)
 
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    df_filtered = df[df['date'] > '2022-12-31'][['date', 'diesel', 'diesel_eastmsia']]
+    df_filtered = df[df['date'] > '2020-12-31'][['date', 'diesel', 'diesel_eastmsia']]
+    df_filtered = df_filtered[~((df_filtered['diesel'].fillna(0) == 0) & (df_filtered['diesel_eastmsia'].fillna(0) == 0))]
+    df_filtered = df_filtered.drop_duplicates(subset='date', keep='first')
     df_filtered = df_filtered.sort_values(by='date')
     df_filtered['date'] = df_filtered['date'].dt.strftime('%Y-%m-%d')
 
     return df_filtered.to_dict(orient='records')
+# commodities
 
+#export import
+#export import and trade surplus/deficit chart
 @app.get("/exim-data")
 def get_exim_data():
     url = "https://storage.dosm.gov.my/trade/trade_sitc_1d.csv"
@@ -321,7 +383,12 @@ def get_exim_data():
 def serve_index():
     with open("index.html", "r") as f:
         return HTMLResponse(f.read())
+# export import
 
+# mpob stats
+# concessions with 3-days weather forecast
+
+# weather station layer
 @app.get("/weather_stations")
 async def weather_stations():
     response = requests.get('https://api.data.gov.my/weather/forecast')
@@ -340,6 +407,7 @@ async def weather_stations():
     wf_result = grouped.to_dict(orient='records')
     return JSONResponse(content=wf_result)
 
+# rspolayer
 @app.get("/rsposhapefile")
 def get_shapefile():
     rspo_gdf = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
@@ -352,6 +420,7 @@ def get_shapefile():
     rspo_geojson = rspo_gdf.to_crs(epsg=4326).to_json()
     return JSONResponse(content=json.loads(rspo_geojson))
 
+# oplayer
 @app.get("/opshapefile")
 def get_shapefile():
     op_gdf = gpd.read_file("gfw_oil_palm/gfw_oil_palm_v20191031.shp")
@@ -364,6 +433,7 @@ def get_shapefile():
     op_geojson = op_gdf.to_crs(epsg=4326).to_json()
     return JSONResponse(content=json.loads(op_geojson))
 
+# milllayer
 @app.get("/mills")
 def get_mills():
     mill_df = pd.read_csv("universal_mill_list.csv")
@@ -373,6 +443,7 @@ def get_mills():
     mill_geojson = mill_gdf.to_json()
     return JSONResponse(content=json.loads(mill_geojson))
 
+# rfrlayer/cfrlyer/drrlayer
 @app.get("/aqueduct")
 def get_shapefile():
     auqeduct = gpd.read_file("aqueduct/aqueduct.gpkg")
@@ -384,6 +455,7 @@ def get_shapefile():
     aq_geojson = auqeduct.to_crs(epsg=4326).to_json()
     return JSONResponse(content=json.loads(aq_geojson))
 
+# cfr chart
 @app.get("/cfr-bar-top6")
 def cfr_bar_top6():
     df = pd.read_csv("cfr_summary.csv")
@@ -434,6 +506,7 @@ def cfr_bar_top6():
     }
     return JSONResponse(content=chart_data)
 
+#rfr chart
 @app.get("/rfr-bar-top6")
 def rfr_bar_top6():
     df = pd.read_csv("rfr_summary.csv")
@@ -484,6 +557,7 @@ def rfr_bar_top6():
     }
     return JSONResponse(content=chart_data)
 
+#drr chart
 @app.get("/drr-bar-top6")
 def drr_bar_top6():
     df = pd.read_csv("drr_summary.csv")

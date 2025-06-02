@@ -1,52 +1,64 @@
 //STARTING OF JAVASCRIPT FROM HERE
 // MAINPAGE
 // treemap market cap
- anychart.onDocumentReady(function() {
-      // Fetch data from API endpoint
-      fetch('http://127.0.0.1:8000/marketcap-data')
-        .then(response => response.json())
-        .then(apiData => {
-          // Transform API data to the exact requested format
-          var data = [
-            { 
-              id: "root", 
-              name: "Market Cap", 
-              children: apiData.map(company => ({
-                id: company.company,
-                name: company.company,
-                value: company.market_cap_billion
-              }))
-            }
-          ];
+anychart.onDocumentReady(function() {
+  // Fetch data from API endpoint
+  fetch('http://127.0.0.1:8000/marketcap-data')
+    .then(response => response.json())
+    .then(apiData => {
+      // Transform API data to the requested format
+      var data = [
+        { 
+          id: "root", 
+          name: "Market Cap", 
+          children: apiData.map(company => ({
+            id: company.company,
+            name: company.company,
+            value: company.market_cap_billion
+          }))
+        }
+      ];
 
-          // Calculate total market cap
-          var total = data[0].children.reduce((sum, company) => sum + company.value, 0);
+      // Calculate total market cap
+      var total = data[0].children.reduce((sum, company) => sum + company.value, 0);
 
-          // Create and configure chart
-          var chart = anychart.treeMap(data);
+      // Create and configure chart
+      var chart = anychart.treeMap(data);
 
-          // SET COLORS HERE INSTEAD OF IN DATA
-          chart.colorScale().ranges([
-            { less: 1, color: '#e8f5e9' },   // Very light green
-            { from: 1, to: 5, color: '#a5d6a7' },  // Light green
-            { from: 5, to: 20, color: '#4caf50' }, // Medium green
-            { greater: 20, color: '#2e7d32' }      // Dark green
-          ]);
+      chart.colorScale().ranges([
+        { less: 1, color: '#bcb98a' },   // Very light green
+        { from: 1, to: 5, color: '#899a5c' },  // Light green
+        { from: 5, to: 20, color: '#5a7e67' }, // Medium green
+        { greater: 20, color: '#4a6854' }      // Dark green
+      ]);
 
-          // Visual settings
-          //chart.title("Market Cap by Company (Total: " + total.toFixed(2) + "B MYR)");
-          //chart.title().fontSize(16).padding(10);
-          
-          // Tooltip configuration
-          chart.tooltip()
-            .format("{%name}: {%value}B MYR")
-            .fontSize(12);
-                    
-          // Clear loading message and render
-          chart.container("treemap");
-          chart.draw();
-        })
+      // Visual settings
+      chart.title("Plantation Sector Market Cap (RM " + total.toFixed(2) + "Billion)");
+      chart.title()
+        .fontSize(14)
+        .padding(10)
+        .fontColor('#00321f')  // Dark green-ish color
+        .fontWeight('bold')
+        .fontFamily('Inter')
+        .hAlign('left');
+
+      // Tooltip configuration
+      chart.tooltip()
+        .format("{%name}: {%value}B MYR")
+        .fontSize(12)
+        .fontFamily('Inter');
+
+      // Labels font for treemap nodes
+      chart.labels()
+        .fontFamily('Inter')
+        .fontSize(12)
+        .fontColor('#00321f');
+
+      // Clear loading message and render
+      chart.container("treemap");
+      chart.draw();
     });
+});
 
 //klci chart
 fetch("http://127.0.0.1:8000/klci-data")
@@ -61,7 +73,7 @@ fetch("http://127.0.0.1:8000/klci-data")
         datasets: [{
           label: "KLCI Index",
           data: data.prices,
-          borderColor: "rgba(11, 118, 18, 0.51)",
+          borderColor: "#014422",
           borderWidth: 2,
           fill: false,
           pointRadius: 0,
@@ -73,22 +85,75 @@ fetch("http://127.0.0.1:8000/klci-data")
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: true
+            labels: {
+              font: {
+                family: 'Inter',
+                size: 12
+              },
+              color: '#00321f'
+            },
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Kuala Lumpur Composite Index (KLCI), Last 30 days',
+            color: '#00321f',
+            font: {
+              family: 'Inter',
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10,
+              bottom: 20
+            }
+          },
+          tooltip: {
+            bodyFont: {
+              family: 'Inter',
+              size: 12
+            },
+            titleFont: {
+              family: 'Inter',
+              size: 14,
+              weight: 'bold'
+            }
           }
         },
         scales: {
           x: {
-            ticks: {autoSkip: true, maxTicksLimit: 15}, grid: {display: false}
+            ticks: {
+              font: {
+                family: 'Inter',
+                size: 12
+              },
+              color: '#00321f',
+              autoSkip: true,
+              maxTicksLimit: 15
+            },
+            grid: {
+              display: false
+            }
           },
           y: {
-            beginAtZero: false, grid: {display: false}
+            ticks: {
+              font: {
+                family: 'Inter',
+                size: 12
+              },
+              color: '#00321f'
+            },
+            beginAtZero: false,
+            grid: {
+              display: false
+            }
           }
         }
       }
     });
   })
   .catch(error => console.error("Error fetching KLCI data:", error));
-    
+
 //Latest share price
 fetch("http://localhost:8000/api/share-prices")
   .then(res => res.json())
@@ -114,6 +179,36 @@ fetch("http://localhost:8000/api/share-prices")
       container.innerHTML += card;
     });
   });
+
+//news cards
+async function loadNews() {
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/news');
+    const data = await response.json();
+    const newsCardsContainer = document.getElementById('newsCards');
+    newsCardsContainer.innerHTML = '';  // Clear any existing cards
+
+    data.news.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition';
+
+      card.innerHTML = `
+        <h3 class="text-lg font-bold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">
+          <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="hover:underline">${item.headline}</a>
+        </h3>
+        <p class="flex-grow" style="color: #345f3c; font-family: 'Inter', sans-serif;">${item.description}</p>
+        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="mt-4 text-sm text-green-600 hover:underline">Read more</a>
+      `;
+
+      newsCardsContainer.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Failed to load news:', error);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadNews);
+
 // MAINPAGE
 
 // COMPANY
@@ -137,12 +232,12 @@ async function fetchCompanyData(company) {
 
 function getColor(index) {
   const colors = [
-    "rgba(34, 197, 94, 0.7)",
-    "rgba(59, 130, 246, 0.7)",
-    "rgba(234, 179, 8, 0.7)",
-    "rgba(16, 185, 129, 0.7)",
-    "rgba(139, 92, 246, 0.7)",
-    "rgba(244, 63, 94, 0.7)"
+    "rgba(0, 50, 31, 0.7)",
+    "rgba(1, 68, 34, 0.7)",
+    "rgba(52, 95, 60, 0.7)",
+    "rgba(127, 154, 131, 0.7)",
+    "rgba(137, 154, 92, 0.7)",
+    "rgba(188, 185, 138, 0.7)"
   ];
   return colors[index % colors.length];
 }
@@ -218,8 +313,8 @@ function drawPriceChart(data, ticker) {
       datasets: [{
         label: `${ticker} Closing Price`,
         data: prices,
-        borderColor: 'rgba(34, 197, 94, 0.7)', 
-        backgroundColor: 'rgba(34, 197, 94, 0.07)',
+        borderColor: 'rgba(52, 95, 60, 0.7)', 
+        backgroundColor: 'rgba(0, 50, 31, 0.7)',
         fill: true,
         tension: 0.3
       }]
@@ -297,21 +392,21 @@ function drawEarningsChart(data) {
         {
           label: "Total Revenue (RM mil)",
           data: revenue,
-          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          backgroundColor: "rgba(1, 68, 34, 0.7)",
           yAxisID: 'y',
         },
         {
           label: "Net Income (RM mil)",
           data: netIncome,
-          backgroundColor: "rgba(153, 102, 255, 0.6)",
+          backgroundColor: "rgba(137, 154, 92, 0.7)",
           yAxisID: 'y',
         },
         {
           label: "Operating Margin (%)",
           data: margin,
           type: "line",
-          borderColor: "rgba(255, 99, 132, 1)",
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderColor: "rgba(188, 185, 138, 1)",
+          backgroundColor: "rgba(188, 185, 138, 0.2)",
           borderWidth: 2,
           fill: false,
           yAxisID: 'y1'
@@ -360,9 +455,9 @@ function drawEarningsChart(data) {
 // Utility to get colors
 function getColor(index) {
   const colors = [
-    "rgba(34, 197, 94, 0.7)",
-    "rgba(59, 130, 246, 0.7)",
-    "rgba(234, 179, 8, 0.7)"
+    "rgba(1, 68, 34, 0.7)",
+    "rgba(127, 154, 131, 0.7)",
+    "rgba(188, 185, 138, 0.7)"
   ];
   return colors[index % colors.length];
 }
@@ -604,8 +699,8 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
         datasets: [{
           label: "Soybean Oil Futures (ZL=F)",
           data: data.prices,
-          borderColor: "rgba(34, 197, 94, 0.7)",       // blue
-          backgroundColor: "rgba(34, 197, 94, 0.07)",  // light fill
+          borderColor: "rgba(52, 95, 60, 0.7)",       // blue
+          backgroundColor: "rgba(52, 95, 60, 0.1)",  // light fill
           fill: true,
           tension: 0.3
         }]
@@ -634,7 +729,7 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
           title: {
             display: true,
             text: "Soybean Oil Futures (Last 6 Months)",
-            color: "black",
+            color: "rgba(52, 95, 60, 0.7)",
             font: { size: 18 }
           }
         }
@@ -658,11 +753,11 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
 
     const labels = data["Month"];
     const colors = {
-      "urea": "rgba(255, 99, 132, 1)",
-      "triple-superphosphate": "rgba(54, 162, 235, 1)",
-      "rock-phosphate": "rgba(255, 206, 86, 1)",
-      "potassium-chloride": "rgba(75, 192, 192, 1)",
-      "dap-fertilizer": "rgba(153, 102, 255, 1)"
+      "urea": "rgba(0, 50, 31, 0.7)",
+      "triple-superphosphate": "rgba(52, 95, 60, 0.7)",
+      "rock-phosphate": "rgba(127, 154, 131, 0.7)",
+      "potassium-chloride": "rgba(188, 185, 138, 0.7)",
+      "dap-fertilizer": "rgba(237, 226, 70, 0.87)"
     };
 
     const datasets = Object.keys(data)
@@ -730,7 +825,7 @@ fetch("http://127.0.0.1:8000/fuelprices")
             label: "Diesel (West Malaysia)",
             data: diesel,
             borderColor: "green",
-            backgroundColor: "rgba(0, 128, 0, 0.2)",
+            backgroundColor: "rgba(1,68,34,0.8)",
             fill: true,
             tension: 0.3,
           },
@@ -738,7 +833,7 @@ fetch("http://127.0.0.1:8000/fuelprices")
             label: "Diesel (East Malaysia)",
             data: dieselEastMsia,
             borderColor: "darkgreen",
-            backgroundColor: "rgba(33, 246, 33, 0.8)",
+            backgroundColor: "rgba(137,154,92,0.8)",
             fill: true,
             tension: 0.3,
           }
@@ -799,16 +894,16 @@ fetch("http://127.0.0.1:8000/fuelprices")
             {
               label: "Exports",
               data: animal_exports,
-              borderColor: "blue",
-              backgroundColor: "rgba(0, 0, 255, 0.1)",
+              borderColor: "rgba(1,68,34,0.8)",
+              backgroundColor: "rgba(1,68,34,0.1)",
               type: "line",
               yAxisID: 'y',
             },
             {
               label: "Imports",
               data: animal_imports,
-              borderColor: "orange",
-              backgroundColor: "rgba(255, 165, 0, 0.1)",
+              borderColor: "rgba(137,154,92,0.8)",
+              backgroundColor: "rgba(137,154,92,0.1)",
               type: "line",
               yAxisID: 'y',
             }
@@ -842,16 +937,16 @@ fetch("http://127.0.0.1:8000/fuelprices")
             {
               label: "Exports",
               data: chemical_exports,
-              borderColor: "green",
-              backgroundColor: "rgba(0, 255, 0, 0.1)",
+              borderColor: "rgba(1,68,34,0.8)",
+              backgroundColor: "rgba(1,68,34,0.1)",
               type: "line",
               yAxisID: 'y',
             },
             {
               label: "Imports",
               data: chemical_imports,
-              borderColor: "red",
-              backgroundColor: "rgba(255, 0, 0, 0.1)",
+              borderColor: "rgba(137,154,92,0.8)",
+              backgroundColor: "rgba(137,154,92,0.1)",
               type: "line",
               yAxisID: 'y',
             }
@@ -873,7 +968,7 @@ fetch("http://127.0.0.1:8000/fuelprices")
 
 //MPOB
 let map; // Make it global so we can call invalidateSize later
-let rspolayer, oplayer, millslayer; // To store the polygon layer
+let rspolayer, oplayer, millslayer, rfrlayer, cfrlayer, drrlayer; // To store the polygon layer
 
 document.addEventListener("DOMContentLoaded", function () {
   const mapContainer = document.getElementById("map");

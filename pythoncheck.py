@@ -14,7 +14,6 @@ wfcast_df.rename(columns={'location.location_name': 'location_name'}, inplace=Tr
 points_df = pd.read_csv('weather_station_base.csv')
 
 rain_table = wfcast_df.merge(points_df, on='location_name', how='left')
-print(rain_table.head())
 weather_gdf = gpd.GeoDataFrame(
     rain_table,
     geometry=gpd.points_from_xy(rain_table.Longitude, rain_table.Latitude),
@@ -51,9 +50,7 @@ def get_nearest_station_info(row):
 
 # Apply to concessions
 concessions[['nearest_station', 'distance_km']] = concessions.apply(get_nearest_station_info, axis=1)
-print(concessions.head())
-print(concessions['distance_km'].max())
-print(len(concessions))
+
 # Merge 7-day forecast from the matched station
 concessions_forecast = pd.merge(
     concessions,
@@ -63,8 +60,5 @@ concessions_forecast = pd.merge(
     how='left'
 )
 concessions_forecast_3days = concessions_forecast[concessions_forecast['date'] <= cutoff_date]
-
-# Optional: reset index after filtering
 concessions_forecast_3days = concessions_forecast_3days.reset_index(drop=True)
-print(len(concessions_forecast_3days))
-concessions_forecast_3days.to_csv('concessions_wf.csv')
+print(concessions_forecast_3days)

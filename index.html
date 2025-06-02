@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bursa PalmAI</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- Load AnyChart FIRST to prevent conflicts -->
   <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
@@ -20,26 +23,27 @@
 
   <!-- Sidebar -->
   <aside class="w-64 min-h-screen sticky top-0 bg-white shadow-md p-6 flex flex-col justify-between">
-    <div>
-      <h2 class="text-2xl font-bold text-green-600 mb-6">Bursa PalmAI</h2>
-      <nav class="space-y-4" id="sidebar-nav">
-        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold">Mainpage</a>
-        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500">Company</a>
-        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500">Commodities</a>
-        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500">MPOB Statistics</a>
-        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500">Export Import</a>
-        <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500">PalmAI Chatbot</a>
-      </nav>
-    </div>
+  <div>
+    <h2 class="text-2xl font-bold mb-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
+    <nav class="space-y-4" id="sidebar-nav">
+      <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
+      <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
+      <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
+      <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">MPOB Statistics</a>
+      <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Export Import</a>
+      <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
+      <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
+    </nav>
+  </div>
   </aside>
 
   <!-- Main content -->
   <div class="flex-1 p-6 max-w-5xl mx-auto">
   <!-- Tab Contents -->
   <section id="mainpage" class="tab-content px-4">
-  <header class="text-center mb-8">
-    <h1 class="text-5xl font-extrabold text-green-700 mb-2">Bursa PalmAI</h1>
-    <p class="text-lg text-gray-700 mb-6">
+    <header class="text-center mb-8">
+    <h1 class="text-5xl font-extrabold mb-2" style=" color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
+    <p class="text-lg mb-6" style=" color: #91b7a2; font-family: 'Inter', sans-serif">
       An AI, data-powered Bursa Malaysia Plantation Dashboard App
     </p>
 
@@ -64,37 +68,19 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow text-left">
-        <thead class="bg-green-100 text-green-800">
-          <tr>
-            <th class="px-4 py-2">Company</th>
-            <th class="px-4 py-2">Market Cap</th>
-            <th class="px-4 py-2">Revenue</th>
-            <th class="px-4 py-2">Profit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="px-4 py-2 border-t">FGV</td>
-            <td class="px-4 py-2 border-t">4.74B</td>
-            <td class="px-4 py-2 border-t">XX</td>
-            <td class="px-4 py-2 border-t">XX</td>
-          </tr>
-          <!-- Add more rows dynamically -->
-        </tbody>
-      </table>
-      </div>
+    <div id="newsCards" class="flex flex-col gap-4 mt-8">
+      <!-- News cards will be dynamically injected here -->
+    </div>
     </header>
   </section>
 
-  <section id="company" class="tab-content hidden">
+  <section id="company" class="tab-content hidden font-[Inter]">
     <div x-show="activeTab === 'company'" x-init="initCompanyTab()" class="p-6 bg-white rounded-lg shadow-md">        
       <!-- Header Section -->
       <div class="mb-6">
         <!-- Title and Dropdown in one row -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-          <h2 id="company-title" class="text-2xl font-bold text-green-600">
+          <h2 id="company-title" class="text-2xl font-bold" style=" color: #014422; font-family: 'Inter', sans-serif">
             Kuala Lumpur Kepong Berhad
           </h2>
           <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
@@ -104,16 +90,16 @@
             <option value="FGV|5222.KL">FGV Holdings Berhad</option>
           </select>
         </div>
-        
+
         <!-- Description below -->
-        <p id="company-description" class="text-gray-700 text-justify"></p>
+        <p id="company-description" class="text-justify" style=" color: #345f3c; font-family: 'Inter', sans-serif"></p>
       </div>
 
       <!-- Charts Section -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Share Price Chart -->
         <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Company Share Price</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Company Share Price</h3>
           <div class="relative h-full w-full">
             <canvas id="price-chart"></canvas>
           </div>
@@ -121,24 +107,25 @@
 
         <!-- Monthly Production Chart -->
         <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Monthly Production</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Monthly Production</h3>
           <div class="relative h-full w-full">
             <canvas id="prod-chart"></canvas>
           </div>
         </div>
       </div>
-      <!-- Quarterly Earnings Chart Section -->
-    <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
-      <h3 class="text-lg font-semibold text-green-600 mb-2">Company Quarterly Earnings</h3>
-      <div class="relative h-full w-full">
-        <canvas id="earnings-chart"></canvas>
-      </div>
-    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <!-- Quarterly Earnings Chart Section -->
+      <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
+        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Company Quarterly Earnings</h3>
+        <div class="relative h-full w-full">
+          <canvas id="earnings-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <!-- Planted Area Chart -->
         <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Planted Area</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Planted Area</h3>
           <div class="relative h-full w-full">
             <canvas id="plt-area-chart"></canvas>
           </div>
@@ -146,32 +133,32 @@
 
         <!-- Extraction Rate Chart -->
         <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Extraction Rate</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Extraction Rate</h3>
           <div class="relative h-full w-full">
             <canvas id="ext-rates-chart"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
   <section id="commodities" class="tab-content hidden">
     <div class="flex flex-col space-y-8">
       <!-- Soybean Chart -->
       <div class="h-[600px]">
-        <h3 class="text-lg font-semibold text-green-600 mb-2">Soybean Futures</h3>
+        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Soybean Futures</h3>
         <canvas id="soy-price-chart" class="w-full h-full"></canvas>
       </div>
 
       <!-- Fertilizer Chart -->
       <div class="h-[600px]">
-        <h3 class="text-lg font-semibold text-green-600 mb-2">Fertilizer Prices</h3>
+        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Fertilizer Prices</h3>
         <canvas id="fert-chart" class="w-full h-full"></canvas>
       </div>
 
       <!-- Diesel Chart -->
       <div class="h-[600px]">
-        <h3 class="text-lg font-semibold text-green-600 mb-2">Diesel Prices</h3>
+        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Diesel Prices</h3>
         <canvas id="diesel-chart" class="w-full h-full"></canvas>
       </div>
     </div>
@@ -179,8 +166,17 @@
 
     <section id="mpobstats" class="tab-content hidden">
       <!-- Section Title -->
-      <h2 class="text-2xl font-bold text-green-600 mb-2">Palm Oil Map</h2>
-      
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-2xl font-bold" style=" color: #345f3c; font-family: 'Inter', sans-serif">Palm Oil Map</h2>
+        
+        <!-- Slider -->
+        <div class="flex items-center space-x-2">
+          <label for="dateSlider" class="text-sm text-gray-700">Forecast Day:</label>
+          <input id="dateSlider" type="range" min="0" max="2" value="0" class="w-40">
+          <span id="selectedDate" class="text-sm text-gray-600">Day 1</span>
+        </div>
+      </div>
+
       <!-- Map -->
       <div id="map" style="height: 80vh; width: 100%; border-radius: 12px;"></div>
 
@@ -192,7 +188,7 @@
         
       <!-- Chart 1: Coastal Flood Risk -->
       <div>
-        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
           Coastal Flood Risk Composition
           <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -205,7 +201,7 @@
 
       <!-- Chart 2: Riverine Flood Risk -->
       <div>
-        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
           Riverine Flood Risk Composition
           <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -218,7 +214,7 @@
 
       <!-- Chart 3: Drought Risk -->
       <div>
-        <h3 class="text-lg font-semibold text-green-600 mb-2 flex items-center gap-2">
+        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
           Drought Risk Composition
           <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -235,13 +231,13 @@
       <div class="flex flex-col space-y-8">
         <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
         <div class="h-[600px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
           <canvas id="4th-chart" class="w-full h-full"></canvas>
         </div>
 
         <!-- Chemical and Related Products NEC Chart -->
         <div class="h-[600px]">
-          <h3 class="text-lg font-semibold text-green-600 mb-2">Chemical and Related Products NEC Export and Import</h3>
+          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Chemical and Related Products NEC Export and Import</h3>
           <canvas id="5th-chart" class="w-full h-full"></canvas>
         </div>
       </div>
