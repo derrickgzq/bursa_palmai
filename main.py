@@ -303,6 +303,12 @@ def get_company_earnings(ticker):
 # company
 
 # commodities
+# mpob stats
+@app.get("/api/mpob")
+def get_mpob_data():
+    df = pd.read_csv("mpob_stats.csv", sep="|")
+    return df.to_dict(orient="records")
+
 # soy futures chart
 @app.get("/soy-price-data")
 def get_soy_price_data(ticker: str):

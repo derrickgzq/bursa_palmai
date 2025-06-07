@@ -753,6 +753,68 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
 //SIDEBAR
 
 //COMMODITIES
+//mpob stats
+fetch(BACKEND_URL + "/api/mpob")
+  .then(res => res.json())
+  .then(data => {
+    const months = [...new Set(data.map(d => d.MONTH_YEAR))];
+    const items = [...new Set(data.map(d => d.ITEMS))];
+
+    const greenPalette = [
+      "rgba(0, 50, 31, 0.7)",
+      "rgba(1, 68, 34, 0.7)",
+      "rgba(52, 95, 60, 0.7)",
+      "rgba(127, 154, 131, 0.7)",
+      "rgba(137, 154, 92, 0.7)",
+      "rgba(188, 185, 138, 0.7)"
+    ];
+
+    const datasets = items.map((item, index) => ({
+      label: item,
+      data: months.map(month =>
+        data.find(d => d.MONTH_YEAR === month && d.ITEMS === item)?.VALUE || 0
+      ),
+      backgroundColor: greenPalette[index % greenPalette.length],
+      yAxisID: item === "FFB (RM)" ? "y1" : "y"
+    }));
+
+    const ctx = document.getElementById("mpobChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top" },
+          title: {
+            display: true,
+            text: "Monthly MPOB Key Indicators"
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Month Year" }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Volume / Stocks / Export" },
+            position: "left"
+          },
+          y1: {
+            beginAtZero: true,
+            position: "right",
+            title: { display: true, text: "FFB Price (RM)" },
+            grid: { drawOnChartArea: false } // avoids overlapping grids
+          }
+        }
+      }
+    });
+  });
+
   //soybean price
   async function fetchSoyPriceData() {
     const response = await fetch(BACKEND_URL + "/soy-price-data?ticker=ZL=F");
@@ -1173,7 +1235,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //rfrlayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
-    fetch(BACKEND_URL + "weather_stations")
+    fetch(BACKEND_URL + "/weather_stations")
     .then(res => res.json())
     .then(stationData => {
       stationData.forEach(station => {

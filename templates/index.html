@@ -77,7 +77,7 @@
     <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
       Latest Palm Oil News
     </h2>
-    
+
     <!-- Table -->
     <div id="newsCards" class="flex flex-col gap-4 mt-8">
       <!-- News cards will be dynamically injected here -->
@@ -155,6 +155,12 @@
 
   <section id="commodities" class="tab-content hidden">
     <div class="flex flex-col space-y-8">
+      <!-- MPOB Chart -->
+      <div class="h-[600px]">
+        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">MPOB Key Indicators</h3>
+        <canvas id="mpobChart" class="w-full h-full"></canvas>
+      </div>
+
       <!-- Soybean Chart -->
       <div class="h-[600px]">
         <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Soybean Futures</h3>
