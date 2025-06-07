@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from shapely.geometry import Point
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from io import BytesIO
 import pandas as pd
 import yfinance as yf
@@ -107,7 +107,19 @@ def get_klci_data():
 # stock share price aka scorecards
 @app.get("/api/share-prices")
 def get_share_prices():
-    stocks = ["1961.KL", "2445.KL", "5285.KL", "5222.KL"]
+    stocks = ["1961.KL", #ioi
+              "2445.KL", #klk
+              "5285.KL", #sdg
+              "5222.KL", #fgv
+              "4383.KL", #jtiasa
+              "5027.KL", #kmloong
+              "9059.KL", #tsh
+              "1996.KL", #kretam
+              "2089.KL", #utdplt
+              "2291.KL", #genp
+              "6262.KL", #inno
+              "5126.KL" #sop
+              ]
     data = []
 
     for stock in stocks:
@@ -136,7 +148,10 @@ def get_share_prices():
 # news display
 @app.get("/api/news")
 def get_news():
-    url = "https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to=2025-05-31&from=1999-01-01&language=english&offset=0"
+    today = date.today()  
+    today_str = today.strftime("%Y-%m-%d")  
+    url = f"https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to={today_str}&from=1999-01-01&language=english&offset=0"
+
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')

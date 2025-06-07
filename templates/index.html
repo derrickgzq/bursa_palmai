@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="/static/favicon.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- Load AnyChart FIRST to prevent conflicts -->
@@ -67,6 +68,16 @@
       <!-- Cards will be injected by JS -->
     </div>
 
+    <div class="flex justify-center space-x-4">
+      <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
+      <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
+    </div>
+
+    <!-- Section Heading -->
+    <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+      Latest Palm Oil News
+    </h2>
+    
     <!-- Table -->
     <div id="newsCards" class="flex flex-col gap-4 mt-8">
       <!-- News cards will be dynamically injected here -->

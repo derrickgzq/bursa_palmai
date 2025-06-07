@@ -1,7 +1,7 @@
 //STARTING OF JAVASCRIPT FROM HERE
 //define backend url
-const BACKEND_URL = "https://bursa-palmai.onrender.com"
-//const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
+//const BACKEND_URL = "https://bursa-palmai.onrender.com"
+const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
 
 // MAINPAGE
 // treemap market cap
@@ -159,30 +159,99 @@ fetch(BACKEND_URL + "/klci-data")
   .catch(error => console.error("Error fetching KLCI data:", error));
 
 //Latest share price
-fetch(BACKEND_URL + "/api/share-prices")
-  .then(res => res.json())
-  .then(data => {
-    const container = document.getElementById("scoreCards");
-    container.innerHTML = "";
+let allData = [];
+let currentPage = 0;
+const cardsPerPage = 4;
 
-    data.forEach((item, index) => {
-      const arrowUp = '<span class="text-green-600">▲</span>';
-      const arrowDown = '<span class="text-red-600">▼</span>';
-      const arrow = item.change > 0 ? arrowUp : item.change < 0 ? arrowDown : "";
-      const color = item.change > 0 ? "text-green-600" : item.change < 0 ? "text-red-600" : "text-gray-600";
+const logoMap = {
+  "1961": "ioi_logo.png",
+  "2445": "klk_logo.png",
+  "5285": "sdg_logo.png",
+  "5222": "fgv_logo.png",
+  "4383": "jtiasa_logo.png",
+  "5027": "kmloong_logo.png",
+  "9059": "tsh_logo.png",
+  "1996": "kretam_logo.png",
+  "2089": "utdplt_logo.png",
+  "2291": "genp_logo.png",
+  "6262": "inno_logo.png",
+  "5126": "sop_logo.png"
+};
 
-      const card = `
-        <div class="bg-white p-4 rounded-lg shadow text-center">
-          <h3 class="text-sm font-semibold text-gray-600">${item.symbol}</h3>
-          <p class="text-2xl font-bold text-green-700">RM ${item.price}</p>
+const stockMap = {
+  "1961": "IOI Corporation Berhad",
+  "2445": "Kuala Lumpur Kepong Berhad",
+  "5285": "SD Guthrie Berhad",
+  "5222": "FGV Holdings Berhad",
+  "4383": "Jaya Tiasa Holdings Berhad",
+  "5027": "Kim Loong Resources berhad",
+  "9059": "TSH Resources Berhad",
+  "1996": "Kretam Holdings Berhad",
+  "2089": "United Plantations Berhad",
+  "2291": "Genting Plantations Berhad",
+  "6262": "Innoprise Plantations Berhad",
+  "5126": "Sarawak Oil Palms Berhad"
+};
+
+function renderCards() {
+  const container = document.getElementById("scoreCards");
+  container.innerHTML = "";
+
+  const start = currentPage * cardsPerPage;
+  const end = start + cardsPerPage;
+  const pageData = allData.slice(start, end);
+
+  pageData.forEach(item => {
+    const arrowUp = '<span class="text-green-600">▲</span>';
+    const arrowDown = '<span class="text-red-600">▼</span>';
+    const arrow = item.change > 0 ? arrowUp : item.change < 0 ? arrowDown : "";
+    const color = item.change > 0 ? "text-green-600" : item.change < 0 ? "text-red-600" : "text-gray-600";
+
+    const logoFilename = logoMap[item.symbol] || "default_logo.png";
+    const stockname = stockMap[item.symbol] || item.symbol;
+
+    const card = `
+      <div class="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+        <img src="/static/company_logo/${logoFilename}" alt="${stockname} logo" class="w-12 h-12 object-contain" />
+        <div class="text-left">
+          <h3 class="text-sm font-semibold text-gray-800">${stockname}</h3>
+          <p class="text-lg font-bold text-green-700">RM ${item.price}</p>
           <p class="text-sm ${color}">
             ${arrow} ${item.percent}% (${item.change})
           </p>
         </div>
-      `;
-      container.innerHTML += card;
-    });
+      </div>
+    `;
+    container.innerHTML += card;
   });
+
+  // Disable/enable buttons
+  document.getElementById("prevBtn").disabled = currentPage === 0;
+  document.getElementById("nextBtn").disabled = end >= allData.length;
+}
+
+// Fetch and render on load
+fetch(BACKEND_URL + "/api/share-prices")
+  .then(res => res.json())
+  .then(data => {
+    allData = data;
+    renderCards();
+  });
+
+// Navigation buttons
+document.getElementById("prevBtn").addEventListener("click", () => {
+  if (currentPage > 0) {
+    currentPage--;
+    renderCards();
+  }
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  if ((currentPage + 1) * cardsPerPage < allData.length) {
+    currentPage++;
+    renderCards();
+  }
+});
 
 //news cards
 async function loadNews() {
