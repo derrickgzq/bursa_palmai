@@ -1,9 +1,13 @@
 //STARTING OF JAVASCRIPT FROM HERE
+//define backend url
+const BACKEND_URL = "https://bursa-palmai.onrender.com"
+//const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
+
 // MAINPAGE
 // treemap market cap
 anychart.onDocumentReady(function() {
   // Fetch data from API endpoint
-  fetch('http://127.0.0.1:8000/marketcap-data')
+  fetch(BACKEND_URL + '/marketcap-data')
     .then(response => response.json())
     .then(apiData => {
       // Transform API data to the requested format
@@ -61,7 +65,7 @@ anychart.onDocumentReady(function() {
 });
 
 //klci chart
-fetch("http://127.0.0.1:8000/klci-data")
+fetch(BACKEND_URL + "/klci-data")
   .then(response => response.json())
   .then(data => {
     const ctx = document.getElementById("klciChart").getContext("2d");
@@ -155,7 +159,7 @@ fetch("http://127.0.0.1:8000/klci-data")
   .catch(error => console.error("Error fetching KLCI data:", error));
 
 //Latest share price
-fetch("http://localhost:8000/api/share-prices")
+fetch(BACKEND_URL + "/api/share-prices")
   .then(res => res.json())
   .then(data => {
     const container = document.getElementById("scoreCards");
@@ -183,7 +187,7 @@ fetch("http://localhost:8000/api/share-prices")
 //news cards
 async function loadNews() {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/news');
+    const response = await fetch(BACKEND_URL + '/api/news');
     const data = await response.json();
     const newsCardsContainer = document.getElementById('newsCards');
     newsCardsContainer.innerHTML = '';  // Clear any existing cards
@@ -225,7 +229,7 @@ const nameMap = {
 
 // Production Data
 async function fetchCompanyData(company) {
-  const response = await fetch(`http://localhost:8000/prod-data?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/prod-data?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -294,7 +298,7 @@ function buildBarChart(data, companyCode) {
 
 // Share Price Data
 async function fetchPriceData(ticker) {
-  const response = await fetch(`http://localhost:8000/price-data?ticker=${ticker}`);
+  const response = await fetch(BACKEND_URL + `/price-data?ticker=${ticker}`);
   const result = await response.json();
   return result;
 }
@@ -351,7 +355,7 @@ function drawPriceChart(data, ticker) {
 
 // Company description data
 async function fetchCompanyDescription(ticker) {
-  const response = await fetch(`http://localhost:8000/company-summary?ticker=${ticker}`);
+  const response = await fetch(BACKEND_URL + `/company-summary?ticker=${ticker}`);
   if (!response.ok) {
     console.error("Failed to fetch company description");
     return "";
@@ -361,7 +365,7 @@ async function fetchCompanyDescription(ticker) {
 
 // company earnings data
 async function fetchEarnings(ticker) {
-  const res = await fetch(`http://127.0.0.1:8000/company-earnings?ticker=${ticker}`);
+  const res = await fetch(BACKEND_URL + `/company-earnings?ticker=${ticker}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch earnings for ${ticker}`);
   }
@@ -464,7 +468,7 @@ function getColor(index) {
 
 // Fetch planted area data
 async function fetchPlantedAreaData(company) {
-  const response = await fetch(`http://localhost:8000/plt-area?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/plt-area?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -516,7 +520,7 @@ function buildPlantedAreaPieChart(data, company) {
 //Oil extraction rates chart
 // Fetch extraction rate data
 async function fetchExtractionRateData(company) {
-  const response = await fetch(`http://localhost:8000/ext-rates?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/ext-rates?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -682,7 +686,7 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
 //COMMODITIES
   //soybean price
   async function fetchSoyPriceData() {
-    const response = await fetch("http://localhost:8000/soy-price-data?ticker=ZL=F");
+    const response = await fetch(BACKEND_URL + "/soy-price-data?ticker=ZL=F");
     const result = await response.json();
     return result;
   }
@@ -748,7 +752,7 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
   });
 
   async function renderFertilizerChart() {
-    const response = await fetch("http://localhost:8000/fertilizer-data"); // Update URL if needed
+    const response = await fetch(BACKEND_URL + "/fertilizer-data"); // Update URL if needed
     const data = await response.json();
 
     const labels = data["Month"];
@@ -806,7 +810,7 @@ document.addEventListener("DOMContentLoaded", initCompanyTab);
   renderFertilizerChart();
 
 //diesel chart
-fetch("http://127.0.0.1:8000/fuelprices")
+fetch(BACKEND_URL + "/fuelprices")
   .then(response => response.json())
   .then(data => {
     // Extract data for chart
@@ -863,7 +867,7 @@ fetch("http://127.0.0.1:8000/fuelprices")
 
 //EXPORT IMPORT
   async function loadEXIMData() {
-      const res = await fetch("http://localhost:8000/exim-data");
+      const res = await fetch(BACKEND_URL + "/exim-data");
       const data = await res.json();
 
       const labels = data.date;
@@ -979,7 +983,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }).addTo(map);
 
   // Fetch shapefile as GeoJSON and create a layer
-  fetch("http://127.0.0.1:8000/rsposhapefile")
+  fetch(BACKEND_URL + "/rsposhapefile")
     .then(res => res.json())
     .then(geojson => {
       rspolayer = L.geoJSON(geojson, {
@@ -1004,7 +1008,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //rspolayer.addTo(map); // add to map
       addLayerControl();
     });
-  fetch("http://127.0.0.1:8000/opshapefile")
+  fetch(BACKEND_URL + "/opshapefile")
     .then(res => res.json())
     .then(geojson => {
       oplayer = L.geoJSON(geojson, {
@@ -1029,7 +1033,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //oplayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
-    fetch("http://127.0.0.1:8000/mills")
+    fetch(BACKEND_URL + "/mills")
       .then(res => res.json())
       .then(geojson => {
         millslayer = L.geoJSON(geojson, {
@@ -1052,7 +1056,7 @@ document.addEventListener("DOMContentLoaded", function () {
         //millslayer.addTo(map);
         addLayerControl();
       });
-    fetch("http://127.0.0.1:8000/aqueduct")
+    fetch(BACKEND_URL + "/aqueduct")
     .then(res => res.json())
     .then(geojson => {
       function getColor(label) {
@@ -1100,7 +1104,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //rfrlayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
-    fetch("http://127.0.0.1:8000/weather_stations")
+    fetch(BACKEND_URL + "weather_stations")
     .then(res => res.json())
     .then(stationData => {
       stationData.forEach(station => {
@@ -1134,7 +1138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         marker.addTo(map);
       });
     });
-    fetch("http://127.0.0.1:8000/aqueduct")
+    fetch(BACKEND_URL + "/aqueduct")
     .then(res => res.json())
     .then(geojson => {
       function getColor(label) {
@@ -1182,7 +1186,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //cfrlayer.addTo(map);
       addLayerControl(); // Add control after both layers loaded
     });
-    fetch("http://127.0.0.1:8000/aqueduct")
+    fetch(BACKEND_URL + "/aqueduct")
     .then(res => res.json())
     .then(geojson => {
       function getColor(label) {
@@ -1260,7 +1264,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-fetch("http://127.0.0.1:8000/cfr-bar-top6")
+fetch(BACKEND_URL + "/cfr-bar-top6")
   .then(res => res.json())
   .then(data => {
     new Chart(document.getElementById("cfr-bar-chart"), {
@@ -1288,7 +1292,7 @@ fetch("http://127.0.0.1:8000/cfr-bar-top6")
     });
   });
 
-fetch("http://127.0.0.1:8000/rfr-bar-top6")
+fetch(BACKEND_URL + "/rfr-bar-top6")
   .then(res => res.json())
   .then(data => {
     new Chart(document.getElementById("rfr-bar-chart"), {
@@ -1316,7 +1320,7 @@ fetch("http://127.0.0.1:8000/rfr-bar-top6")
     });
   });  
 
-fetch("http://127.0.0.1:8000/drr-bar-top6")
+fetch(BACKEND_URL + "/drr-bar-top6")
   .then(res => res.json())
   .then(data => {
     new Chart(document.getElementById("drr-bar-chart"), {
