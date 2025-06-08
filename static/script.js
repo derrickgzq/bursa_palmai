@@ -1,7 +1,7 @@
 //STARTING OF JAVASCRIPT FROM HERE
 //define backend url
-//const BACKEND_URL = "https://bursa-palmai.onrender.com"
-const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
+const BACKEND_URL = "https://bursa-palmai.onrender.com"
+//const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
 
 // MAINPAGE
 // treemap market cap
