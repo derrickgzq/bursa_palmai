@@ -1,7 +1,7 @@
 //STARTING OF JAVASCRIPT FROM HERE
 //define backend url
-const BACKEND_URL = "https://bursa-palmai.onrender.com"
-//const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
+//const BACKEND_URL = "https://bursa-palmai.onrender.com"
+const BACKEND_URL = "http://localhost:8000" //---> commented, only uncomment when doing development
 
 // MAINPAGE
 // treemap market cap
@@ -832,7 +832,7 @@ fetch(BACKEND_URL + "/api/mpob")
       data: {
         labels: data.dates,
         datasets: [{
-          label: "Soybean Oil Futures (ZL=F)",
+          label: "Soybean Oil Futures",
           data: data.prices,
           borderColor: "rgba(52, 95, 60, 0.7)",       // blue
           backgroundColor: "rgba(52, 95, 60, 0.1)",  // light fill
@@ -913,6 +913,7 @@ fetch(BACKEND_URL + "/api/mpob")
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
@@ -976,6 +977,7 @@ fetch(BACKEND_URL + "/fuelprices")
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             title: { display: true, text: "Date" },
@@ -994,6 +996,194 @@ fetch(BACKEND_URL + "/fuelprices")
     });
   })
   .catch(error => console.error("Error loading fuel price data:", error));
+
+// Crude oil
+fetch(BACKEND_URL + "/crude-oil-data")
+.then(response => response.json())
+.then(data => {
+  const ctx = document.getElementById("crude-oil-chart").getContext("2d");
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.dates,
+      datasets: [{
+        label: "Crude Oil",
+        data: data.prices,
+        borderColor: "#014422",
+        borderWidth: 2,
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f'
+          },
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Crude Oil Futures',
+          color: '#00321f',
+          font: {
+            family: 'Inter',
+            size: 16,
+            weight: 'bold'
+          },
+          padding: {
+            top: 10,
+            bottom: 20
+          }
+        },
+        tooltip: {
+          bodyFont: {
+            family: 'Inter',
+            size: 12
+          },
+          titleFont: {
+            family: 'Inter',
+            size: 14,
+            weight: 'bold'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f',
+            autoSkip: true,
+            maxTicksLimit: 15
+          },
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          ticks: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f'
+          },
+          beginAtZero: false,
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+})
+.catch(error => console.error("Error fetching Crude Oil data:", error)); 
+  
+// Brent oil
+fetch(BACKEND_URL + "/brent-oil-data")
+.then(response => response.json())
+.then(data => {
+  const ctx = document.getElementById("brent-oil-chart").getContext("2d");
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.dates,
+      datasets: [{
+        label: "Brent Oil",
+        data: data.prices,
+        borderColor: "#014422",
+        borderWidth: 2,
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f'
+          },
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Brent Oil Futures',
+          color: '#00321f',
+          font: {
+            family: 'Inter',
+            size: 16,
+            weight: 'bold'
+          },
+          padding: {
+            top: 10,
+            bottom: 20
+          }
+        },
+        tooltip: {
+          bodyFont: {
+            family: 'Inter',
+            size: 12
+          },
+          titleFont: {
+            family: 'Inter',
+            size: 14,
+            weight: 'bold'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f',
+            autoSkip: true,
+            maxTicksLimit: 15
+          },
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          ticks: {
+            font: {
+              family: 'Inter',
+              size: 12
+            },
+            color: '#00321f'
+          },
+          beginAtZero: false,
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+})
+.catch(error => console.error("Error fetching Brent Oil data:", error));
 //COMMODITIES
 
 //EXPORT IMPORT

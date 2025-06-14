@@ -6,6 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from shapely.geometry import Point
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, date
+from shapely.geometry import Point
+from shapely.ops import nearest_points
+from geopy.distance import geodesic
+from typing import List, Dict, Any
 from io import BytesIO
 import pandas as pd
 import yfinance as yf
@@ -13,10 +17,9 @@ import os
 import requests
 import geopandas as gpd
 import json
-from shapely.geometry import Point
-from shapely.ops import nearest_points
-from geopy.distance import geodesic
-from typing import List, Dict, Any
+import sqlite3
+
+SQLITE_DB = "bursa_palmai_database.db"
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -188,57 +191,105 @@ def get_news():
 # company
 # company mthly production data
 @app.get("/prod-data")
-def get_prod_data(company: str = Query(..., regex = "^(KLK|IOI|SDG|FGV)$")):
-    filename_map = {
-        "KLK":"klk_prod_data.csv",
-        "IOI":"ioi_prod_data.csv",
-        "SDG":"sdg_prod_data.csv",
-        "FGV":"fgv_prod_data.csv"
-    }
-
-    csv_file = filename_map.get(company.upper())
-    if not csv_file or not os.path.exists(csv_file):
-        raise HTTPException(status_code=404, detail="CSV file not found")
-
-    df = pd.read_csv(csv_file, sep="|")
-    data = df.to_dict(orient = "records")
-    return JSONResponse(content = {"company": company, "data": data})
+def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
+    try:
+        # Connect to SQLite database
+        conn = sqlite3.connect(SQLITE_DB)
+        
+        # Query data for the specific company
+        query = f"""
+        SELECT * FROM company_mthly_prod 
+        WHERE company = '{company.upper()}'
+        """
+        
+        df = pd.read_sql(query, conn)
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No data found for company {company}"
+            )
+            
+        data = df.to_dict(orient="records")
+        
+        return JSONResponse(
+            content={"company": company.upper(), "data": data}
+        )
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 # company plantation area
 @app.get("/plt-area")
 def get_plt_area(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
-    csv_file = "plt_area.csv"
-
-    if not os.path.exists(csv_file):
-        raise HTTPException(status_code=404, detail="CSV file not found")
-
-    df = pd.read_csv(csv_file, delimiter = '|')
-    
-    # Filter by company (case-insensitive match)
-    filtered_df = df[df["Company"].str.upper() == company.upper()]
-    if filtered_df.empty:
-        raise HTTPException(status_code=404, detail=f"No data found for company '{company}'")
-
-    data = filtered_df.to_dict(orient="records")
-    return JSONResponse(content={"company": company, "data": data})
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        query = """
+        SELECT * FROM company_plt_area
+        WHERE UPPER(Company) = ?
+        """
+        
+        df = pd.read_sql(query, conn, params=(company.upper(),))
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No data found for company '{company}'"
+            )
+            
+        data = df.to_dict(orient="records")
+        
+        return JSONResponse(
+            content={"company": company, "data": data}
+        )
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 # company oil extraction rates
 @app.get("/ext-rates")
 def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
-    csv_file = "extraction_rates.csv"
-
-    if not os.path.exists(csv_file):
-        raise HTTPException(status_code=404, detail="CSV file not found")
-
-    df = pd.read_csv(csv_file, delimiter='|')
-
-    # Filter by company (case-insensitive match)
-    filtered_df = df[df["Company"].str.upper() == company.upper()]
-    if filtered_df.empty:
-        raise HTTPException(status_code=404, detail=f"No data found for company '{company}'")
-
-    data = filtered_df.to_dict(orient="records")
-    return JSONResponse(content={"company": company, "data": data})
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        query = """
+        SELECT * FROM company_ext_rate 
+        WHERE UPPER(company) = UPPER(?)
+        """
+        
+        df = pd.read_sql(query, conn, params=(company,))
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No extraction rate data found for company {company}"
+            )
+            
+        data = df.to_dict(orient="records")
+        
+        return JSONResponse(
+            content={"company": company.upper(), "data": data}
+        )
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 # company description summary 
 @app.get("/company-summary")
@@ -306,8 +357,26 @@ def get_company_earnings(ticker):
 # mpob stats
 @app.get("/api/mpob")
 def get_mpob_data():
-    df = pd.read_csv("mpob_stats.csv", sep="|")
-    return df.to_dict(orient="records")
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        df = pd.read_sql("SELECT * FROM mpob_stats", conn)
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404, 
+                detail="No data found in mpob_stats table"
+            )
+            
+        return df.to_dict(orient="records")
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 # soy futures chart
 @app.get("/soy-price-data")
@@ -370,13 +439,37 @@ def get_fuel_prices():
     df = pd.read_csv(fuel_source)
 
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    df_filtered = df[df['date'] > '2020-12-31'][['date', 'diesel', 'diesel_eastmsia']]
+    df_filtered = df[df['date'] > '2022-12-31'][['date', 'diesel', 'diesel_eastmsia']]
     df_filtered = df_filtered[~((df_filtered['diesel'].fillna(0) == 0) & (df_filtered['diesel_eastmsia'].fillna(0) == 0))]
     df_filtered = df_filtered.drop_duplicates(subset='date', keep='first')
     df_filtered = df_filtered.sort_values(by='date')
     df_filtered['date'] = df_filtered['date'].dt.strftime('%Y-%m-%d')
 
     return df_filtered.to_dict(orient='records')
+
+# crude oil chart
+@app.get("/crude-oil-data")
+def get_crude_oil_price_data():
+    end = datetime.today()
+    start = end - timedelta(days=180)  # last 6 months
+    data = yf.download("CL=F", start=start, end=end, progress=False, proxy="")
+
+    dates = list(data.index.strftime('%Y-%m-%d')) 
+    data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
+    prices = data['Close'].tolist()
+    return {"dates": dates, "prices": prices}
+
+# brent oil chart
+@app.get("/brent-oil-data")
+def get_brent_oil_price_data():
+    end = datetime.today()
+    start = end - timedelta(days=180)  # last 6 months
+    data = yf.download("BZ=F", start=start, end=end, progress=False, proxy="")
+
+    dates = list(data.index.strftime('%Y-%m-%d')) 
+    data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
+    prices = data['Close'].tolist()
+    return {"dates": dates, "prices": prices}
 # commodities
 
 #export import
@@ -462,12 +555,34 @@ def get_shapefile():
 # milllayer
 @app.get("/mills")
 def get_mills():
-    mill_df = pd.read_csv("universal_mill_list.csv")
-    geometry = [Point(xy) for xy in zip(mill_df["Longitude"], mill_df["Latitude"])]
-    mill_gdf = gpd.GeoDataFrame(mill_df, geometry=geometry, crs="EPSG:4326")
-    
-    mill_geojson = mill_gdf.to_json()
-    return JSONResponse(content=json.loads(mill_geojson))
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        mill_df = pd.read_sql("SELECT * FROM universal_mill_list", conn)
+        
+        if mill_df.empty:
+            raise HTTPException(
+                status_code=404, 
+                detail="No mill data found in database"
+            )
+            
+        geometry = [Point(xy) for xy in zip(mill_df["Longitude"], mill_df["Latitude"])]
+        mill_gdf = gpd.GeoDataFrame(mill_df, geometry=geometry, crs="EPSG:4326")
+        mill_geojson = mill_gdf.to_json()
+        return JSONResponse(content=json.loads(mill_geojson))
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    except KeyError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Missing required column in database: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 # rfrlayer/cfrlyer/drrlayer
 @app.get("/aqueduct")

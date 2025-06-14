@@ -30,7 +30,7 @@
       <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
       <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
       <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
-      <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">MPOB Statistics</a>
+      <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Palm Oil Geography</a>
       <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Export Import</a>
       <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
       <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
@@ -153,33 +153,54 @@
       </div>
     </section>
 
-  <section id="commodities" class="tab-content hidden">
-    <div class="flex flex-col space-y-8">
-      <!-- MPOB Chart -->
-      <div class="h-[600px]">
-        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">MPOB Key Indicators</h3>
-        <canvas id="mpobChart" class="w-full h-full"></canvas>
-      </div>
+    <section id="commodities" class="tab-content hidden">
+      <div class="flex flex-col space-y-8">
+          <!-- Row 1 -->
+          <div class="flex flex-row space-x-8">
+              <!-- MPOB Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">MPOB Key Indicators</h3>
+                  <canvas id="mpobChart" class="w-full h-full"></canvas>
+              </div>
 
-      <!-- Soybean Chart -->
-      <div class="h-[600px]">
-        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Soybean Futures</h3>
-        <canvas id="soy-price-chart" class="w-full h-full"></canvas>
-      </div>
+              <!-- Soybean Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Soybean Futures</h3>
+                  <canvas id="soy-price-chart" class="w-full h-full"></canvas>
+              </div>
+          </div>
 
-      <!-- Fertilizer Chart -->
-      <div class="h-[600px]">
-        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Fertilizer Prices</h3>
-        <canvas id="fert-chart" class="w-full h-full"></canvas>
-      </div>
+          <!-- Row 2 -->
+          <div class="flex flex-row space-x-8">
+              <!-- Fertilizer Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Fertilizer Prices</h3>
+                  <canvas id="fert-chart" class="w-full h-full"></canvas>
+              </div>
 
-      <!-- Diesel Chart -->
-      <div class="h-[600px]">
-        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Diesel Prices</h3>
-        <canvas id="diesel-chart" class="w-full h-full"></canvas>
+              <!-- Diesel Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Diesel Prices</h3>
+                  <canvas id="diesel-chart" class="w-full h-full"></canvas>
+              </div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="flex flex-row space-x-8">
+              <!-- Crude Oil Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Crude Oil Prices</h3>
+                  <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
+              </div>
+
+              <!-- Brent Oil Chart -->
+              <div class="h-[600px] flex-1">
+                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Brent Oil Prices</h3>
+                  <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
+              </div>
+          </div>
       </div>
-    </div>
-  </section>
+    </section>
 
     <section id="mpobstats" class="tab-content hidden">
       <!-- Section Title -->
