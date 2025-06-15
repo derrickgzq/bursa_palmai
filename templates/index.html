@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bursa PalmAI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="/static/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="icon" href="/static/favicon.png" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <!-- Load AnyChart FIRST to prevent conflicts -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
-  <!-- Then load Chart.js with namespace protection -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // Protect Chart.js from AnyChart namespace conflicts
@@ -21,132 +19,176 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body class="font-sans bg-gray-50 text-black min-h-screen flex">
-
   <!-- Sidebar -->
   <aside class="w-64 min-h-screen sticky top-0 bg-white shadow-md p-6 flex flex-col justify-between">
-  <div>
-    <h2 class="text-2xl font-bold mb-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
-    <nav class="space-y-4" id="sidebar-nav">
-      <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
-      <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
-      <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
-      <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Palm Oil Geography</a>
-      <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Export Import</a>
-      <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
-      <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
-    </nav>
-  </div>
+    <div>
+      <h2 class="text-2xl font-bold mb-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
+      <nav class="space-y-4" id="sidebar-nav">
+        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
+        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
+        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Palm Oil Geography</a>
+        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Export Import</a>
+        <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
+        <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
+      </nav>
+    </div>
   </aside>
 
   <!-- Main content -->
   <div class="flex-1 p-6 max-w-5xl mx-auto">
-  <!-- Tab Contents -->
-  <section id="mainpage" class="tab-content px-4">
-    <header class="text-center mb-8">
-    <h1 class="text-5xl font-extrabold mb-2" style=" color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
-    <p class="text-lg mb-6" style=" color: #91b7a2; font-family: 'Inter', sans-serif">
-      An AI, data-powered Bursa Malaysia Plantation Dashboard App
-    </p>
+    <!-- Tab Contents -->
+    <section id="mainpage" class="tab-content px-4">
+      <header class="text-center mb-8">
+        <h1 class="text-5xl font-extrabold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
+        <p class="text-lg mb-6" style="color: #91b7a2; font-family: 'Inter', sans-serif;">
+          An AI, data-powered Bursa Malaysia Plantation Dashboard App
+        </p>
+      </header>
 
-    <!-- Chart Row -->
-    <div class="flex flex-wrap justify-center gap-6 mb-8">
-      <!-- Treemap container -->
-      <div class="w-full md:w-[48%] border rounded-lg shadow">
-        <div id="treemap" class="h-[400px]"></div>
-      </div>
-
-      <!-- KLCI Chart container -->
-      <div class="w-full md:w-[48%] border rounded-lg shadow">
-        <div class="relative h-[400px]">
-          <canvas id="klciChart" class="absolute inset-0 w-full h-full"></canvas>
+      <!-- Chart Row -->
+      <div class="flex flex-wrap justify-center gap-6 mb-8">
+        <!-- Treemap container -->
+        <div class="w-full md:w-[48%] border rounded-lg shadow">
+          <div id="treemap" class="h-[400px]"></div>
         </div>
-      </div>
-    </div>
-
-    <!-- Scorecards Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="scoreCards">
-      <!-- Cards will be injected by JS -->
-    </div>
-
-    <div class="flex justify-center space-x-4">
-      <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
-      <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
-    </div>
-
-    <!-- Section Heading -->
-    <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
-      Latest Palm Oil News
-    </h2>
-
-    <!-- Table -->
-    <div id="newsCards" class="flex flex-col gap-4 mt-8">
-      <!-- News cards will be dynamically injected here -->
-    </div>
-    </header>
-  </section>
-
-  <section id="company" class="tab-content hidden font-[Inter]">
-    <div x-show="activeTab === 'company'" x-init="initCompanyTab()" class="p-6 bg-white rounded-lg shadow-md">        
-      <!-- Header Section -->
-      <div class="mb-6">
-        <!-- Title and Dropdown in one row -->
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-          <h2 id="company-title" class="text-2xl font-bold" style=" color: #014422; font-family: 'Inter', sans-serif">
-            Kuala Lumpur Kepong Berhad
-          </h2>
-          <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
-            <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
-            <option value="IOI|1961.KL">IOI Corporation Berhad</option>
-            <option value="SDG|5285.KL">Sime Darby Guthrie</option>
-            <option value="FGV|5222.KL">FGV Holdings Berhad</option>
-          </select>
-        </div>
-
-        <!-- Description below -->
-        <p id="company-description" class="text-justify" style=" color: #345f3c; font-family: 'Inter', sans-serif"></p>
-      </div>
-
-      <!-- Charts Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Share Price Chart -->
-        <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Company Share Price</h3>
-          <div class="relative h-full w-full">
-            <canvas id="price-chart"></canvas>
-          </div>
-        </div>
-
-        <!-- Monthly Production Chart -->
-        <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Monthly Production</h3>
-          <div class="relative h-full w-full">
-            <canvas id="prod-chart"></canvas>
+        <!-- KLCI Chart container -->
+        <div class="w-full md:w-[48%] border rounded-lg shadow">
+          <div class="relative h-[400px]">
+            <canvas id="klciChart" class="absolute inset-0 w-full h-full"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- Quarterly Earnings Chart Section -->
-      <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
-        <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Company Quarterly Earnings</h3>
-        <div class="relative h-full w-full">
-          <canvas id="earnings-chart"></canvas>
-        </div>
+      <!-- Scorecards Row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="scoreCards">
+        <!-- Cards will be injected by JS -->
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <!-- Planted Area Chart -->
-        <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Planted Area</h3>
-          <div class="relative h-full w-full">
-            <canvas id="plt-area-chart"></canvas>
+      <div class="flex justify-center space-x-4">
+        <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
+        <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
+      </div>
+
+      <!-- Section Heading -->
+      <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+        Latest Palm Oil News
+      </h2>
+
+      <!-- Table -->
+      <div id="newsCards" class="flex flex-col gap-4 mt-8">
+        <!-- News cards will be dynamically injected here -->
+      </div>
+    </section>
+
+    <section id="company" class="tab-content hidden font-[Inter]">
+      <div class="p-6 bg-white rounded-lg shadow-md">
+        <!-- Header Section -->
+        <div class="mb-6">
+          <!-- Title and Dropdown in one row -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+            <h2 id="company-title" class="text-2xl font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
+              Kuala Lumpur Kepong Berhad
+            </h2>
+            <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
+              <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
+              <option value="IOI|1961.KL">IOI Corporation Berhad</option>
+              <option value="SDG|5285.KL">Sime Darby Guthrie</option>
+              <option value="FGV|5222.KL">FGV Holdings Berhad</option>
+            </select>
+          </div>
+          <!-- Description below -->
+          <p id="company-description" class="text-justify" style="color: #345f3c; font-family: 'Inter', sans-serif;"></p>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Share Price Chart -->
+          <div class="h-[400px] min-h-[300px]">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Company Share Price</h3>
+            <div class="relative h-full w-full">
+              <canvas id="price-chart"></canvas>
+            </div>
+          </div>
+          <!-- Monthly Production Chart -->
+          <div class="h-[400px] min-h-[300px]">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Monthly Production</h3>
+            <div class="relative h-full w-full">
+              <canvas id="prod-chart"></canvas>
+            </div>
           </div>
         </div>
 
-        <!-- Extraction Rate Chart -->
-        <div class="h-[400px] min-h-[300px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Extraction Rate</h3>
+        <!-- Quarterly Earnings Chart Section -->
+        <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Company Quarterly Earnings</h3>
           <div class="relative h-full w-full">
-            <canvas id="ext-rates-chart"></canvas>
+            <canvas id="earnings-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          <!-- Planted Area Chart -->
+          <div class="h-[400px] min-h-[300px]">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Planted Area</h3>
+            <div class="relative h-full w-full">
+              <canvas id="plt-area-chart"></canvas>
+            </div>
+          </div>
+          <!-- Extraction Rate Chart -->
+          <div class="h-[400px] min-h-[300px]">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Extraction Rate</h3>
+            <div class="relative h-full w-full">
+              <canvas id="ext-rates-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- In-depth Analysis Section -->
+        <div class="mt-8">
+          <h3 class="text-lg font-semibold mb-4" style="color: #345f3c; font-family: 'Inter', sans-serif;">In-depth analysis and revenue forecasting</h3>
+          <!-- Row of 2 divs side by side -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Left div - Revenue forecasting bar chart -->
+            <div class="h-[300px] min-h-[300px] bg-gray-50 rounded-lg p-4">
+              <h4 class="text-md font-medium mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Revenue Forecast</h4>
+              <div class="relative h-full w-full">
+                <canvas id="revenue-forecast-chart"></canvas>
+              </div>
+            </div>
+            <!-- Right div - 3 stacked divs -->
+            <div class="grid grid-rows-3 gap-4 h-[300px]">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 1</h4>
+                <p class="text-sm mt-2">Placeholder for first analysis point</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 2</h4>
+                <p class="text-sm mt-2">Placeholder for second analysis point</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 3</h4>
+                <p class="text-sm mt-2">Placeholder for third analysis point</p>
+              </div>
+            </div>
+          </div>
+          <!-- Revenue composition section -->
+          <div class="flex flex-wrap items-center gap-4 mt-6">
+            <span class="text-lg font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Revenue =</span>
+            <!-- FFB Weightage Card -->
+            <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
+              <h4 class="text-sm font-medium">FFB Weightage</h4>
+              <p class="text-xl font-bold mt-1">70%</p>
+            </div>
+            <!-- CPO Weightage Card -->
+            <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
+              <h4 class="text-sm font-medium">CPO Weightage</h4>
+              <p class="text-xl font-bold mt-1">20%</p>
+            </div>
+            <!-- PK Weightage Card -->
+            <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
+              <h4 class="text-sm font-medium">PK Weightage</h4>
+              <p class="text-xl font-bold mt-1">10%</p>
             </div>
           </div>
         </div>
@@ -155,127 +197,187 @@
 
     <section id="commodities" class="tab-content hidden">
       <div class="flex flex-col space-y-8">
-          <!-- Row 1 -->
-          <div class="flex flex-row space-x-8">
-              <!-- MPOB Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">MPOB Key Indicators</h3>
-                  <canvas id="mpobChart" class="w-full h-full"></canvas>
-              </div>
-
-              <!-- Soybean Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Soybean Futures</h3>
-                  <canvas id="soy-price-chart" class="w-full h-full"></canvas>
-              </div>
+        <!-- Row 1 -->
+        <div class="flex flex-row space-x-8">
+          <!-- MPOB Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
+            <canvas id="mpobChart" class="w-full h-full"></canvas>
           </div>
-
-          <!-- Row 2 -->
-          <div class="flex flex-row space-x-8">
-              <!-- Fertilizer Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Fertilizer Prices</h3>
-                  <canvas id="fert-chart" class="w-full h-full"></canvas>
-              </div>
-
-              <!-- Diesel Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Diesel Prices</h3>
-                  <canvas id="diesel-chart" class="w-full h-full"></canvas>
-              </div>
+          <!-- Soybean Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
+            <canvas id="soy-price-chart" class="w-full h-full"></canvas>
           </div>
-
-          <!-- Row 3 -->
-          <div class="flex flex-row space-x-8">
-              <!-- Crude Oil Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Crude Oil Prices</h3>
-                  <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
-              </div>
-
-              <!-- Brent Oil Chart -->
-              <div class="h-[600px] flex-1">
-                  <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif">Brent Oil Prices</h3>
-                  <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
-              </div>
+        </div>
+        <!-- Row 2 -->
+        <div class="flex flex-row space-x-8">
+          <!-- Fertilizer Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
+            <canvas id="fert-chart" class="w-full h-full"></canvas>
           </div>
+          <!-- Diesel Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
+            <canvas id="diesel-chart" class="w-full h-full"></canvas>
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div class="flex flex-row space-x-8">
+          <!-- Crude Oil Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
+            <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
+          </div>
+          <!-- Brent Oil Chart -->
+          <div class="h-[600px] flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
+            <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
+          </div>
+        </div>
       </div>
     </section>
 
     <section id="mpobstats" class="tab-content hidden">
       <!-- Section Title -->
       <div class="flex justify-between items-center mb-2">
-        <h2 class="text-2xl font-bold" style=" color: #345f3c; font-family: 'Inter', sans-serif">Palm Oil Map</h2>
-        
-        <!-- Slider -->
-        <div class="flex items-center space-x-2">
-          <label for="dateSlider" class="text-sm text-gray-700">Forecast Day:</label>
-          <input id="dateSlider" type="range" min="0" max="2" value="0" class="w-40">
-          <span id="selectedDate" class="text-sm text-gray-600">Day 1</span>
+        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Map</h2>
+      </div>
+      <!-- Map -->
+      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px;"></div>
+      <!-- Gap after map -->
+      <div class="my-8"></div>
+      <!-- Weather Forecast Section -->
+      <div class="my-8 p-6 bg-white rounded-lg shadow-md" style="font-family: 'Inter', sans-serif;">
+        <!-- Title + Slider Row -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <!-- Title -->
+          <h3 class="text-lg font-semibold" style="color: #345f3c;">
+            7-Day Weather Forecast Summary
+            <span title="Shows weather distribution across palm oil concessions">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+              </svg>
+            </span>
+          </h3>
+          <!-- Slider + Date -->
+          <div class="flex-1 md:max-w-md">
+            <input
+              type="range"
+              id="date-slider"
+              min="0"
+              max="6"
+              value="0"
+              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            >
+            <div id="selected-date" class="text-center font-medium mt-1" style="color: #345f3c;">2025-06-14</div>
+          </div>
+        </div>
+        <!-- Scorecards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Tiada Hujan / Cerah -->
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="flex items-center p-4" style="background-color: #f8fff8; border-left: 4px solid #2ecc71;">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-600">Cerah</h4>
+                <p id="tiada-hujan-value" class="text-2xl font-bold mt-1" style="color: #2ecc71;">114</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #2ecc71;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+          <!-- Berangin -->
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="flex items-center p-4" style="background-color: #f8f9ff; border-left: 4px solid #dad01a;">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-600">Berangin</h4>
+                <p id="berangin-value" class="text-2xl font-bold mt-1" style="color: #dad01a;">0</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #dad01a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+              </svg>
+            </div>
+          </div>
+          <!-- Hujan -->
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="flex items-center p-4" style="background-color: #faf5ff; border-left: 4px solid #cc6e0a;">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-600">Hujan</h4>
+                <p id="hujan-value" class="text-2xl font-bold mt-1" style="color: #cc6e0a;">226</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #cc6e0a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </div>
+          </div>
+          <!-- Ribut Petir -->
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="flex items-center p-4" style="background-color: #fff5f5; border-left: 4px solid #e74c3c;">
+              <div class="flex-1">
+                <h4 class="font-medium text-gray-600">Ribut Petir</h4>
+                <p id="ribut-petir-value" class="text-2xl font-bold mt-1" style="color: #e74c3c;">452</p>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #e74c3c;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Map -->
-      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px;"></div>
-
-      <!-- Gap after map -->
-      <div class="my-8"></div>
-
       <!-- Charts Section -->
       <div class="space-y-10">
-        
-      <!-- Chart 1: Coastal Flood Risk -->
-      <div>
-        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
-          Coastal Flood Risk Composition
-          <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-            </svg>
-          </span>
-        </h3>
-        <canvas id="cfr-bar-chart"></canvas>
+        <!-- Chart 1: Coastal Flood Risk -->
+        <div>
+          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+            Coastal Flood Risk Composition
+            <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+              </svg>
+            </span>
+          </h3>
+          <canvas id="cfr-bar-chart"></canvas>
+        </div>
+        <!-- Chart 2: Riverine Flood Risk -->
+        <div>
+          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+            Riverine Flood Risk Composition
+            <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+              </svg>
+            </span>
+          </h3>
+          <canvas id="rfr-bar-chart"></canvas>
+        </div>
+        <!-- Chart 3: Drought Risk -->
+        <div>
+          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+            Drought Risk Composition
+            <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+              </svg>
+            </span>
+          </h3>
+          <canvas id="drr-bar-chart"></canvas>
+        </div>
       </div>
-
-      <!-- Chart 2: Riverine Flood Risk -->
-      <div>
-        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
-          Riverine Flood Risk Composition
-          <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-            </svg>
-          </span>
-        </h3>
-        <canvas id="rfr-bar-chart"></canvas>
-      </div>
-
-      <!-- Chart 3: Drought Risk -->
-      <div>
-        <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">
-          Drought Risk Composition
-          <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-grey-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-            </svg>
-          </span>
-        </h3>
-        <canvas id="drr-bar-chart"></canvas>
-      </div>
-    </div>
-  </section>
+    </section>
 
     <section id="exportimport" class="tab-content hidden">
       <div class="flex flex-col space-y-8">
         <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
         <div class="h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
           <canvas id="4th-chart" class="w-full h-full"></canvas>
         </div>
-
         <!-- Chemical and Related Products NEC Chart -->
         <div class="h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style=" color: #345f3c; font-family: 'Inter', sans-serif">Chemical and Related Products NEC Export and Import</h3>
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Chemical and Related Products NEC Export and Import</h3>
           <canvas id="5th-chart" class="w-full h-full"></canvas>
         </div>
       </div>
@@ -293,14 +395,11 @@
           <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-blue-200 overflow-hidden mr-6">
             <img src="static/my_pfp.jpg" alt="Derrick Gan" class="w-full h-full object-cover">
           </div>
-          
           <!-- Name -->
           <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Derrick Gan</h1>
         </div>
-
         <!-- Title -->
         <p class="text-xl md:text-2xl text-blue-600 font-medium mb-4">Data Engineer at Maybank</p>
-
         <!-- Details -->
         <div class="flex items-center text-lg text-gray-600 space-x-4">
           <span>Gym Enthusiast</span>
@@ -311,12 +410,10 @@
     </section>
 
     <footer class="mt-10 text-center text-sm text-gray-700">
-      &copy; 2025 Bursa PalmAI. All rights reserved.
+      © 2025 Bursa PalmAI. All rights reserved.
     </footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
   <script src="/static/script.js"></script>
 </body>
 </html>

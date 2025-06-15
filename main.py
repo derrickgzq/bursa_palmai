@@ -18,6 +18,7 @@ import requests
 import geopandas as gpd
 import json
 import sqlite3
+import geopandas as gpd
 
 SQLITE_DB = "bursa_palmai_database.db"
 
@@ -37,6 +38,57 @@ app.add_middleware(
     allow_methods=["*"],                     # Allow all HTTP methods
     allow_headers=["*"],                     # Allow all headers
 )
+
+#define weather forecast comp
+response = requests.get('https://api.data.gov.my/weather/forecast')
+wfcast_json = response.json()
+wfcast_df = pd.json_normalize(wfcast_json)
+
+wfcast_df = wfcast_df[['date', 'summary_forecast', 'min_temp', 'max_temp', 'location.location_name']]
+wfcast_df.rename(columns={'location.location_name': 'location_name'}, inplace=True)
+points_df = pd.read_csv('weather_station_base.csv')
+
+rain_table = wfcast_df.merge(points_df, on='location_name', how='left')
+weather_gdf = gpd.GeoDataFrame(
+    rain_table,
+    geometry=gpd.points_from_xy(rain_table.Longitude, rain_table.Latitude),
+    crs="EPSG:4326"
+)
+weather_gdf['date'] = pd.to_datetime(weather_gdf['date'])
+
+earliest_date = weather_gdf['date'].min()
+
+concessions = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp").to_crs("EPSG:4326")
+concessions = concessions[concessions['country'].isin(['Malaysia'])]
+
+station_points = weather_gdf[['location_name', 'Longitude', 'Latitude']].drop_duplicates()
+station_points['geometry'] = gpd.points_from_xy(station_points.Longitude, station_points.Latitude)
+station_gdf = gpd.GeoDataFrame(station_points, geometry='geometry', crs='EPSG:4326')
+
+# Find nearest station and calculate distance
+def get_nearest_station_info(row):
+    concession_centroid = row.geometry.centroid
+    nearest_station = station_gdf.geometry.distance(concession_centroid).sort_values().index[0]
+    nearest_row = station_gdf.loc[nearest_station]
+    
+    # Compute geodesic distance in km
+    dist_km = geodesic(
+        (concession_centroid.y, concession_centroid.x),
+        (nearest_row.Latitude, nearest_row.Longitude)
+    ).km
+    
+    return pd.Series({
+        'nearest_station': nearest_row.location_name,
+        'distance_km': round(dist_km, 2)
+    })
+
+# Apply to concessions
+concessions[['nearest_station', 'distance_km']] = concessions.apply(get_nearest_station_info, axis=1)
+
+# Merge 7-day forecast from the matched station
+concessions_forecast = pd.merge(concessions, weather_gdf, left_on='nearest_station', right_on='location_name', how='left')
+concessions_forecast_comp = concessions_forecast.reset_index(drop=True)
+#define weather forecast comp
 
 # mainpage
 # market cap aka treemap
@@ -344,11 +396,18 @@ def get_company_earnings(ticker):
         quarter_str = row["Quarter"].strftime("%Y-%m-%d") if isinstance(row["Quarter"], pd.Timestamp) else str(row["Quarter"])
 
         data.append({
-            "Quarter": quarter_str,
-            "Total Revenue": round(total_revenue / 1e6, 2),
-            "Net Income": round(net_income / 1e6, 2),
-            "Operating Margin": round(margin, 2)
+        "Quarter": quarter_str,
+        "Quarter_Date": row["Quarter"] if isinstance(row["Quarter"], pd.Timestamp) else pd.to_datetime(row["Quarter"]),
+        "Total Revenue": round(total_revenue / 1e6, 2),
+        "Net Income": round(net_income / 1e6, 2),
+        "Operating Margin": round(margin, 2)
         })
+    # Sort the data by Quarter_Date in chronological order
+    data = sorted(data, key=lambda x: x["Quarter_Date"])
+
+    # Remove the temporary Quarter_Date field if you don't need it
+    for item in data:
+        item.pop("Quarter_Date", None)
 
     return JSONResponse(content={"company": ticker, "data": data})
 # company
@@ -505,7 +564,38 @@ def serve_index():
 # export import
 
 # mpob stats
-# concessions with 3-days weather forecast
+# concessions with 7-days weather forecast
+@app.get("/weather_forecast_summary")
+async def weather_forecast_summary():
+    # Convert date to datetime and make a copy to avoid modifying the original
+    df = concessions_forecast_comp.copy()
+    df['date'] = pd.to_datetime(df['date'])
+
+    def categorize_weather(weather):
+        weather = str(weather).lower()  # Ensure string type
+        if 'hujan' in weather and 'tiada' not in weather:
+            return 'Hujan'
+        elif 'ribut petir' in weather:
+            return 'Ribut Petir'
+        elif 'berangin' in weather:
+            return 'Berangin'
+        elif 'tiada hujan' in weather:
+            return 'Tiada Hujan'
+        return weather
+
+    df['summary_forecast'] = df['summary_forecast'].apply(categorize_weather)
+    
+    # Group and reshape data
+    weather_fc_df = (
+        df.groupby(['date', 'summary_forecast'])
+        .size()
+        .unstack(fill_value=0)
+        .reset_index()
+    )
+    
+    # Convert Timestamps to ISO format strings
+    weather_fc_df['date'] = weather_fc_df['date'].apply(lambda x: x.isoformat())
+    return weather_fc_df.to_dict(orient='records')
 
 # weather station layer
 @app.get("/weather_stations")
