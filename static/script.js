@@ -802,16 +802,232 @@ let eximChart2 = null;
 
 async function initExportImport() {
   try {
+    // Fetch trade data
+    const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
+    if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
+    const tradeData = await tradeResponse.json();
+
+    // Check if vis.js is loaded
+    if (typeof vis === 'undefined') {
+      console.error('vis.js library is not loaded. Please ensure the vis-network script is included.');
+      const container = document.getElementById("graphtheory");
+      if (container) {
+        container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: Unable to load trade network visualization. Please try again later.</p>';
+      }
+      return; // Skip graph rendering but continue with other charts
+    }
+
+    // Filter out invalid data and exclude 'World' to reduce graph size
+    const validData = tradeData.filter(row => 
+      row.reporterISO && row.partnerISO && 
+      row.reporterISO !== 'World' && row.partnerISO !== 'World' && 
+      ['X', 'M'].includes(row.reporterDesc) && 
+      !isNaN(Number(row.fobvalue)) && 
+      !isNaN(Number(row.refMonth))
+    );
+
+    // Extract unique years from refMonth (as numbers)
+    const years = [...new Set(validData.map(row => Number(row.refMonth)))].sort((a, b) => a - b);
+    const yearSlider = document.getElementById("yearSlider");
+    const selectedYearEl = document.getElementById("selectedYear");
+    const physicsToggle = document.getElementById("physicsToggle");
+    
+    if (!yearSlider || !selectedYearEl || years.length === 0) {
+      console.error('Year slider or data missing');
+      const container = document.getElementById("graphtheory");
+      if (container) {
+        container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: No valid years available for filtering.</p>';
+      }
+      return;
+    }
+
+    // Set up slider
+    yearSlider.min = 0;
+    yearSlider.max = years.length - 1;
+    yearSlider.value = years.length - 1; // Default to latest year
+    selectedYearEl.textContent = years[years.length - 1];
+
+    // Store node positions and network instance
+    let nodePositions = {};
+    let network = null;
+
+    // Function to render graph and table for a given year
+    const renderGraphAndTable = (selectedYear) => {
+      // Filter data by selected year and limit to top 50 edges by fobvalue
+      let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
+      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 50);
+
+      // Determine trade types for each reporterISO
+      const tradeTypes = {};
+      filteredData.forEach(row => {
+        const reporter = row.reporterISO;
+        if (!tradeTypes[reporter]) {
+          tradeTypes[reporter] = { hasExport: false, hasImport: false };
+        }
+        if (row.reporterDesc === 'X') {
+          tradeTypes[reporter].hasExport = true;
+        } else if (row.reporterDesc === 'M') {
+          tradeTypes[reporter].hasImport = true;
+        }
+      });
+
+      // Create unique nodes from reporterISO and partnerISO
+      const nodeSet = new Set();
+      filteredData.forEach(row => {
+        nodeSet.add(row.reporterISO);
+        nodeSet.add(row.partnerISO);
+      });
+      const nodes = Array.from(nodeSet).map((id, index) => {
+        let backgroundColor = '#345f3c'; // Default color
+        if (tradeTypes[id]) {
+          const { hasExport, hasImport } = tradeTypes[id];
+          if (hasExport && !hasImport) {
+            backgroundColor = '#00FF00'; // Green for export only
+          } else if (!hasExport && hasImport) {
+            backgroundColor = '#FF0000'; // Red for import only
+          } else if (hasExport && hasImport) {
+            backgroundColor = '#FFFF00'; // Yellow for both
+          }
+        }
+        return {
+          id: index + 1,
+          label: id,
+          title: id,
+          ...(nodePositions[id] ? { x: nodePositions[id].x, y: nodePositions[id].y } : {}),
+          color: { background: backgroundColor, border: '#2e4f36' }
+        };
+      });
+
+      // Calculate total nodes and total FOB value
+      const totalNodes = nodeSet.size;
+      const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0).toFixed(2);
+
+      // Update table with stats
+      const totalNodesEl = document.getElementById("totalNodes");
+      const totalFobValueEl = document.getElementById("totalFobValue");
+      if (totalNodesEl) totalNodesEl.textContent = totalNodes;
+      if (totalFobValueEl) totalFobValueEl.textContent = Number(totalFobValue).toLocaleString('en-MY', { style: 'currency', currency: 'MYR' });
+
+      // Map ISO codes to node IDs
+      const isoToNodeId = {};
+      nodes.forEach(node => {
+        isoToNodeId[node.label] = node.id;
+      });
+
+      // Create edges with thickness based on fobvalue
+      const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1); // Avoid division by zero
+      const edges = filteredData.map(row => {
+        const isExport = row.reporterDesc === 'X';
+        const isImport = row.reporterDesc === 'M';
+        return {
+          from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
+          to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
+          arrows: 'to',
+          width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
+          title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`
+        };
+      }).filter(edge => edge.from && edge.to);
+
+      // Debug: Log graph details
+      console.log(`Year ${selectedYear}: ${nodes.length} nodes, ${edges.length} edges, Total FOB: ${totalFobValue}`);
+
+      // Create network
+      const container = document.getElementById("graphtheory");
+      if (!container) throw new Error("Graph theory container not found");
+      container.innerHTML = ''; // Clear previous graph
+      const graphData = { nodes: nodes, edges: edges };
+      const options = {
+        nodes: {
+          shape: 'dot',
+          size: 20,
+          font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
+        },
+        edges: {
+          arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+          color: { color: '#345f3c' },
+          smooth: { type: 'continuous' }
+        },
+        height: '100%',
+        width: '100%',
+        physics: {
+          enabled: physicsToggle ? physicsToggle.checked : false,
+          forceAtlas2Based: {
+            gravitationalConstant: -150,
+            centralGravity: 0.003,
+            springLength: 200,
+            springConstant: 0.02
+          },
+          maxVelocity: 20,
+          solver: 'forceAtlas2Based',
+          stabilization: {
+            enabled: true,
+            iterations: 1500,
+            updateInterval: 25
+          }
+        }
+      };
+      network = new vis.Network(container, graphData, options);
+
+      // Update node positions after stabilization
+      network.on('stabilized', () => {
+        nodes.forEach(node => {
+          const pos = network.getPositions([node.id])[node.id];
+          if (pos) {
+            nodePositions[node.label] = { x: pos.x, y: pos.y };
+          }
+        });
+        console.log(`Graph stabilized for year ${selectedYear}`);
+        network.stopSimulation();
+      });
+
+      // Force stop physics after 2 seconds
+      setTimeout(() => {
+        if (network) {
+          network.stopSimulation();
+          console.log(`Physics stopped for year ${selectedYear} after timeout`);
+        }
+      }, 2000);
+    };
+
+    // Initial render with the latest year
+    renderGraphAndTable(years[years.length - 1]);
+
+    // Slider event listener
+    yearSlider.addEventListener('input', () => {
+      const selectedIndex = parseInt(yearSlider.value);
+      selectedYearEl.textContent = years[selectedIndex];
+      renderGraphAndTable(years[selectedIndex]);
+    });
+
+    // Physics toggle event listener
+    if (physicsToggle) {
+      physicsToggle.addEventListener('change', () => {
+        if (network) {
+          network.setOptions({ physics: { enabled: physicsToggle.checked } });
+          if (!physicsToggle.checked) {
+            network.stopSimulation();
+            console.log('Physics disabled via toggle');
+          } else {
+            console.log('Physics enabled via toggle');
+          }
+        }
+        renderGraphAndTable(years[parseInt(yearSlider.value)]);
+      });
+    } else {
+      console.warn('Physics toggle not found; defaulting to static graph');
+    }
+
+    // Existing export/import charts
     const res = await fetch(BACKEND_URL + "/exim-data");
     if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
-    const data = await res.json();
+    const chartData = await res.json(); // Renamed from 'data' to 'chartData'
 
-    const labels = data.date;
-    const animal_exports = data.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
-    const animal_imports = data.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
+    const labels = chartData.date;
+    const animal_exports = chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
+    const animal_imports = chartData.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
     const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
-    const chemical_exports = data.exports_Chemical_and_Related_Products_NEC;
-    const chemical_imports = data.imports_Chemical_and_Related_Products_NEC;
+    const chemical_exports = chartData.exports_Chemical_and_Related_Products_NEC;
+    const chemical_imports = chartData.imports_Chemical_and_Related_Products_NEC;
     const chemical_net = chemical_exports.map((val, i) => val - chemical_imports[i]);
 
     const ctx1 = document.getElementById("4th-chart")?.getContext("2d");

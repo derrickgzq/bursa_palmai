@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -370,11 +371,46 @@
 
     <section id="exportimport" class="tab-content hidden">
       <div class="flex flex-col space-y-8">
+        <!-- Graph theory visualization and stats table -->
+        <div class="h-[600px] flex flex-row space-x-4">
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Trade Network</h3>
+            <div class="flex items-center mb-2">
+              <label for="yearSlider" class="mr-2 text-gray-800" style="font-family: 'Inter', sans-serif;">Year:</label>
+              <input type="range" id="yearSlider" class="w-1/2" min="0" max="0" value="0">
+              <span id="selectedYear" class="ml-2 text-gray-800" style="font-family: 'Inter', sans-serif;">-</span>
+            </div>
+            <div id="graphtheory" class="w-full h-[500px]"></div>
+          </div>
+          <div class="w-1/4">
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Network Statistics</h3>
+            <table id="graphStats" class="w-full border-collapse" style="font-family: 'Inter', sans-serif;">
+              <thead>
+                <tr style="background-color: #345f3c; color: white;">
+                  <th class="p-2 text-left">Metric</th>
+                  <th class="p-2 text-right">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 text-gray-800">Total Nodes</td>
+                  <td id="totalNodes" class="p-2 text-right text-gray-800">-</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 text-gray-800">Total Value (RM)</td>
+                  <td id="totalFobValue" class="p-2 text-right text-gray-800">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
         <div class="h-[600px]">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
           <canvas id="4th-chart" class="w-full h-full"></canvas>
         </div>
+
         <!-- Chemical and Related Products NEC Chart -->
         <div class="h-[600px]">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Chemical and Related Products NEC Export and Import</h3>

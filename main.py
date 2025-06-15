@@ -532,6 +532,17 @@ def get_brent_oil_price_data():
 # commodities
 
 #export import
+#graph theory
+@app.get("/trade-data")
+async def get_trade_data():
+    conn = sqlite3.connect(SQLITE_DB)
+    query_result = pd.read_sql("SELECT * FROM test_gt", conn)
+    dff = query_result[['reporterISO', 'partnerISO', 'reporterDesc', 'refMonth', 'cmdCode', 'fobvalue']]
+    data = dff.to_dict(orient="records")
+    conn.close()
+    
+    return JSONResponse(content=data)
+
 #export import and trade surplus/deficit chart
 @app.get("/exim-data")
 def get_exim_data():
