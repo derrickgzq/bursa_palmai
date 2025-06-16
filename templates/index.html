@@ -28,8 +28,8 @@
         <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
         <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
         <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
-        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Palm Oil Geography</a>
-        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Export Import</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Geography</a>
+        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Trades</a>
         <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
         <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
       </nav>
@@ -201,12 +201,12 @@
         <!-- Row 1 -->
         <div class="flex flex-row space-x-8">
           <!-- MPOB Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
             <canvas id="mpobChart" class="w-full h-full"></canvas>
           </div>
           <!-- Soybean Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
             <canvas id="soy-price-chart" class="w-full h-full"></canvas>
           </div>
@@ -214,12 +214,12 @@
         <!-- Row 2 -->
         <div class="flex flex-row space-x-8">
           <!-- Fertilizer Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
             <canvas id="fert-chart" class="w-full h-full"></canvas>
           </div>
           <!-- Diesel Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
             <canvas id="diesel-chart" class="w-full h-full"></canvas>
           </div>
@@ -227,12 +227,12 @@
         <!-- Row 3 -->
         <div class="flex flex-row space-x-8">
           <!-- Crude Oil Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
             <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
           </div>
           <!-- Brent Oil Chart -->
-          <div class="h-[600px] flex-1">
+          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
             <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
             <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
           </div>
@@ -331,7 +331,7 @@
       <!-- Charts Section -->
       <div class="space-y-10">
         <!-- Chart 1: Coastal Flood Risk -->
-        <div>
+        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
           <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
             Coastal Flood Risk Composition
             <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
@@ -342,8 +342,9 @@
           </h3>
           <canvas id="cfr-bar-chart"></canvas>
         </div>
+
         <!-- Chart 2: Riverine Flood Risk -->
-        <div>
+        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
           <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
             Riverine Flood Risk Composition
             <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
@@ -354,8 +355,9 @@
           </h3>
           <canvas id="rfr-bar-chart"></canvas>
         </div>
+
         <!-- Chart 3: Drought Risk -->
-        <div>
+        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
           <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
             Drought Risk Composition
             <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
@@ -372,9 +374,9 @@
     <section id="exportimport" class="tab-content hidden">
       <div class="flex flex-col space-y-8">
         <!-- Graph theory visualization and stats table -->
-        <div class="h-[600px] flex flex-row space-x-4">
+        <div class="h-[600px] flex flex-row space-x-4 bg-white rounded-lg shadow-md m-2 p-4">
           <div class="flex-1">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Trade Network</h3>
+            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil and Products Trade Network</h3>
             <div class="flex items-center mb-2">
               <label for="yearSlider" class="mr-2 text-gray-800" style="font-family: 'Inter', sans-serif;">Year:</label>
               <input type="range" id="yearSlider" class="w-1/2" min="0" max="0" value="0">
@@ -383,7 +385,24 @@
             <div id="graphtheory" class="w-full h-[500px]"></div>
           </div>
           <div class="w-1/4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Network Statistics</h3>
+            <div class="mb-4">
+              <h4 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Node Legend</h4>
+              <ul style="font-family: 'Inter', sans-serif; list-style: none; padding: 0;">
+                <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
+                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #BCB98A; margin-right: 8px;"></span>
+                  <span class="text-gray-800">Export Only</span>
+                </li>
+                <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
+                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #345f3c; margin-right: 8px;"></span>
+                  <span class="text-gray-800">Import Only</span>
+                </li>
+                <li style="display: inline-flex; align-items: center;">
+                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #fff8dc; margin-right: 8px;"></span>
+                  <span class="text-gray-800">Both Import and Export</span>
+                </li>
+              </ul>
+            </div>
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Overall Statistics</h3>
             <table id="graphStats" class="w-full border-collapse" style="font-family: 'Inter', sans-serif;">
               <thead>
                 <tr style="background-color: #345f3c; color: white;">
@@ -393,11 +412,11 @@
               </thead>
               <tbody>
                 <tr class="border-b">
-                  <td class="p-2 text-gray-800">Total Nodes</td>
+                  <td class="p-2 text-gray-800">Total Countries</td>
                   <td id="totalNodes" class="p-2 text-right text-gray-800">-</td>
                 </tr>
                 <tr class="border-b">
-                  <td class="p-2 text-gray-800">Total Value (RM)</td>
+                  <td class="p-2 text-gray-800">Total Value Traded (USD)</td>
                   <td id="totalFobValue" class="p-2 text-right text-gray-800">-</td>
                 </tr>
               </tbody>
@@ -406,14 +425,14 @@
         </div>
 
         <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
-        <div class="h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Animal, Vegetable Oils, Fats, and Waxes Export and Import</h3>
+        <div class="h-[600px] bg-white rounded-lg shadow-md m-2 p-4">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Animal, Vegetable Oils, Fats and Waxes Export and Import</h3>
           <canvas id="4th-chart" class="w-full h-full"></canvas>
         </div>
 
         <!-- Chemical and Related Products NEC Chart -->
-        <div class="h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Chemical and Related Products NEC Export and Import</h3>
+        <div class="h-[600px] bg-white rounded-lg shadow-md m-2 p-4">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Chemical and Related Products NEC Export and Import</h3>
           <canvas id="5th-chart" class="w-full h-full"></canvas>
         </div>
       </div>

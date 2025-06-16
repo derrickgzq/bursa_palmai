@@ -247,12 +247,12 @@ async function fetchCompanyData(company) {
 
 function getColor(index) {
   const colors = [
-    "rgba(0, 50, 31, 0.7)",
-    "rgba(1, 68, 34, 0.7)",
-    "rgba(52, 95, 60, 0.7)",
-    "rgba(127, 154, 131, 0.7)",
-    "rgba(137, 154, 92, 0.7)",
-    "rgba(188, 185, 138, 0.7)"
+    "rgba(0, 50, 31, 1)",
+    "rgba(1, 68, 34, 1)",
+    "rgba(52, 95, 60, 1)",
+    "rgba(127, 154, 131, 1)",
+    "rgba(137, 154, 92, 1)",
+    "rgba(188, 185, 138, 1)"
   ];
   return colors[index % colors.length];
 }
@@ -316,8 +316,8 @@ function drawPriceChart(data, ticker) {
       datasets: [{
         label: `${ticker} Closing Price`,
         data: prices,
-        borderColor: 'rgba(52, 95, 60, 0.7)',
-        backgroundColor: 'rgba(0, 50, 31, 0.7)',
+        borderColor: 'rgba(52, 95, 60, 1)',
+        backgroundColor: 'rgba(0, 50, 31, 1)',
         fill: true,
         tension: 0.3
       }]
@@ -381,7 +381,7 @@ function drawEarningsChart(data) {
           data: margin,
           type: "line",
           borderColor: "rgba(188, 185, 138, 1)",
-          backgroundColor: "rgba(188, 185, 138, 0.2)",
+          backgroundColor: "rgba(188, 185, 138, 1)",
           borderWidth: 2,
           fill: false,
           yAxisID: 'y1'
@@ -563,8 +563,7 @@ async function initCommodities() {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: "top" },
-            title: { display: true, text: "Monthly MPOB Key Indicators" }
+            legend: { position: "top" }
           },
           scales: {
             x: { title: { display: true, text: "Month Year" } },
@@ -610,8 +609,7 @@ async function initCommodities() {
           y: { title: { display: true, text: "Price (USD)" }, ticks: { color: "black" }, grid: { display: false } }
         },
         plugins: {
-          legend: { labels: { color: "black" } },
-          title: { display: true, text: "Soybean Oil Futures (Last 6 Months)", color: "rgba(52, 95, 60, 0.7)", font: { size: 18 } }
+          legend: { labels: { color: "black" } }
         }
       }
     });
@@ -727,13 +725,6 @@ async function initCommodities() {
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
-            title: {
-              display: true,
-              text: 'Crude Oil Futures',
-              color: '#00321f',
-              font: { family: 'Inter', size: 16, weight: 'bold' },
-              padding: { top: 10, bottom: 20 }
-            },
             tooltip: {
               bodyFont: { family: 'Inter', size: 12 },
               titleFont: { family: 'Inter', size: 14, weight: 'bold' }
@@ -774,13 +765,6 @@ async function initCommodities() {
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
-            title: {
-              display: true,
-              text: 'Brent Oil Futures',
-              color: '#00321f',
-              font: { family: 'Inter', size: 16, weight: 'bold' },
-              padding: { top: 10, bottom: 20 }
-            },
             tooltip: {
               bodyFont: { family: 'Inter', size: 12 },
               titleFont: { family: 'Inter', size: 14, weight: 'bold' }
@@ -806,6 +790,9 @@ async function initExportImport() {
     const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
     if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
     const tradeData = await tradeResponse.json();
+
+    // Debug: Log trade data sample
+    console.log('Trade Data Sample (first 5 rows):', tradeData.slice(0, 5));
 
     // Check if vis.js is loaded
     if (typeof vis === 'undefined') {
@@ -851,25 +838,49 @@ async function initExportImport() {
     let nodePositions = {};
     let network = null;
 
+    // Helper function to format fobvalue compactly
+    const formatFobValue = (value) => {
+      if (value >= 1_000_000_000) {
+        return `USD ${(value / 1_000_000_000).toFixed(2)}B`;
+      } else if (value >= 1_000_000) {
+        return `USD ${(value / 1_000_000).toFixed(2)}M`;
+      } else if (value >= 1_000) {
+        return `USD ${(value / 1_000).toFixed(2)}K`;
+      }
+      return `USD ${value.toFixed(2)}`;
+    };
+
     // Function to render graph and table for a given year
     const renderGraphAndTable = (selectedYear) => {
       // Filter data by selected year and limit to top 50 edges by fobvalue
       let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
-      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 50);
+      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 100);
 
-      // Determine trade types for each reporterISO
+      // Debug: Log filtered data sample
+      console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
+
+      // Determine trade types for each country (reporterISO and partnerISO)
       const tradeTypes = {};
       filteredData.forEach(row => {
         const reporter = row.reporterISO;
+        const partner = row.partnerISO;
         if (!tradeTypes[reporter]) {
           tradeTypes[reporter] = { hasExport: false, hasImport: false };
         }
+        if (!tradeTypes[partner]) {
+          tradeTypes[partner] = { hasExport: false, hasImport: false };
+        }
         if (row.reporterDesc === 'X') {
           tradeTypes[reporter].hasExport = true;
+          tradeTypes[partner].hasImport = true; // Partner imports what reporter exports
         } else if (row.reporterDesc === 'M') {
           tradeTypes[reporter].hasImport = true;
+          tradeTypes[partner].hasExport = true; // Partner exports what reporter imports
         }
       });
+
+      // Debug: Log trade types
+      console.log(`Trade Types for ${selectedYear}:`, tradeTypes);
 
       // Create unique nodes from reporterISO and partnerISO
       const nodeSet = new Set();
@@ -882,11 +893,11 @@ async function initExportImport() {
         if (tradeTypes[id]) {
           const { hasExport, hasImport } = tradeTypes[id];
           if (hasExport && !hasImport) {
-            backgroundColor = '#00FF00'; // Green for export only
+            backgroundColor = '#BCB98A'; // Green for export only
           } else if (!hasExport && hasImport) {
-            backgroundColor = '#FF0000'; // Red for import only
+            backgroundColor = '#345f3c'; // Red for import only
           } else if (hasExport && hasImport) {
-            backgroundColor = '#FFFF00'; // Yellow for both
+            backgroundColor = '#fff8dc'; // Yellow for both
           }
         }
         return {
@@ -900,13 +911,13 @@ async function initExportImport() {
 
       // Calculate total nodes and total FOB value
       const totalNodes = nodeSet.size;
-      const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0).toFixed(2);
+      const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
 
       // Update table with stats
       const totalNodesEl = document.getElementById("totalNodes");
       const totalFobValueEl = document.getElementById("totalFobValue");
       if (totalNodesEl) totalNodesEl.textContent = totalNodes;
-      if (totalFobValueEl) totalFobValueEl.textContent = Number(totalFobValue).toLocaleString('en-MY', { style: 'currency', currency: 'MYR' });
+      if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
 
       // Map ISO codes to node IDs
       const isoToNodeId = {};
@@ -916,15 +927,18 @@ async function initExportImport() {
 
       // Create edges with thickness based on fobvalue
       const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1); // Avoid division by zero
-      const edges = filteredData.map(row => {
+      const edges = filteredData.map((row, index) => {
         const isExport = row.reporterDesc === 'X';
         const isImport = row.reporterDesc === 'M';
         return {
+          id: `edge-${index}`, // Unique ID for edges
           from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
           to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
           arrows: 'to',
           width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
-          title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`
+          title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`,
+          label: '', // Initial empty label
+          fobvalue: row.fobvalue // Store for hover
         };
       }).filter(edge => edge.from && edge.to);
 
@@ -935,7 +949,7 @@ async function initExportImport() {
       const container = document.getElementById("graphtheory");
       if (!container) throw new Error("Graph theory container not found");
       container.innerHTML = ''; // Clear previous graph
-      const graphData = { nodes: nodes, edges: edges };
+      const graphData = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
       const options = {
         nodes: {
           shape: 'dot',
@@ -944,29 +958,61 @@ async function initExportImport() {
         },
         edges: {
           arrows: { to: { enabled: true, scaleFactor: 0.5 } },
-          color: { color: '#345f3c' },
-          smooth: { type: 'continuous' }
+          color: { color: '#3b3c36' },
+          smooth: { type: 'continuous' },
+          font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
         },
         height: '100%',
         width: '100%',
         physics: {
-          enabled: physicsToggle ? physicsToggle.checked : false,
-          forceAtlas2Based: {
-            gravitationalConstant: -150,
-            centralGravity: 0.003,
-            springLength: 200,
-            springConstant: 0.02
+          enabled: physicsToggle ? physicsToggle.checked : true,
+          solver: 'barnesHut',
+          barnesHut: {
+            gravitationalConstant: -1200,   // less pull = more bounciness
+            centralGravity: 0.1,            // higher = stronger spring to center
+            springLength: 150,              // shorter springs = more tension
+            springConstant: 0.03,           // higher = more elastic / bounce
+            damping: 0.1,                   // lower = less friction = more bounce
+            avoidOverlap: 0.3
           },
-          maxVelocity: 20,
-          solver: 'forceAtlas2Based',
+          maxVelocity: 50,
+          minVelocity: 0.1,
           stabilization: {
             enabled: true,
-            iterations: 1500,
+            iterations: 1000,
             updateInterval: 25
           }
+        },
+        interaction: {
+          dragNodes: true,
+          hover: true
         }
       };
+
       network = new vis.Network(container, graphData, options);
+
+      // Show edge label on hover
+      network.on('hoverEdge', (event) => {
+        const edgeId = event.edge;
+        const edge = graphData.edges.get(edgeId);
+        if (edge && edge.fobvalue !== undefined) {
+          graphData.edges.update({
+            id: edgeId,
+            label: formatFobValue(edge.fobvalue),
+            font: { color: '#000', strokeWidth: 0, align: 'top' }
+          });
+        }
+      });
+
+      // Hide edge label on blur
+      network.on('blurEdge', (event) => {
+        const edgeId = event.edge;
+        graphData.edges.update({
+          id: edgeId,
+          label: '',
+          font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 } // optionally make fully transparent
+        });
+      });
 
       // Update node positions after stabilization
       network.on('stabilized', () => {
@@ -987,6 +1033,11 @@ async function initExportImport() {
           console.log(`Physics stopped for year ${selectedYear} after timeout`);
         }
       }, 2000);
+
+      // Debug: Log drag events
+      network.on('dragEnd', () => {
+        console.log('Node dragged, physics should respond with bounce');
+      });
     };
 
     // Initial render with the latest year
@@ -1071,8 +1122,7 @@ async function initExportImport() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "top" },
-          title: { display: true, text: "Animal, Vegetable Oils, Fats, and Waxes" }
+          legend: { position: "top" }
         },
         scales: {
           x: { title: { display: true, text: "Date" }, grid: { display: false } },
@@ -1122,8 +1172,7 @@ async function initExportImport() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "top" },
-          title: { display: true, text: "Chemical and Related Products NEC" }
+          legend: { position: "top" }
         },
         scales: {
           x: { title: { display: true, text: "Date" }, grid: { display: false } },
