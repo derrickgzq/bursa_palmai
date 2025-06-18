@@ -344,7 +344,13 @@ async function fetchCompanyDescription(ticker) {
     console.error("Failed to fetch company description");
     return "";
   }
-  return await response.text();
+
+  let text = await response.text();
+
+  // Remove leading and trailing quotes (", “, ”, ')
+  text = text.replace(/^["“”']+|["“”']+$/g, '');
+
+  return text;
 }
 
 async function fetchEarnings(ticker) {
@@ -481,6 +487,169 @@ function buildExtractionRateChart(data, company) {
   });
 }
 
+async function buildRevenueForecastChart(data, company, prodData) {
+  const ctx = document.getElementById("revenue-forecast-chart")?.getContext("2d");
+  if (!ctx) return;
+
+  // Get the latest quarter's revenue and quarter label
+  const latestQuarter = data.data[data.data.length - 1];
+  const latestRevenue = latestQuarter["Total Revenue"];
+  const latestQuarterLabel = latestQuarter.Quarter;
+
+  // Get the latest three months from prodData
+  const months = [...new Set(prodData.map(item => item.month))].sort((a, b) => new Date(b) - new Date(a));
+  const latestThreeMonths = months.slice(0, 3);
+
+  // Sum volumes for each raw_mat over the latest three months
+  const volumeSums = {
+    "Fresh Fruit Bunches": 0,
+    "Crude Palm Oil": 0,
+    "Palm Kernel": 0,
+    "Rubber": 0
+  };
+
+  prodData
+  .filter(item => latestThreeMonths.includes(item.month))
+  .forEach(item => {
+    if (item.raw_mat.includes("Fresh Fruit Bunches")) {
+      volumeSums["Fresh Fruit Bunches"] += Number(item.volume);
+    } else if (["Crude Palm Oil", "Palm Kernel", "Rubber"].includes(item.raw_mat)) {
+      volumeSums[item.raw_mat] += Number(item.volume);
+    }
+  });
+
+  // Assign dynamic values for forecasting
+  const ffbProdVol = volumeSums["Fresh Fruit Bunches"];
+  const cpoProdVol = volumeSums["Crude Palm Oil"];
+  const pkProdVol = volumeSums["Palm Kernel"];
+  const rubberProdVol = volumeSums["Rubber"];
+
+  // Static values for prices
+  const fcpoPrice = 3000;
+  const pkPrice = 2000;
+
+  // Define company-specific formulas
+  const formulas = {
+    KLK: {
+      intercept: 3.129,
+      ffbCoef: 6.37e-6,
+      cpoCoef: -7.238e-5,
+      pkCoef: 2.766e-4,
+      rubberCoef: 1.508e-7,
+      fcpoCoef: -3.544e-4,
+      pkPriceCoef: 1.069e-3,
+      scale: 1000
+    },
+    IOI: {
+      intercept: 1.062, 
+      ffbCoef: 7.685e-6,
+      cpoCoef: -5.236e-5, 
+      pkCoef: 1.236e-4, 
+      rubberCoef: -7.351e-7, 
+      fcpoCoef: -1.675e-4, 
+      pkPriceCoef: 1.089e-3, 
+      scale: 1000
+    },
+    SDG: {
+      intercept: 4.383, 
+      ffbCoef: 4.893e-6,
+      cpoCoef: -2.636e-5, 
+      pkCoef: 4.647e-5, 
+      rubberCoef: 0, 
+      fcpoCoef: -4.38e-4, 
+      pkPriceCoef: 4.555e-4, 
+      scale: 1000
+    }
+  };
+
+  // Select formula based on company, default to KLK if company not found
+  const formula = formulas[company] || formulas.KLK;
+
+  // Forecast revenue using the company-specific formula
+  const forecastedRevenue = (
+    formula.intercept +
+    ffbProdVol * formula.ffbCoef +
+    cpoProdVol * formula.cpoCoef +
+    pkProdVol * formula.pkCoef +
+    rubberProdVol * formula.rubberCoef +
+    fcpoPrice * formula.fcpoCoef +
+    pkPrice * formula.pkPriceCoef
+  ) * formula.scale;  
+
+  // Calculate weightages for FFB, CPO, and PK
+  const ffbContribution = Math.abs(ffbProdVol * formula.ffbCoef);
+  const cpoContribution = Math.abs(cpoProdVol * formula.cpoCoef);
+  const pkContribution = Math.abs(pkProdVol * formula.pkCoef);
+  const totalContribution = ffbContribution + cpoContribution + pkContribution;
+
+  // Avoid division by zero
+  const ffbWeightage = totalContribution > 0 ? (ffbContribution / totalContribution * 100).toFixed(1) : 0;
+  const cpoWeightage = totalContribution > 0 ? (cpoContribution / totalContribution * 100).toFixed(1) : 0;
+  const pkWeightage = totalContribution > 0 ? (pkContribution / totalContribution * 100).toFixed(1) : 0;
+
+  // Update values in the HTML
+  const ffbWeightElement = document.getElementById('ffb-weight');
+  const cpoWeightElement = document.getElementById('cpo-weight');
+  const pkWeightElement = document.getElementById('pk-weight');
+
+  if (ffbWeightElement) ffbWeightElement.innerText = `${ffbWeightage}%`;
+  else console.error('Element with ID "ffb-weight" not found');
+  if (cpoWeightElement) cpoWeightElement.innerText = `${cpoWeightage}%`;
+  else console.error('Element with ID "cpo-weight" not found');
+  if (pkWeightElement) pkWeightElement.innerText = `${pkWeightage}%`;
+  else console.error('Element with ID "pk-weight" not found');
+
+  // Define the next quarter label (simplified assumption: increment quarter)
+  const [year, q] = latestQuarterLabel.split('Q');
+  const nextQuarter = parseInt(q) === 4 
+    ? `${parseInt(year) + 1}Q1` 
+    : `${year}Q${parseInt(q) + 1}`;
+
+  // Destroy existing chart if it exists
+  if (window.revenueForecastChart) window.revenueForecastChart.destroy();
+
+  // Create the bar chart
+  window.revenueForecastChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [latestQuarterLabel, nextQuarter],
+      datasets: [{
+        label: 'Revenue (RM mil)',
+        data: [latestRevenue, forecastedRevenue],
+        backgroundColor: ['rgba(1, 68, 34, 0.7)', 'rgba(128, 128, 128, 0.7)'], // Grey for forecast
+        borderColor: ['rgba(1, 68, 34, 1)', 'rgba(128, 128, 128, 1)'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { color: 'black' } },
+        title: { 
+          display: true, 
+          text: `${nameMap[company]} Revenue and Forecast`, 
+          color: 'black',
+          font: { family: 'Inter', size: 16, weight: 'bold' }
+        }
+      },
+      scales: {
+        x: { 
+          title: { display: true, text: 'Quarter' }, 
+          grid: { display: false },
+          ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }
+        },
+        y: { 
+          beginAtZero: true, 
+          title: { display: true, text: 'Revenue (RM Million)' }, 
+          grid: { display: false },
+          ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }
+        }
+      }
+    }
+  });
+}
+
 async function initCompanyTab() {
   const selectedOption = companySelect.options[companySelect.selectedIndex];
   const [companyCode, shareCode] = selectedOption.value.split("|");
@@ -504,6 +673,8 @@ async function initCompanyTab() {
 
   const extData = await fetchExtractionRateData(companyCode);
   buildExtractionRateChart(extData, companyCode);
+
+  await buildRevenueForecastChart(earningsData, companyCode, prodData);
 }
 
 companySelect.addEventListener("change", async (e) => {
@@ -527,6 +698,8 @@ companySelect.addEventListener("change", async (e) => {
 
   const extData = await fetchExtractionRateData(companyCode);
   buildExtractionRateChart(extData, companyCode);
+
+  await buildRevenueForecastChart(earningsData, companyCode, prodData);
 });
 
 // COMMODITIES INITIALIZATION
@@ -653,7 +826,6 @@ async function initCommodities() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          title: { display: true, text: "Fertilizer Prices (MYR)", font: { size: 18 } },
           legend: { position: 'bottom' }
         },
         scales: {
@@ -818,6 +990,7 @@ async function initExportImport() {
     const yearSlider = document.getElementById("yearSlider");
     const selectedYearEl = document.getElementById("selectedYear");
     const physicsToggle = document.getElementById("physicsToggle");
+    const playButton = document.getElementById("playButton");
     
     if (!yearSlider || !selectedYearEl || years.length === 0) {
       console.error('Year slider or data missing');
@@ -828,15 +1001,18 @@ async function initExportImport() {
       return;
     }
 
+    if (!playButton) {
+      console.warn('Play button not found; animation control will be unavailable.');
+    }
+
     // Set up slider
     yearSlider.min = 0;
     yearSlider.max = years.length - 1;
     yearSlider.value = years.length - 1; // Default to latest year
     selectedYearEl.textContent = years[years.length - 1];
 
-    // Store node positions and network instance
+    // Store node positions
     let nodePositions = {};
-    let network = null;
 
     // Helper function to format fobvalue compactly
     const formatFobValue = (value) => {
@@ -850,66 +1026,161 @@ async function initExportImport() {
       return `USD ${value.toFixed(2)}`;
     };
 
+    // Initialize network and datasets
+    const container = document.getElementById("graphtheory");
+    if (!container) throw new Error("Graph theory container not found");
+
+    // Global node ID mapping
+    const isoToNodeId = {};
+    let nextNodeId = 1;
+    validData.forEach(row => {
+      if (!isoToNodeId[row.reporterISO]) isoToNodeId[row.reporterISO] = nextNodeId++;
+      if (!isoToNodeId[row.partnerISO]) isoToNodeId[row.partnerISO] = nextNodeId++;
+    });
+
+    // Initialize DataSets
+    const nodesDataSet = new vis.DataSet([]);
+    const edgesDataSet = new vis.DataSet([]);
+    const graphData = { nodes: nodesDataSet, edges: edgesDataSet };
+
+    // Network options
+    const options = {
+      nodes: {
+        shape: 'dot',
+        font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
+      },
+      edges: {
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+        color: { color: '#3b3c36' },
+        smooth: { type: 'continuous' },
+        font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
+      },
+      height: '100%',
+      width: '100%',
+      physics: {
+        enabled: physicsToggle ? physicsToggle.checked : true,
+        solver: 'barnesHut',
+        barnesHut: {
+          gravitationalConstant: -1200,
+          centralGravity: 0.1,
+          springLength: 150,
+          springConstant: 0.03,
+          damping: 0.2,
+          avoidOverlap: 0.3
+        },
+        maxVelocity: 50,
+        minVelocity: 0.1,
+        stabilization: {
+          enabled: true,
+          iterations: 200,
+          updateInterval: 25
+        }
+      },
+      interaction: {
+        dragNodes: true,
+        hover: true
+      }
+    };
+
+    // Initialize network
+    let network = new vis.Network(container, graphData, options);
+
+    // Debounce function
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Animation state
+    let isPlaying = false;
+    let animationInterval = null;
+
     // Function to render graph and table for a given year
     const renderGraphAndTable = (selectedYear) => {
-      // Filter data by selected year and limit to top 50 edges by fobvalue
+      // Filter data by selected year and limit to top 100 edges by fobvalue
       let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
-      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 100);
+      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 180);
 
       // Debug: Log filtered data sample
       console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
 
-      // Determine trade types for each country (reporterISO and partnerISO)
+      // Determine trade types for each country
       const tradeTypes = {};
       filteredData.forEach(row => {
         const reporter = row.reporterISO;
         const partner = row.partnerISO;
-        if (!tradeTypes[reporter]) {
-          tradeTypes[reporter] = { hasExport: false, hasImport: false };
-        }
-        if (!tradeTypes[partner]) {
-          tradeTypes[partner] = { hasExport: false, hasImport: false };
-        }
+        if (!tradeTypes[reporter]) tradeTypes[reporter] = { hasExport: false, hasImport: false };
+        if (!tradeTypes[partner]) tradeTypes[partner] = { hasExport: false, hasImport: false };
         if (row.reporterDesc === 'X') {
           tradeTypes[reporter].hasExport = true;
-          tradeTypes[partner].hasImport = true; // Partner imports what reporter exports
+          tradeTypes[partner].hasImport = true;
         } else if (row.reporterDesc === 'M') {
           tradeTypes[reporter].hasImport = true;
-          tradeTypes[partner].hasExport = true; // Partner exports what reporter imports
+          tradeTypes[partner].hasExport = true;
         }
       });
 
       // Debug: Log trade types
       console.log(`Trade Types for ${selectedYear}:`, tradeTypes);
 
-      // Create unique nodes from reporterISO and partnerISO
+      // Create unique nodes
       const nodeSet = new Set();
       filteredData.forEach(row => {
         nodeSet.add(row.reporterISO);
         nodeSet.add(row.partnerISO);
       });
-      const nodes = Array.from(nodeSet).map((id, index) => {
-        let backgroundColor = '#345f3c'; // Default color
+
+      // Calculate node degrees
+      const nodeDegrees = {};
+      filteredData.forEach(row => {
+        const reporter = row.reporterISO;
+        const partner = row.partnerISO;
+        if (!nodeDegrees[reporter]) nodeDegrees[reporter] = new Set();
+        if (!nodeDegrees[partner]) nodeDegrees[partner] = new Set();
+        nodeDegrees[reporter].add(partner);
+        nodeDegrees[partner].add(reporter);
+      });
+      for (const iso in nodeDegrees) {
+        nodeDegrees[iso] = nodeDegrees[iso].size;
+      }
+
+      // Determine min and max degrees for scaling
+      const degrees = Object.values(nodeDegrees);
+      const minDegree = Math.min(...degrees, 1);
+      const maxDegree = Math.max(...degrees, 1);
+      const minSize = 15;
+      const maxSize = 45;
+
+      // Prepare new nodes
+      const newNodes = Array.from(nodeSet).map(id => {
+        let backgroundColor = '#345f3c';
         if (tradeTypes[id]) {
           const { hasExport, hasImport } = tradeTypes[id];
-          if (hasExport && !hasImport) {
-            backgroundColor = '#BCB98A'; // Green for export only
-          } else if (!hasExport && hasImport) {
-            backgroundColor = '#345f3c'; // Red for import only
-          } else if (hasExport && hasImport) {
-            backgroundColor = '#fff8dc'; // Yellow for both
-          }
+          if (hasExport && !hasImport) backgroundColor = '#BCB98A';
+          else if (!hasExport && hasImport) backgroundColor = '#345f3c';
+          else if (hasExport && hasImport) backgroundColor = '#fff8dc';
+        }
+        const degree = nodeDegrees[id] || 0;
+        let size = minSize;
+        if (maxDegree > minDegree) {
+          size = minSize + ((degree - minDegree) / (maxDegree - minDegree)) * (maxSize - minSize);
+        } else if (degree > 0) {
+          size = maxSize;
         }
         return {
-          id: index + 1,
+          id: isoToNodeId[id],
           label: id,
           title: id,
           ...(nodePositions[id] ? { x: nodePositions[id].x, y: nodePositions[id].y } : {}),
-          color: { background: backgroundColor, border: '#2e4f36' }
+          color: { background: backgroundColor, border: '#2e4f36' },
+          size: size
         };
       });
 
-      // Calculate total nodes and total FOB value
+      // Calculate total nodes and FOB value
       const totalNodes = nodeSet.size;
       const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
 
@@ -919,104 +1190,43 @@ async function initExportImport() {
       if (totalNodesEl) totalNodesEl.textContent = totalNodes;
       if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
 
-      // Map ISO codes to node IDs
-      const isoToNodeId = {};
-      nodes.forEach(node => {
-        isoToNodeId[node.label] = node.id;
-      });
-
-      // Create edges with thickness based on fobvalue
-      const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1); // Avoid division by zero
-      const edges = filteredData.map((row, index) => {
+      // Prepare new edges
+      const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1);
+      const newEdges = filteredData.map((row, index) => {
         const isExport = row.reporterDesc === 'X';
         const isImport = row.reporterDesc === 'M';
         return {
-          id: `edge-${index}`, // Unique ID for edges
+          id: `edge-${selectedYear}-${index}`,
           from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
           to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
           arrows: 'to',
           width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
           title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`,
-          label: '', // Initial empty label
-          fobvalue: row.fobvalue // Store for hover
+          label: '',
+          fobvalue: row.fobvalue
         };
       }).filter(edge => edge.from && edge.to);
 
       // Debug: Log graph details
-      console.log(`Year ${selectedYear}: ${nodes.length} nodes, ${edges.length} edges, Total FOB: ${totalFobValue}`);
+      console.log(`Year ${selectedYear}: ${newNodes.length} nodes, ${newEdges.length} edges, Total FOB: ${totalFobValue}`);
 
-      // Create network
-      const container = document.getElementById("graphtheory");
-      if (!container) throw new Error("Graph theory container not found");
-      container.innerHTML = ''; // Clear previous graph
-      const graphData = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
-      const options = {
-        nodes: {
-          shape: 'dot',
-          size: 20,
-          font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
-        },
-        edges: {
-          arrows: { to: { enabled: true, scaleFactor: 0.5 } },
-          color: { color: '#3b3c36' },
-          smooth: { type: 'continuous' },
-          font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
-        },
-        height: '100%',
-        width: '100%',
-        physics: {
-          enabled: physicsToggle ? physicsToggle.checked : true,
-          solver: 'barnesHut',
-          barnesHut: {
-            gravitationalConstant: -1200,   // less pull = more bounciness
-            centralGravity: 0.1,            // higher = stronger spring to center
-            springLength: 150,              // shorter springs = more tension
-            springConstant: 0.03,           // higher = more elastic / bounce
-            damping: 0.1,                   // lower = less friction = more bounce
-            avoidOverlap: 0.3
-          },
-          maxVelocity: 50,
-          minVelocity: 0.1,
-          stabilization: {
-            enabled: true,
-            iterations: 1000,
-            updateInterval: 25
-          }
-        },
-        interaction: {
-          dragNodes: true,
-          hover: true
-        }
-      };
+      // Update nodes
+      const currentNodeIds = nodesDataSet.getIds();
+      const newNodeIds = newNodes.map(n => n.id);
+      const nodesToRemove = currentNodeIds.filter(id => !newNodeIds.includes(id));
+      nodesDataSet.remove(nodesToRemove);
+      nodesDataSet.update(newNodes);
 
-      network = new vis.Network(container, graphData, options);
-
-      // Show edge label on hover
-      network.on('hoverEdge', (event) => {
-        const edgeId = event.edge;
-        const edge = graphData.edges.get(edgeId);
-        if (edge && edge.fobvalue !== undefined) {
-          graphData.edges.update({
-            id: edgeId,
-            label: formatFobValue(edge.fobvalue),
-            font: { color: '#000', strokeWidth: 0, align: 'top' }
-          });
-        }
-      });
-
-      // Hide edge label on blur
-      network.on('blurEdge', (event) => {
-        const edgeId = event.edge;
-        graphData.edges.update({
-          id: edgeId,
-          label: '',
-          font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 } // optionally make fully transparent
-        });
-      });
+      // Update edges
+      const currentEdgeIds = edgesDataSet.getIds();
+      const newEdgeIds = newEdges.map(e => e.id);
+      const edgesToRemove = currentEdgeIds.filter(id => !newEdgeIds.includes(id));
+      edgesDataSet.remove(edgesToRemove);
+      edgesDataSet.add(newEdges);
 
       // Update node positions after stabilization
       network.on('stabilized', () => {
-        nodes.forEach(node => {
+        newNodes.forEach(node => {
           const pos = network.getPositions([node.id])[node.id];
           if (pos) {
             nodePositions[node.label] = { x: pos.x, y: pos.y };
@@ -1026,28 +1236,57 @@ async function initExportImport() {
         network.stopSimulation();
       });
 
-      // Force stop physics after 2 seconds
+      // Force stop physics after 1 second
       setTimeout(() => {
         if (network) {
           network.stopSimulation();
           console.log(`Physics stopped for year ${selectedYear} after timeout`);
         }
-      }, 2000);
-
-      // Debug: Log drag events
-      network.on('dragEnd', () => {
-        console.log('Node dragged, physics should respond with bounce');
-      });
+      }, 1200);
     };
 
-    // Initial render with the latest year
+    // Initial render
     renderGraphAndTable(years[years.length - 1]);
 
-    // Slider event listener
-    yearSlider.addEventListener('input', () => {
-      const selectedIndex = parseInt(yearSlider.value);
+    // Animation control
+    const toggleAnimation = () => {
+      if (isPlaying) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+        isPlaying = false;
+        if (playButton) playButton.textContent = '▶️ Play';
+        console.log('Animation stopped');
+      } else {
+        isPlaying = true;
+        if (playButton) playButton.textContent = '⏸️ Pause';
+        let currentIndex = parseInt(yearSlider.value);
+        animationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % years.length; // Loop back to start
+          yearSlider.value = currentIndex;
+          selectedYearEl.textContent = years[currentIndex];
+          renderGraphAndTable(years[currentIndex]);
+        }, 1500); // 1 second per year
+        console.log('Animation started');
+      }
+    };
+
+    // Play button event listener
+    if (playButton) {
+      playButton.addEventListener('click', toggleAnimation);
+    }
+
+    // Debounced slider event listener
+    const debouncedRender = debounce((selectedIndex) => {
+      if (isPlaying) {
+        toggleAnimation(); // Stop animation on manual slider interaction
+      }
       selectedYearEl.textContent = years[selectedIndex];
       renderGraphAndTable(years[selectedIndex]);
+    }, 100);
+
+    yearSlider.addEventListener('input', () => {
+      const selectedIndex = parseInt(yearSlider.value);
+      debouncedRender(selectedIndex);
     });
 
     // Physics toggle event listener
@@ -1062,16 +1301,42 @@ async function initExportImport() {
             console.log('Physics enabled via toggle');
           }
         }
-        renderGraphAndTable(years[parseInt(yearSlider.value)]);
       });
     } else {
       console.warn('Physics toggle not found; defaulting to static graph');
     }
 
+    // Hover edge events
+    network.on('hoverEdge', (event) => {
+      const edgeId = event.edge;
+      const edge = edgesDataSet.get(edgeId);
+      if (edge && edge.fobvalue !== undefined) {
+        edgesDataSet.update({
+          id: edgeId,
+          label: formatFobValue(edge.fobvalue),
+          font: { color: '#000', strokeWidth: 0, align: 'top' }
+        });
+      }
+    });
+
+    network.on('blurEdge', (event) => {
+      const edgeId = event.edge;
+      edgesDataSet.update({
+        id: edgeId,
+        label: '',
+        font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 }
+      });
+    });
+
+    // Debug: Log drag events
+    network.on('dragEnd', () => {
+      console.log('Node dragged, physics should respond with bounce');
+    });
+
     // Existing export/import charts
     const res = await fetch(BACKEND_URL + "/exim-data");
     if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
-    const chartData = await res.json(); // Renamed from 'data' to 'chartData'
+    const chartData = await res.json();
 
     const labels = chartData.date;
     const animal_exports = chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;

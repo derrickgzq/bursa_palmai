@@ -151,14 +151,14 @@
           <!-- Row of 2 divs side by side -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <!-- Left div - Revenue forecasting bar chart -->
-            <div class="h-[300px] min-h-[300px] bg-gray-50 rounded-lg p-4">
+            <div class="h-[450px] min-h-[450px] bg-gray-50 rounded-lg p-4">
               <h4 class="text-md font-medium mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Revenue Forecast</h4>
               <div class="relative h-full w-full">
                 <canvas id="revenue-forecast-chart"></canvas>
               </div>
             </div>
             <!-- Right div - 3 stacked divs -->
-            <div class="grid grid-rows-3 gap-4 h-[300px]">
+            <div class="grid grid-rows-3 gap-4 h-[450px]">
               <div class="bg-gray-50 rounded-lg p-4">
                 <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 1</h4>
                 <p class="text-sm mt-2">Placeholder for first analysis point</p>
@@ -174,22 +174,25 @@
             </div>
           </div>
           <!-- Revenue composition section -->
-          <div class="flex flex-wrap items-center gap-4 mt-6">
-            <span class="text-lg font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Revenue =</span>
+          <div id="weightage-cards" class="flex flex-wrap items-center gap-4 mt-6">
+            <span class="text-lg font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Forecasted revenue contribution by products: </span>
+
             <!-- FFB Weightage Card -->
             <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
               <h4 class="text-sm font-medium">FFB Weightage</h4>
-              <p class="text-xl font-bold mt-1">70%</p>
+              <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
             </div>
+
             <!-- CPO Weightage Card -->
             <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
               <h4 class="text-sm font-medium">CPO Weightage</h4>
-              <p class="text-xl font-bold mt-1">20%</p>
+              <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
             </div>
+
             <!-- PK Weightage Card -->
             <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
               <h4 class="text-sm font-medium">PK Weightage</h4>
-              <p class="text-xl font-bold mt-1">10%</p>
+              <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
             </div>
           </div>
         </div>
@@ -328,6 +331,9 @@
         </div>
       </div>
 
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil related Aqueduct Risks</h2>
+      </div>
       <!-- Charts Section -->
       <div class="space-y-10">
         <!-- Chart 1: Coastal Flood Risk -->
@@ -376,11 +382,12 @@
         <!-- Graph theory visualization and stats table -->
         <div class="h-[600px] flex flex-row space-x-4 bg-white rounded-lg shadow-md m-2 p-4">
           <div class="flex-1">
-            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil and Products Trade Network</h3>
+            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil Trade Network</h3>
             <div class="flex items-center mb-2">
               <label for="yearSlider" class="mr-2 text-gray-800" style="font-family: 'Inter', sans-serif;">Year:</label>
               <input type="range" id="yearSlider" class="w-1/2" min="0" max="0" value="0">
               <span id="selectedYear" class="ml-2 text-gray-800" style="font-family: 'Inter', sans-serif;">-</span>
+              <button id="playButton" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded" style="font-family: 'Inter', sans-serif;">▶️ Play</button>
             </div>
             <div id="graphtheory" class="w-full h-[500px]"></div>
           </div>

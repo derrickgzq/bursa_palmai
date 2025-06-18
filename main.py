@@ -19,6 +19,7 @@ import geopandas as gpd
 import json
 import sqlite3
 import geopandas as gpd
+import re
 
 SQLITE_DB = "bursa_palmai_database.db"
 
@@ -89,6 +90,25 @@ concessions[['nearest_station', 'distance_km']] = concessions.apply(get_nearest_
 concessions_forecast = pd.merge(concessions, weather_gdf, left_on='nearest_station', right_on='location_name', how='left')
 concessions_forecast_comp = concessions_forecast.reset_index(drop=True)
 #define weather forecast comp
+
+# coloured palm oil layer
+df_lab = concessions_forecast_comp.copy()
+df_lab['date'] = pd.to_datetime(df_lab['date'])
+
+def categorize_weather(weather):
+    weather = str(weather).lower()  # Ensure string type
+    if 'hujan' in weather and 'tiada' not in weather:
+        return 'Hujan'
+    elif 'ribut petir' in weather:
+        return 'Ribut Petir'
+    elif 'berangin' in weather:
+        return 'Berangin'
+    elif 'tiada hujan' in weather:
+        return 'Tiada Hujan'
+    return weather
+
+df_lab['summary_forecast'] = df_lab['summary_forecast'].apply(categorize_weather)
+# coloured palm oil layer 
 
 # mainpage
 # market cap aka treemap
@@ -203,6 +223,21 @@ def get_share_prices():
 # news display
 @app.get("/api/news")
 def get_news():
+    def format_description(text):
+        # Fix common mashed variants like 'palmoil'
+        text = re.sub(r'(?i)palmoil', 'palm oil', text)
+
+        # Add space before 'palm' if mashed, e.g., 'basedpalm' -> 'based palm'
+        text = re.sub(r'(?i)(\w)(palm)', r'\1 palm', text)
+
+        # Add space after 'palm' if mashed, e.g., 'palmcompany' -> 'palm company'
+        text = re.sub(r'(?i)(palm)([A-Z]?\w)', r'palm \2', text)
+
+        # Add space after 'oil' if mashed, e.g., 'oilcompany' -> 'oil company'
+        text = re.sub(r'(?i)(oil)([A-Z]?\w)', r'oil \2', text)
+
+        return text
+
     today = date.today()  
     today_str = today.strftime("%Y-%m-%d")  
     url = f"https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to={today_str}&from=1999-01-01&language=english&offset=0"
@@ -217,7 +252,6 @@ def get_news():
         headline_tag = item.find('span', class_='NewsList_newsListItemHead__dg7eK')
         description_tag = item.find('span', class_='NewsList_newsList__2fXyv')
 
-        # Try to find image in the sibling div (adjust this if HTML structure changes)
         img_tag = item.find_previous_sibling('div')
         if img_tag:
             img_tag = img_tag.find('img', class_='NewsList_newsImage__j_h0a')
@@ -227,7 +261,7 @@ def get_news():
             if link.startswith('/'):
                 link = f"https://theedgemalaysia.com{link}"
             headline = headline_tag.get_text(strip=True)
-            description = description_tag.get_text(strip=True)
+            description = format_description(description_tag.get_text(strip=True))
             image_url = img_tag['src'] if img_tag else None
 
             data.append({
@@ -348,7 +382,15 @@ def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
 def get_company_description(ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
-    return info.get('longBusinessSummary', '')
+    summary = info.get('longBusinessSummary', '')
+
+    # Clean ONLY leading/trailing quotes — including smart quotes
+    summary = summary.strip().strip('"').strip("“”").strip("'")
+
+    # Extra safety: use regex to remove quotes only at the start and end
+    summary = re.sub(r'^[\"“”\']+|[\"“”\']+$', '', summary)
+
+    return summary
 
 # company share price chart 
 @app.get("/price-data")
@@ -578,25 +620,8 @@ def serve_index():
 # concessions with 7-days weather forecast
 @app.get("/weather_forecast_summary")
 async def weather_forecast_summary():
-    # Convert date to datetime and make a copy to avoid modifying the original
-    df = concessions_forecast_comp.copy()
-    df['date'] = pd.to_datetime(df['date'])
+    df = df_lab.copy()
 
-    def categorize_weather(weather):
-        weather = str(weather).lower()  # Ensure string type
-        if 'hujan' in weather and 'tiada' not in weather:
-            return 'Hujan'
-        elif 'ribut petir' in weather:
-            return 'Ribut Petir'
-        elif 'berangin' in weather:
-            return 'Berangin'
-        elif 'tiada hujan' in weather:
-            return 'Tiada Hujan'
-        return weather
-
-    df['summary_forecast'] = df['summary_forecast'].apply(categorize_weather)
-    
-    # Group and reshape data
     weather_fc_df = (
         df.groupby(['date', 'summary_forecast'])
         .size()
@@ -604,7 +629,6 @@ async def weather_forecast_summary():
         .reset_index()
     )
     
-    # Convert Timestamps to ISO format strings
     weather_fc_df['date'] = weather_fc_df['date'].apply(lambda x: x.isoformat())
     return weather_fc_df.to_dict(orient='records')
 
