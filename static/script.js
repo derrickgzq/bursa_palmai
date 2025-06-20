@@ -1102,7 +1102,7 @@ async function initExportImport() {
     const renderGraphAndTable = (selectedYear) => {
       // Filter data by selected year and limit to top 100 edges by fobvalue
       let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
-      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 180);
+      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 200);
 
       // Debug: Log filtered data sample
       console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
@@ -1334,6 +1334,7 @@ async function initExportImport() {
     });
 
     // Existing export/import charts
+    // Existing export/import charts
     const res = await fetch(BACKEND_URL + "/exim-data");
     if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
     const chartData = await res.json();
@@ -1357,7 +1358,7 @@ async function initExportImport() {
         labels,
         datasets: [
           {
-            label: "Net Export",
+            label: "Net Trade", // Base label for dataset
             data: animal_net,
             backgroundColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"),
             borderColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"),
@@ -1387,7 +1388,36 @@ async function initExportImport() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "top" }
+          legend: {
+            position: "top",
+            labels: {
+              generateLabels: function(chart) {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset, i) => {
+                  if (dataset.label === "Net Trade") {
+                    // Check the first non-zero data point to determine label
+                    const netValue = dataset.data.find(v => v !== 0) || 0;
+                    return {
+                      text: netValue >= 0 ? "Net Export" : "Net Import",
+                      fillStyle: dataset.backgroundColor[0],
+                      strokeStyle: dataset.borderColor[0],
+                      lineWidth: dataset.borderWidth,
+                      hidden: !chart.isDatasetVisible(i),
+                      datasetIndex: i
+                    };
+                  }
+                  return {
+                    text: dataset.label,
+                    fillStyle: dataset.backgroundColor,
+                    strokeStyle: dataset.borderColor,
+                    lineWidth: dataset.borderWidth,
+                    hidden: !chart.isDatasetVisible(i),
+                    datasetIndex: i
+                  };
+                });
+              }
+            }
+          }
         },
         scales: {
           x: { title: { display: true, text: "Date" }, grid: { display: false } },
@@ -1407,7 +1437,7 @@ async function initExportImport() {
         labels,
         datasets: [
           {
-            label: "Net Export",
+            label: "Net Trade", // Base label for dataset
             data: chemical_net,
             backgroundColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"),
             borderColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"),
@@ -1437,7 +1467,36 @@ async function initExportImport() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "top" }
+          legend: {
+            position: "top",
+            labels: {
+              generateLabels: function(chart) {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset, i) => {
+                  if (dataset.label === "Net Trade") {
+                    // Check the first non-zero data point to determine label
+                    const netValue = dataset.data.find(v => v !== 0) || 0;
+                    return {
+                      text: netValue >= 0 ? "Net Export" : "Net Import",
+                      fillStyle: dataset.backgroundColor[0],
+                      strokeStyle: dataset.borderColor[0],
+                      lineWidth: dataset.borderWidth,
+                      hidden: !chart.isDatasetVisible(i),
+                      datasetIndex: i
+                    };
+                  }
+                  return {
+                    text: dataset.label,
+                    fillStyle: dataset.backgroundColor,
+                    strokeStyle: dataset.borderColor,
+                    lineWidth: dataset.borderWidth,
+                    hidden: !chart.isDatasetVisible(i),
+                    datasetIndex: i
+                  };
+                });
+              }
+            }
+          }
         },
         scales: {
           x: { title: { display: true, text: "Date" }, grid: { display: false } },
