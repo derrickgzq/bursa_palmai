@@ -1,5 +1,5 @@
-const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
-
+//const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
+const BACKEND_URL = "https://bursa-palmai.onrender.com"
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
