@@ -1,6 +1,5 @@
 //const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
 const BACKEND_URL = "https://bursa-palmai.onrender.com"
-
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
@@ -1512,9 +1511,9 @@ async function initExportImport() {
 
 // MPOB INITIALIZATION
 let map;
-let rspolayer, oplayer, millslayer
-//, rfrlayer, cfrlayer, drrlayer
-;
+let //rspolayer, oplayer, 
+millslayer
+//, rfrlayer, cfrlayer, drrlayer;
 
 async function initMpobStats() {
   const mapContainer = document.getElementById("map");
@@ -1526,7 +1525,7 @@ async function initMpobStats() {
     attribution: 'Map data © OpenStreetMap contributors'
   }).addTo(map);
 
-  fetch(BACKEND_URL + "/rsposhapefile")
+  /*fetch(BACKEND_URL + "/rsposhapefile")
     .then(res => res.json())
     .then(geojson => {
       rspolayer = L.geoJSON(geojson, {
@@ -1558,7 +1557,7 @@ async function initMpobStats() {
       oplayer.addTo(map);
       addLayerControl();
     })
-    .catch(error => console.error("Error fetching OP shapefile:", error));
+    .catch(error => console.error("Error fetching OP shapefile:", error));*/
 
   fetch(BACKEND_URL + "/mills")
     .then(res => res.json())
@@ -1662,9 +1661,8 @@ async function initMpobStats() {
       });
       addLayerControl();
     })
-    .catch(error => console.error("Error fetching drought risk data:", error)); 
+    .catch(error => console.error("Error fetching drought risk data:", error));*/
 
-    */
   fetch(BACKEND_URL + "/weather_stations")
     .then(res => res.json())
     .then(stationData => {
@@ -1693,12 +1691,13 @@ async function initMpobStats() {
       oplayer.addTo(map);
       millslayer.addTo(map);
       const overlayMaps = {
-        "RSPO Plantation": rspolayer,
-        "Oil Palm Concessions": oplayer,
-        "Mills": millslayer,
-        "Riverine flood risk": rfrlayer,
-        "Coastal flood risk": cfrlayer,
-        "Drought risk": drrlayer
+        //"RSPO Plantation": rspolayer,
+        //"Oil Palm Concessions": oplayer,
+        "Mills": millslayer
+        //,
+        //"Riverine flood risk": rfrlayer,
+        //"Coastal flood risk": cfrlayer,
+        //"Drought risk": drrlayer
       };
       L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
       map.layerControlAdded = true;
