@@ -1,5 +1,6 @@
 //const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
 const BACKEND_URL = "https://bursa-palmai.onrender.com"
+
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
@@ -1511,7 +1512,9 @@ async function initExportImport() {
 
 // MPOB INITIALIZATION
 let map;
-let rspolayer, oplayer, millslayer, rfrlayer, cfrlayer, drrlayer;
+let rspolayer, oplayer, millslayer
+//, rfrlayer, cfrlayer, drrlayer
+;
 
 async function initMpobStats() {
   const mapContainer = document.getElementById("map");
@@ -1575,7 +1578,7 @@ async function initMpobStats() {
     })
     .catch(error => console.error("Error fetching mills data:", error));
 
-  fetch(BACKEND_URL + "/aqueduct")
+  /*fetch(BACKEND_URL + "/aqueduct")
     .then(res => res.json())
     .then(geojson => {
       function getColor(label) {
@@ -1659,8 +1662,9 @@ async function initMpobStats() {
       });
       addLayerControl();
     })
-    .catch(error => console.error("Error fetching drought risk data:", error));
+    .catch(error => console.error("Error fetching drought risk data:", error)); 
 
+    */
   fetch(BACKEND_URL + "/weather_stations")
     .then(res => res.json())
     .then(stationData => {
