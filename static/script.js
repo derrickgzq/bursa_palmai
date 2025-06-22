@@ -199,7 +199,7 @@ function initMainpage() {
   });
 
   // ai summary news
-  const summaryDiv = document.getElementById("aiSummary");
+  /*const summaryDiv = document.getElementById("aiSummary");
 
   fetch(BACKEND_URL + "/ai-summary") 
     .then(response => response.json())
@@ -211,7 +211,7 @@ function initMainpage() {
     .catch(error => {
       console.error("Error fetching AI summary:", error);
       summaryDiv.innerHTML = `<p style="color: red;"><strong>Failed to load AI summary.</strong></p>`;
-    });
+    });*/
 
   // News cards
   async function loadNews() {
@@ -614,11 +614,31 @@ async function buildRevenueForecastChart(data, company, prodData) {
   if (pkWeightElement) pkWeightElement.innerText = `${pkWeightage}%`;
   else console.error('Element with ID "pk-weight" not found');
 
-  // Define the next quarter label (simplified assumption: increment quarter)
-  const [year, q] = latestQuarterLabel.split('Q');
-  const nextQuarter = parseInt(q) === 4 
-    ? `${parseInt(year) + 1}Q1` 
-    : `${year}Q${parseInt(q) + 1}`;
+  function getNextQuarterLabel(latestQuarterLabel) {
+  // Parse the date (e.g., "2025-03-31")
+  const date = new Date(latestQuarterLabel);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date format for latestQuarterLabel:", latestQuarterLabel);
+    return "Invalid Quarter";
+  }
+
+  // Get year and month (0-based: January = 0, March = 2, etc.)
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  
+  // Determine current quarter (Q1: Jan-Mar, Q2: Apr-Jun, Q3: Jul-Sep, Q4: Oct-Dec)
+  const currentQuarter = Math.floor(month / 3) + 1;
+  
+  // Calculate next quarter (3 months later)
+  const nextQuarter = currentQuarter === 4 ? 1 : currentQuarter + 1;
+  const nextYear = currentQuarter === 4 ? year + 1 : year;
+  
+  // Return formatted next quarter label
+  return `${nextYear}Q${nextQuarter}`;
+}
+
+// Usage
+const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
 
   // Destroy existing chart if it exists
   if (window.revenueForecastChart) window.revenueForecastChart.destroy();
