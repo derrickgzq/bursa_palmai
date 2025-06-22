@@ -11,6 +11,7 @@ from shapely.ops import nearest_points
 from geopy.distance import geodesic
 from typing import List, Dict, Any
 from io import BytesIO
+from openai import OpenAI
 import pandas as pd
 import yfinance as yf
 import os
@@ -22,6 +23,11 @@ import geopandas as gpd
 import re
 
 SQLITE_DB = "bursa_palmai_database.db"
+
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="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",
+)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -219,6 +225,31 @@ def get_share_prices():
                 "percent": None
             })
     return data
+
+# ai summary news
+@app.get("/ai-summary")
+def get_ai_summary():
+    # Get the news data
+    news_data = get_news()
+    headlines = [item["headline"] for item in news_data["news"][:5]]  # Limit to 5 headlines
+
+    # Join headlines into one prompt
+    news_prompt = "Summarize the following palm oil news headlines in 20 words, focusing on price, production, and exports:\n\n"
+    news_prompt += "\n".join(f"- {hl}" for hl in headlines)
+
+    # Get AI summary from OpenRouter
+    response = client.chat.completions.create(
+        model="meta-llama/llama-3.1-8b-instruct",
+        messages=[
+            {
+                "role": "user",
+                "content": news_prompt
+            }
+        ]
+    )
+
+    summary = response.choices[0].message.content
+    return {"summary": summary}
 
 # news display
 @app.get("/api/news")
