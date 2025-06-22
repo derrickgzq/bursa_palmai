@@ -12,6 +12,7 @@ from geopy.distance import geodesic
 from typing import List, Dict, Any
 from io import BytesIO
 from openai import OpenAI
+from dotenv import load_dotenv
 import pandas as pd
 import yfinance as yf
 import os
@@ -24,9 +25,11 @@ import re
 
 SQLITE_DB = "bursa_palmai_database.db"
 
+load_dotenv()
+api_key = os.getenv("OPENROUTER_API_KEY")
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key=api_key,
 )
 
 app = FastAPI()
