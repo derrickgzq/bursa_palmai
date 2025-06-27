@@ -276,13 +276,13 @@ function buildBarChart(data, companyCode) {
   const ctx = document.getElementById("prod-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const months = [...new Set(data.map(item => item.month))];
-  const rawMats = [...new Set(data.map(item => item.raw_mat))];
+  const months = [...new Set(data.map(item => item.date))];
+  const rawMats = [...new Set(data.map(item => item.raw_material))];
 
   const datasets = rawMats.map((mat, i) => ({
     label: mat,
     data: months.map(month => {
-      const item = data.find(d => d.month === month && d.raw_mat === mat);
+      const item = data.find(d => d.date === month && d.raw_material === mat);
       return item ? Number(item.volume) : 0;
     }),
     backgroundColor: getColor(i)
@@ -465,14 +465,14 @@ function buildExtractionRateChart(data, company) {
   const ctx = document.getElementById("ext-rates-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const years = [...new Set(data.map(d => d.Date))].sort();
-  const categories = [...new Set(data.map(d => d.Category))];
+  const years = [...new Set(data.map(d => d.date))].sort();
+  const categories = [...new Set(data.map(d => d.category))];
 
   const datasets = categories.map((category, i) => ({
     label: category,
     data: years.map(year => {
-      const item = data.find(d => d.Date === year && d.Category === category);
-      return item ? Number(item.Value) : 0;
+      const item = data.find(d => d.date === year && d.category === category);
+      return item ? Number(item.value) : 0;
     }),
     borderColor: getColor(i),
     backgroundColor: getColor(i),
@@ -526,7 +526,7 @@ async function buildRevenueForecastChart(data, company, prodData) {
   prodData
   .filter(item => latestThreeMonths.includes(item.month))
   .forEach(item => {
-    if (item.raw_mat.includes("Fresh Fruit Bunches")) {
+    if (item.raw_mat && item.raw_mat.includes("Fresh Fruit Bunches")) {
       volumeSums["Fresh Fruit Bunches"] += Number(item.volume);
     } else if (["Crude Palm Oil", "Palm Kernel", "Rubber"].includes(item.raw_mat)) {
       volumeSums[item.raw_mat] += Number(item.volume);
@@ -1543,380 +1543,256 @@ async function initExportImport() {
     console.error("Error initializing Export Import charts:", error);
   }
 }
-/*
-// MPOB INITIALIZATION
+
 let map;
-let rspolayer, oplayer, millslayer, rfrlayer, cfrlayer, drrlayer;
+let forecastLayer = null;
+let millCluster = null;
 
 async function initMpobStats() {
   const mapContainer = document.getElementById("map");
-  if (!mapContainer) return;
+if (!mapContainer) return;
 
-  map = L.map("map").setView([4.310756684156521, 108.3481479634814], 6);
+// Define base layers
+const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: 'Map data © OpenStreetMap contributors'
+});
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: 'Map data © OpenStreetMap contributors'
-  }).addTo(map);
+const esriSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+  attribution: 'Tiles © Esri'
+});
 
+const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+  attribution: 'Tiles © Esri'
+});
+
+// Initialize map with default base layer
+let map = L.map("map", {
+  center: [4.310756684156521, 108.3481479634814],
+  zoom: 6,
+  layers: [osm]  // default base layer
+});
+
+let forecastLayer = null;
+let millCluster = null;
+let layerControl = null;
+
+// Add base layer switcher
+const baseLayers = {
+  "🗺️ Streets (OSM)": osm,
+  "🛰️ Satellite (Esri)": esriSat,
+  "🏞️ Terrain (Esri Topo)": esriTopo
+};
+
+// Add legend control, overlays, etc. (your original code continues below)
+
+
+  // Legend for Palm Oil Estates
+  const legend = L.control({ position: "bottomright" });
+
+  legend.onAdd = function () {
+    const div = L.DomUtil.create("div", "info legend");
+    div.style.background = "white";
+    div.style.padding = "10px";
+    div.style.border = "1px solid #ccc";
+    div.style.borderRadius = "6px";
+    div.style.fontSize = "14px";
+    div.style.lineHeight = "1.4em";
+    div.innerHTML = `
+      <strong>Palm Oil Estate</strong><br/>
+      <div style="display: flex; align-items: center; margin-top: 4px;">
+        <div style="width: 12px; height: 12px; background: gray; border-radius: 50%; margin-right: 6px;"></div>
+        Circle Marker
+      </div>
+      <hr style="margin: 6px 0;" />
+      <strong>Weather Forecast</strong><br/>
+      <div><span style="color: green;">●</span> Tiada Hujan/Cerah</div>
+      <div><span style="color: yellow;">●</span> Berangin</div>
+      <div><span style="color: orange;">●</span> Hujan</div>
+      <div><span style="color: red;">●</span> Ribut Petir</div>
+      <hr style="margin: 6px 0;" />
+      <div><i class="fas fa-industry" style="color: brown;"></i> Palm Oil Mills</div>
+    `;
+    return div;
+  };
+
+  legend.addTo(map);
+
+  const slider = document.getElementById("dateSlider");
+
+  // Disable dragging and zoom when using slider
+  slider.addEventListener("mousedown", () => {
+    map.dragging.disable();
+    map.scrollWheelZoom.disable();
+  });
+  slider.addEventListener("touchstart", () => {
+    map.dragging.disable();
+    map.scrollWheelZoom.disable();
+  });
+
+  // Re-enable after interaction ends
+  slider.addEventListener("mouseup", () => {
+    map.dragging.enable();
+    map.scrollWheelZoom.enable();
+  });
+  slider.addEventListener("touchend", () => {
+    map.dragging.enable();
+    map.scrollWheelZoom.enable();
+  });
+
+  // Color mapping by forecast type
+  function getColor(forecast) {
+    switch ((forecast || "").toLowerCase()) {
+      case "tiada hujan": return "green";
+      case "berangin": return "yellow";
+      case "hujan": return "orange";
+      case "ribut petir": return "red";
+      default: return "gray";
+    }
+  }
+
+  // Load forecast GeoJSON
+  let allForecastData = [];
   fetch(BACKEND_URL + "/rsposhapefile")
     .then(res => res.json())
-    .then(geojson => {
-      rspolayer = L.geoJSON(geojson, {
-        style: { color: "green", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
-        onEachFeature: function(feature, layer) {
-          const company = feature.properties.company || "N/A";
-          const plantation = feature.properties.plantation || "N/A";
-          const tooltipContent = `<b>Company:</b> ${company}<br><b>Plantation:</b> ${plantation}`;
-          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-        }
-      });
-      rspolayer.addTo(map);
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching RSPO shapefile:", error));
-
-  fetch(BACKEND_URL + "/opshapefile")
-    .then(res => res.json())
-    .then(geojson => {
-      oplayer = L.geoJSON(geojson, {
-        style: { color: "blue", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
-        onEachFeature: function(feature, layer) {
-          const company = feature.properties.company || "N/A";
-          const name = feature.properties.name || "N/A";
-          const tooltipContent = `<b>Company:</b> ${company}<br><b>Name:</b> ${name}`;
-          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-        }
-      });
-      oplayer.addTo(map);
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching OP shapefile:", error));
-
-  fetch(BACKEND_URL + "/mills")
-    .then(res => res.json())
-    .then(geojson => {
-      millslayer = L.geoJSON(geojson, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, { radius: 1, fillColor: "black", color: "#000", weight: 0.8, opacity: 1, fillOpacity: 0.8 });
-        },
-        onEachFeature: function(feature, layer) {
-          const name = feature.properties.Mill_Name || "Unknown";
-          const company = feature.properties.Parent_Com || "Unknown";
-          layer.bindTooltip(`<b>Mill:</b> ${name}<br><b>Company:</b> ${company}`);
-        }
-      });
-      millslayer.addTo(map);
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching mills data:", error));
-
-  fetch(BACKEND_URL + "/aqueduct")
-    .then(res => res.json())
-    .then(geojson => {
-      function getColor(label) {
-        switch (label) {
-          case "No Data": return "#999999";
-          case "Low (0 to 1 in 1,000)": return "#ffff99";
-          case "Low - Medium (1 in 1,000 to 2 in 1,000)": return "#ffcc33";
-          case "Medium - High (2 in 1,000 to 6 in 1,000)": return "#ff6600";
-          case "High (6 in 1,000 to 1 in 100)": return "#ff3300";
-          case "Extremely High (more than 1 in 100)": return "#cc0000";
-          default: return "#cccccc";
-        }
+    .then(data => {
+      console.log("RSPO Forecast Response:", data);
+      allForecastData = data.features || [];
+      if (!allForecastData.length) {
+        console.warn("No forecast data found");
+        return;
       }
-      rfrlayer = L.geoJSON(geojson, {
-        style: function(feature) {
-          const label = feature.properties.rfr_label || "N/A";
-          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-        },
-        onEachFeature: function(feature, layer) {
-          const label = feature.properties.rfr_label || "N/A";
-          const tooltipContent = `<b>Riverine Flood Risk Label:</b> ${label}`;
-          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-        }
-      });
-      addLayerControl();
+      initDateSlider();
+      updateForecastLayer(getUniqueDates()[0]);
+      loadMillData(); // Load mill data after forecast data
     })
-    .catch(error => console.error("Error fetching riverine flood risk data:", error));
+    .catch(error => console.error("Error fetching RSPO shapefile with forecast:", error));
 
-  fetch(BACKEND_URL + "/aqueduct")
-    .then(res => res.json())
-    .then(geojson => {
-      function getColor(label) {
-        switch (label) {
-          case "No Risk": return "#00cc66";
-          case "Low (0 to 9 in 1,000,000)": return "#ccff33";
-          case "Low - Medium (9 in 1,000,000 to 7 in 100,000)": return "#ffff66";
-          case "Medium - High (7 in 100,000 to 3 in 10,000)": return "#ffcc00";
-          case "High (3 in 10,000 to 2 in 1,000)": return "#ff6600";
-          case "Extremely High (more than 2 in 1,000)": return "#cc0000";
-          case "No Data": return "#999999";
-          default: return "#999999";
-        }
-      }
-      cfrlayer = L.geoJSON(geojson, {
-        style: function(feature) {
-          const label = feature.properties.cfr_label || "N/A";
-          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-        },
-        onEachFeature: function(feature, layer) {
-          const label = feature.properties.cfr_label || "N/A";
-          const tooltipContent = `<b>Coastal Flood Risk Label:</b> ${label}`;
-          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-        }
-      });
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching coastal flood risk data:", error));
+  function getUniqueDates() {
+    const dates = [...new Set(allForecastData.map(f => f.properties.date))];
+    return dates.sort();
+  }
 
-  fetch(BACKEND_URL + "/aqueduct")
-    .then(res => res.json())
-    .then(geojson => {
-      function getColor(label) {
-        switch (label) {
-          case "Medium (0.4-0.6)": return "#FFD700";
-          case "Medium - High (0.6-0.8)": return "#FFA500";
-          case "High (0.8-1.0)": return "#FF4500";
-          case "No Data": return "#D3D3D3";
-          default: return "#D3D3D3";
-        }
-      }
-      drrlayer = L.geoJSON(geojson, {
-        style: function(feature) {
-          const label = feature.properties.drr_label || "N/A";
-          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-        },
-        onEachFeature: function(feature, layer) {
-          const label = feature.properties.drr_label || "N/A";
-          const tooltipContent = `<b>Drought Risk Label:</b> ${label}`;
-          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-        }
-      });
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching drought risk data:", error));
+  function initDateSlider() {
+    const dates = getUniqueDates();
+    const slider = document.getElementById("dateSlider");
+    const label = document.getElementById("sliderLabel");
 
-  fetch(BACKEND_URL + "/weather_stations")
-    .then(res => res.json())
-    .then(stationData => {
-      stationData.forEach(station => {
-        const lat = station.Latitude;
-        const lon = station.Longitude;
-        const name = station.location_name;
-        const forecast = station.forecast_with_dates;
-        const crossIcon = L.divIcon({
-          className: 'custom-cross-icon',
-          html: '<div style="color: yellow; font-weight: bold; font-size: 18px;">+</div>',
-          iconSize: [15, 15],
-          iconAnchor: [5, 5]
-        });
-        const marker = L.marker([lat, lon], { icon: crossIcon });
-        const tooltipContent = `<b>${name}</b><br><div style="font-size: 12px;">${forecast}</div>`;
-        marker.bindTooltip(tooltipContent, { direction: 'top', permanent: false, className: 'leaflet-tooltip', sticky: true });
-        marker.addTo(map);
-      });
-    })
-    .catch(error => console.error("Error fetching weather stations:", error));
+    slider.min = 0;
+    slider.max = dates.length - 1;
+    slider.value = 0;
+    label.innerText = `Date: ${dates[0]}`;
 
-  function addLayerControl() {
-    if (rspolayer && oplayer && millslayer && rfrlayer && cfrlayer && drrlayer && !map.layerControlAdded) {
-      rspolayer.addTo(map);
-      oplayer.addTo(map);
-      millslayer.addTo(map);
-      const overlayMaps = {
-        "RSPO Plantation": rspolayer,
-        "Oil Palm Concessions": oplayer,
-        "Mills": millslayer,
-        "Riverine flood risk": rfrlayer,
-        "Coastal flood risk": cfrlayer,
-        "Drought risk": drrlayer
-      };
-      L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
-      map.layerControlAdded = true;
+    slider.oninput = function () {
+      const selectedDate = dates[this.value];
+      label.innerText = `Date: ${selectedDate}`;
+      updateForecastLayer(selectedDate);
+    };
+  }
+
+  function updateForecastLayer(selectedDate) {
+    if (forecastLayer) {
+      forecastLayer.clearLayers();
+    } else {
+      forecastLayer = L.layerGroup().addTo(map);
     }
-  }*/
 
-let map;
-let rspolayer, oplayer, millslayer, rfrlayer, cfrlayer, drrlayer;
+    const filtered = allForecastData.filter(f => f.properties.date === selectedDate);
 
-async function initMpobStats() {
-  const mapContainer = document.getElementById("map");
-  if (!mapContainer) return;
+    // Create all markers
+    const markers = filtered.map(feature => {
+      const props = feature.properties;
+      const lat = props.Latitude;
+      const lng = props.Longitude;
+      const color = getColor(props.summary_forecast);
 
-  map = L.map("map").setView([4.310756684156521, 108.3481479634814], 6);
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: 'Map data © OpenStreetMap contributors'
-  }).addTo(map);
-
-  // fetch(BACKEND_URL + "/rsposhapefile")
-  //   .then(res => res.json())
-  //   .then(geojson => {
-  //     rspolayer = L.geoJSON(geojson, {
-  //       style: { color: "green", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
-  //       onEachFeature: function(feature, layer) {
-  //         const company = feature.properties.company || "N/A";
-  //         const plantation = feature.properties.plantation || "N/A";
-  //         const tooltipContent = `<b>Company:</b> ${company}<br><b>Plantation:</b> ${plantation}`;
-  //         layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-  //       }
-  //     });
-  //     rspolayer.addTo(map);
-  //     addLayerControl();
-  //   })
-  //   .catch(error => console.error("Error fetching RSPO shapefile:", error));
-
-  // fetch(BACKEND_URL + "/opshapefile")
-  //   .then(res => res.json())
-  //   .then(geojson => {
-  //     oplayer = L.geoJSON(geojson, {
-  //       style: { color: "blue", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
-  //       onEachFeature: function(feature, layer) {
-  //         const company = feature.properties.company || "N/A";
-  //         const name = feature.properties.name || "N/A";
-  //         const tooltipContent = `<b>Company:</b> ${company}<br><b>Name:</b> ${name}`;
-  //         layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-  //       }
-  //     });
-  //     oplayer.addTo(map);
-  //     addLayerControl();
-  //   })
-  //   .catch(error => console.error("Error fetching OP shapefile:", error));
-
-  fetch(BACKEND_URL + "/mills")
-    .then(res => res.json())
-    .then(geojson => {
-      millslayer = L.geoJSON(geojson, {
-        pointToLayer: function(feature, latlng) {
-          return L.circleMarker(latlng, { radius: 1, fillColor: "black", color: "#000", weight: 0.8, opacity: 1, fillOpacity: 0.8 });
-        },
-        onEachFeature: function(feature, layer) {
-          const name = feature.properties.Mill_Name || "Unknown";
-          const company = feature.properties.Parent_Com || "Unknown";
-          layer.bindTooltip(`<b>Mill:</b> ${name}<br><b>Company:</b> ${company}`);
-        }
+      const marker = L.circleMarker([lat, lng], {
+        radius: 5,
+        fillColor: color,
+        color: "#333",
+        weight: 0.7,
+        opacity: 1,
+        fillOpacity: 0.8
       });
-      millslayer.addTo(map);
-      addLayerControl();
-    })
-    .catch(error => console.error("Error fetching mills data:", error));
 
-  // fetch(BACKEND_URL + "/aqueduct")
-  //   .then(res => res.json())
-  //   .then(geojson => {
-  //     function getColor(label) {
-  //       switch (label) {
-  //         case "No Data": return "#999999";
-  //         case "Low (0 to 1 in 1,000)": return "#ffff99";
-  //         case "Low - Medium (1 in 1,000 to 2 in 1,000)": return "#ffcc33";
-  //         case "Medium - High (2 in 1,000 to 6 in 1,000)": return "#ff6600";
-  //         case "High (6 in 1,000 to 1 in 100)": return "#ff3300";
-  //         case "Extremely High (more than 1 in 100)": return "#cc0000";
-  //         default: return "#cccccc";
-  //       }
-  //     }
-  //     rfrlayer = L.geoJSON(geojson, {
-  //       style: function(feature) {
-  //         const label = feature.properties.rfr_label || "N/A";
-  //         return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-  //       },
-  //       onEachFeature: function(feature, layer) {
-  //         const label = feature.properties.rfr_label || "N/A";
-  //         const tooltipContent = `<b>Riverine Flood Risk Label:</b> ${label}`;
-  //         layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-  //       }
-  //     });
-  //     addLayerControl();
-  //   })
-  //   .catch(error => console.error("Error fetching riverine flood risk data:", error));
+      const tooltipContent = `
+        <b>Plantation:</b> ${props.plantation}<br/>
+        <b>Company:</b> ${props.company}<br/>
+        <b>Date:</b> ${props.date}<br/>
+        <b>Forecast:</b> ${props.summary_forecast}<br/>
+        <b>Temp:</b> ${props.min_temp}–${props.max_temp} °C<br/>
+        <b>Station:</b> ${props.nearest_station} (${props.distance_km} km)
+      `;
 
-  // fetch(BACKEND_URL + "/aqueduct")
-  //   .then(res => res.json())
-  //   .then(geojson => {
-  //     function getColor(label) {
-  //       switch (label) {
-  //         case "No Risk": return "#00cc66";
-  //         case "Low (0 to 9 in 1,000,000)": return "#ccff33";
-  //         case "Low - Medium (9 in 1,000,000 to 7 in 100,000)": return "#ffff66";
-  //         case "Medium - High (7 in 100,000 to 3 in 10,000)": return "#ffcc00";
-  //         case "High (3 in 10,000 to 2 in 1,000)": return "#ff6600";
-  //         case "Extremely High (more than 2 in 1,000)": return "#cc0000";
-  //         case "No Data": return "#999999";
-  //         default: return "#999999";
-  //       }
-  //     }
-  //     cfrlayer = L.geoJSON(geojson, {
-  //       style: function(feature) {
-  //         const label = feature.properties.cfr_label || "N/A";
-  //         return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-  //       },
-  //       onEachFeature: function(feature, layer) {
-  //         const label = feature.properties.cfr_label || "N/A";
-  //         const tooltipContent = `<b>Coastal Flood Risk Label:</b> ${label}`;
-  //         layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-  //       }
-  //     });
-  //     addLayerControl();
-  //   })
-  //   .catch(error => console.error("Error fetching coastal flood risk data:", error));
+      marker.bindTooltip(tooltipContent, {
+        direction: 'top',
+        sticky: true,
+        opacity: 0.9,
+        className: 'leaflet-tooltip'
+      });
 
-  // fetch(BACKEND_URL + "/aqueduct")
-  //   .then(res => res.json())
-  //   .then(geojson => {
-  //     function getColor(label) {
-  //       switch (label) {
-  //         case "Medium (0.4-0.6)": return "#FFD700";
-  //         case "Medium - High (0.6-0.8)": return "#FFA500";
-  //         case "High (0.8-1.0)": return "#FF4500";
-  //         case "No Data": return "#D3D3D3";
-  //         default: return "#D3D3D3";
-  //       }
-  //     }
-  //     drrlayer = L.geoJSON(geojson, {
-  //       style: function(feature) {
-  //         const label = feature.properties.drr_label || "N/A";
-  //         return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
-  //       },
-  //       onEachFeature: function(feature, layer) {
-  //         const label = feature.properties.drr_label || "N/A";
-  //         const tooltipContent = `<b>Drought Risk Label:</b> ${label}`;
-  //         layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
-  //       }
-  //     });
-  //     addLayerControl();
-  //   })
-  //   .catch(error => console.error("Error fetching drought risk data:", error));
+      return marker;
+    });
 
-  fetch(BACKEND_URL + "/weather_stations")
-    .then(res => res.json())
-    .then(stationData => {
-      stationData.forEach(station => {
-        const lat = station.Latitude;
-        const lon = station.Longitude;
-        const name = station.location_name;
-        const forecast = station.forecast_with_dates;
-        const crossIcon = L.divIcon({
-          className: 'custom-cross-icon',
-          html: '<div style="color: yellow; font-weight: bold; font-size: 18px;">+</div>',
-          iconSize: [15, 15],
-          iconAnchor: [5, 5]
+    // Add markers to the forecast layer
+    markers.forEach(marker => forecastLayer.addLayer(marker));
+
+    // Add layer control if not already added
+    addLayerControl();
+  }
+
+  function loadMillData() {
+    fetch(BACKEND_URL + "/mills")
+      .then(res => res.json())
+      .then(data => {
+        millCluster = L.markerClusterGroup();
+
+        const millLayer = L.geoJSON(data, {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {
+              icon: L.divIcon({
+                html: '<i class="fas fa-industry" style="color: brown; font-size: 18px;"></i>',
+                className: '',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+              })
+            });
+          },
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties;
+            const tooltip = `
+              <b>Mill:</b> ${props.Mill_Name}<br/>
+              <b>Company:</b> ${props.Parent_Com}<br/>
+              <b>Group:</b> ${props.Group_Name}<br/>
+              <b>RSPO:</b> ${props.RSPO_Statu}
+            `;
+            layer.bindTooltip(tooltip, {
+              direction: 'top',
+              sticky: true,
+              className: 'leaflet-tooltip'
+            });
+          }
         });
-        const marker = L.marker([lat, lon], { icon: crossIcon });
-        const tooltipContent = `<b>${name}</b><br><div style="font-size: 12px;">${forecast}</div>`;
-        marker.bindTooltip(tooltipContent, { direction: 'top', permanent: false, className: 'leaflet-tooltip', sticky: true });
-        marker.addTo(map);
-      });
-    })
-    .catch(error => console.error("Error fetching weather stations:", error));
+
+        millCluster.addLayer(millLayer);
+        map.addLayer(millCluster);
+
+        // Add layer control after mill data is loaded
+        addLayerControl();
+      })
+      .catch(err => console.error("Error fetching mill data:", err));
+  }
 
   function addLayerControl() {
-    if (millslayer && !map.layerControlAdded) {
-      millslayer.addTo(map);
+    if (forecastLayer && millCluster && !layerControl) {
       const overlayMaps = {
-        "Mills": millslayer
+        "🌿 Palm Oil Estates (RSPO)": forecastLayer,
+        "🏭 Palm Oil Mills": millCluster
       };
-      L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
-      map.layerControlAdded = true;
+
+      layerControl = L.control.layers(baseLayers, overlayMaps, {
+        position: 'topright',
+        collapsed: false
+      }).addTo(map);
     }
   }
 
@@ -1939,33 +1815,48 @@ async function initMpobStats() {
     }
   }
 
-  async function initializeWeatherSlider() {
+  async function initializeWeatherDropdown() {
     const weatherData = await fetchWeatherData();
-    const slider = document.getElementById('date-slider');
-    const dateDisplay = document.getElementById('selected-date');
-    if (!slider || !dateDisplay || weatherData.length === 0) {
-      console.error('Weather slider elements or data missing');
+    const dropdown = document.getElementById('date-select');
+    const dateDisplay = document.getElementById('selected-date'); // Optional
+
+    if (!dropdown || weatherData.length === 0) {
+      console.error('Weather dropdown element or data missing');
       return;
     }
 
-    slider.max = weatherData.length - 1;
+    // Populate dropdown options
+    dropdown.innerHTML = ''; // Clear existing options
+    weatherData.forEach((item, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = item.date.split('T')[0];
+      dropdown.appendChild(option);
+    });
 
+    // Update UI values
     function updateDisplay(selectedIndex) {
       const selectedData = weatherData[selectedIndex];
-      dateDisplay.textContent = selectedData.date.split('T')[0];
+      const date = selectedData.date.split('T')[0];
+
+      if (dateDisplay) dateDisplay.textContent = date;
       document.getElementById('tiada-hujan-value').textContent = selectedData.TiadaHujan || 0;
       document.getElementById('berangin-value').textContent = selectedData.Berangin || 0;
       document.getElementById('hujan-value').textContent = selectedData.Hujan || 0;
       document.getElementById('ribut-petir-value').textContent = selectedData.RibutPetir || 0;
     }
 
+    // Initial display
     updateDisplay(0);
-    slider.addEventListener('input', function() {
+
+    // On change event
+    dropdown.addEventListener('change', function () {
       updateDisplay(parseInt(this.value));
     });
   }
 
-  initializeWeatherSlider();
+  initializeWeatherDropdown();
+
 
   // CFR bar chart
   fetch(BACKEND_URL + "/cfr-bar-top6")

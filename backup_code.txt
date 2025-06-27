@@ -1746,3 +1746,198 @@ fetch(BACKEND_URL + "/drr-bar-top6")
 //MISCELLANEOUS
 
 //ENDING OF JAVASCRIPT FROM HERE
+
+
+// FOR GEOGRAPHY
+/*
+// MPOB INITIALIZATION
+let map;
+let rspolayer, oplayer, millslayer, rfrlayer, cfrlayer, drrlayer;
+
+async function initMpobStats() {
+  const mapContainer = document.getElementById("map");
+  if (!mapContainer) return;
+
+  map = L.map("map").setView([4.310756684156521, 108.3481479634814], 6);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: 'Map data © OpenStreetMap contributors'
+  }).addTo(map);
+
+  fetch(BACKEND_URL + "/rsposhapefile")
+    .then(res => res.json())
+    .then(geojson => {
+      rspolayer = L.geoJSON(geojson, {
+        style: { color: "green", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
+        onEachFeature: function(feature, layer) {
+          const company = feature.properties.company || "N/A";
+          const plantation = feature.properties.plantation || "N/A";
+          const tooltipContent = `<b>Company:</b> ${company}<br><b>Plantation:</b> ${plantation}`;
+          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
+        }
+      });
+      rspolayer.addTo(map);
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching RSPO shapefile:", error));
+
+  fetch(BACKEND_URL + "/opshapefile")
+    .then(res => res.json())
+    .then(geojson => {
+      oplayer = L.geoJSON(geojson, {
+        style: { color: "blue", weight: 1.5, opacity: 0.7, fillOpacity: 0.3 },
+        onEachFeature: function(feature, layer) {
+          const company = feature.properties.company || "N/A";
+          const name = feature.properties.name || "N/A";
+          const tooltipContent = `<b>Company:</b> ${company}<br><b>Name:</b> ${name}`;
+          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
+        }
+      });
+      oplayer.addTo(map);
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching OP shapefile:", error));
+
+  fetch(BACKEND_URL + "/mills")
+    .then(res => res.json())
+    .then(geojson => {
+      millslayer = L.geoJSON(geojson, {
+        pointToLayer: function(feature, latlng) {
+          return L.circleMarker(latlng, { radius: 1, fillColor: "black", color: "#000", weight: 0.8, opacity: 1, fillOpacity: 0.8 });
+        },
+        onEachFeature: function(feature, layer) {
+          const name = feature.properties.Mill_Name || "Unknown";
+          const company = feature.properties.Parent_Com || "Unknown";
+          layer.bindTooltip(`<b>Mill:</b> ${name}<br><b>Company:</b> ${company}`);
+        }
+      });
+      millslayer.addTo(map);
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching mills data:", error));
+
+  fetch(BACKEND_URL + "/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+        switch (label) {
+          case "No Data": return "#999999";
+          case "Low (0 to 1 in 1,000)": return "#ffff99";
+          case "Low - Medium (1 in 1,000 to 2 in 1,000)": return "#ffcc33";
+          case "Medium - High (2 in 1,000 to 6 in 1,000)": return "#ff6600";
+          case "High (6 in 1,000 to 1 in 100)": return "#ff3300";
+          case "Extremely High (more than 1 in 100)": return "#cc0000";
+          default: return "#cccccc";
+        }
+      }
+      rfrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+          const label = feature.properties.rfr_label || "N/A";
+          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
+        },
+        onEachFeature: function(feature, layer) {
+          const label = feature.properties.rfr_label || "N/A";
+          const tooltipContent = `<b>Riverine Flood Risk Label:</b> ${label}`;
+          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
+        }
+      });
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching riverine flood risk data:", error));
+
+  fetch(BACKEND_URL + "/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+        switch (label) {
+          case "No Risk": return "#00cc66";
+          case "Low (0 to 9 in 1,000,000)": return "#ccff33";
+          case "Low - Medium (9 in 1,000,000 to 7 in 100,000)": return "#ffff66";
+          case "Medium - High (7 in 100,000 to 3 in 10,000)": return "#ffcc00";
+          case "High (3 in 10,000 to 2 in 1,000)": return "#ff6600";
+          case "Extremely High (more than 2 in 1,000)": return "#cc0000";
+          case "No Data": return "#999999";
+          default: return "#999999";
+        }
+      }
+      cfrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+          const label = feature.properties.cfr_label || "N/A";
+          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
+        },
+        onEachFeature: function(feature, layer) {
+          const label = feature.properties.cfr_label || "N/A";
+          const tooltipContent = `<b>Coastal Flood Risk Label:</b> ${label}`;
+          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
+        }
+      });
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching coastal flood risk data:", error));
+
+  fetch(BACKEND_URL + "/aqueduct")
+    .then(res => res.json())
+    .then(geojson => {
+      function getColor(label) {
+        switch (label) {
+          case "Medium (0.4-0.6)": return "#FFD700";
+          case "Medium - High (0.6-0.8)": return "#FFA500";
+          case "High (0.8-1.0)": return "#FF4500";
+          case "No Data": return "#D3D3D3";
+          default: return "#D3D3D3";
+        }
+      }
+      drrlayer = L.geoJSON(geojson, {
+        style: function(feature) {
+          const label = feature.properties.drr_label || "N/A";
+          return { color: getColor(label), weight: 1.5, opacity: 0.5, fillOpacity: 0.3, fillColor: getColor(label) };
+        },
+        onEachFeature: function(feature, layer) {
+          const label = feature.properties.drr_label || "N/A";
+          const tooltipContent = `<b>Drought Risk Label:</b> ${label}`;
+          layer.bindTooltip(tooltipContent, { permanent: false, direction: "top", className: "leaflet-tooltip" });
+        }
+      });
+      addLayerControl();
+    })
+    .catch(error => console.error("Error fetching drought risk data:", error));
+
+  fetch(BACKEND_URL + "/weather_stations")
+    .then(res => res.json())
+    .then(stationData => {
+      stationData.forEach(station => {
+        const lat = station.Latitude;
+        const lon = station.Longitude;
+        const name = station.location_name;
+        const forecast = station.forecast_with_dates;
+        const crossIcon = L.divIcon({
+          className: 'custom-cross-icon',
+          html: '<div style="color: yellow; font-weight: bold; font-size: 18px;">+</div>',
+          iconSize: [15, 15],
+          iconAnchor: [5, 5]
+        });
+        const marker = L.marker([lat, lon], { icon: crossIcon });
+        const tooltipContent = `<b>${name}</b><br><div style="font-size: 12px;">${forecast}</div>`;
+        marker.bindTooltip(tooltipContent, { direction: 'top', permanent: false, className: 'leaflet-tooltip', sticky: true });
+        marker.addTo(map);
+      });
+    })
+    .catch(error => console.error("Error fetching weather stations:", error));
+
+  function addLayerControl() {
+    if (rspolayer && oplayer && millslayer && rfrlayer && cfrlayer && drrlayer && !map.layerControlAdded) {
+      rspolayer.addTo(map);
+      oplayer.addTo(map);
+      millslayer.addTo(map);
+      const overlayMaps = {
+        "RSPO Plantation": rspolayer,
+        "Oil Palm Concessions": oplayer,
+        "Mills": millslayer,
+        "Riverine flood risk": rfrlayer,
+        "Coastal flood risk": cfrlayer,
+        "Drought risk": drrlayer
+      };
+      L.control.layers(null, overlayMaps, { position: 'topright', collapsed: false }).addTo(map);
+      map.layerControlAdded = true;
+    }
+  }*/

@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+  .leaflet-interactive {transition: fill 0.4s ease, stroke 0.4s ease, r 0.3s ease, opacity 0.4s ease;}
+  </style>
   <script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
@@ -17,19 +21,27 @@
     // Protect Chart.js from AnyChart namespace conflicts
     window.ChartJS = Chart;
   </script>
+  <!-- Load Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Load MarkerCluster plugin (after Leaflet!) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </head>
 <body class="font-sans bg-gray-50 text-black min-h-screen flex">
   <!-- Sidebar -->
   <aside class="w-64 min-h-screen sticky top-0 bg-white shadow-md p-6 flex flex-col justify-between">
     <div>
+      
       <h2 class="text-2xl font-bold mb-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
       <nav class="space-y-4" id="sidebar-nav">
-        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Mainpage</a>
-        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company</a>
-        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodities</a>
-        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Geography</a>
-        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Trades</a>
+        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Market Overview</a>
+        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company Profiles</a>
+        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodity Trends</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Geography Insights</a>
+        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Trade Chain & Flows</a>
         <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
         <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
       </nav>
@@ -51,10 +63,12 @@
       <div class="flex flex-wrap justify-center gap-6 mb-8">
         <!-- Treemap container -->
         <div class="w-full md:w-[48%] border rounded-lg shadow">
+          <div class="p-2 font-medium text-sm text-[#345f3c]">📊 Plantation Stock Treemap</div>
           <div id="treemap" class="h-[400px]"></div>
         </div>
         <!-- KLCI Chart container -->
         <div class="w-full md:w-[48%] border rounded-lg shadow">
+          <div class="p-2 font-medium text-sm text-[#345f3c]">📈 KLCI vs Plantation Performance</div>
           <div class="relative h-[400px]">
             <canvas id="klciChart" class="absolute inset-0 w-full h-full"></canvas>
           </div>
@@ -63,30 +77,29 @@
 
       <!-- Scorecards Row -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="scoreCards">
-        <!-- Cards will be injected by JS -->
+        <!-- Cards injected by JS -->
       </div>
 
-      <div class="flex justify-center space-x-4">
+      <!-- Navigation Buttons -->
+      <div class="flex justify-center space-x-4 mb-12">
         <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
         <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
       </div>
 
-      <!-- Section Heading -->
+      <!-- News Heading -->
       <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
-        Latest Palm Oil News
+        📰 Latest Palm Oil News
       </h2>
 
       <!-- AI Summary Output -->
-      <div id="aiSummary" class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto" style="font-family: 'Inter', sans-serif;">
-        <!-- AI summary will be inserted here -->
+      <div id="aiSummary" class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto mb-6" style="font-family: 'Inter', sans-serif;">
         <p><em>Loading AI summary...</em></p>
       </div>
 
-      <!-- Table -->
-      <div id="newsCards" class="flex flex-col gap-4 mt-8">
+      <!-- News Cards -->
+      <div id="newsCards" class="flex flex-col gap-4 mt-4">
         <!-- News cards will be dynamically injected here -->
       </div>
-
     </section>
 
     <section id="company" class="tab-content hidden font-[Inter]">
@@ -207,87 +220,115 @@
     </section>
 
     <section id="commodities" class="tab-content hidden">
-      <div class="flex flex-col space-y-8">
-        <!-- Row 1 -->
-        <div class="flex flex-row space-x-8">
-          <!-- MPOB Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
-            <canvas id="mpobChart" class="w-full h-full"></canvas>
-          </div>
-          <!-- Soybean Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
-            <canvas id="soy-price-chart" class="w-full h-full"></canvas>
-          </div>
+      <!-- Section Header -->
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">🌾 Commodity Market Insights</h2>
+        <p class="text-gray-700 mt-2 max-w-4xl" style="font-family: 'Inter', sans-serif;">
+          This section presents key commodities that influence palm oil markets — including crop prices, fuel costs, and agricultural inputs. Use the insights below to monitor external factors affecting plantation economics.
+        </p>
+      </div>
+
+      <!-- Grid Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- MPOB Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
+          <p class="text-sm text-gray-600 mb-2">Latest official data from MPOB including production, stocks, and exports.</p>
+          <canvas id="mpobChart" class="w-full h-full"></canvas>
         </div>
-        <!-- Row 2 -->
-        <div class="flex flex-row space-x-8">
-          <!-- Fertilizer Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
-            <canvas id="fert-chart" class="w-full h-full"></canvas>
-          </div>
-          <!-- Diesel Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
-            <canvas id="diesel-chart" class="w-full h-full"></canvas>
-          </div>
+
+        <!-- Soybean Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
+          <p class="text-sm text-gray-600 mb-2">Global soybean prices — a key substitute for palm oil in the vegetable oil market.</p>
+          <canvas id="soy-price-chart" class="w-full h-full"></canvas>
         </div>
-        <!-- Row 3 -->
-        <div class="flex flex-row space-x-8">
-          <!-- Crude Oil Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
-            <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
-          </div>
-          <!-- Brent Oil Chart -->
-          <div class="h-[600px] flex-1 bg-white rounded-lg shadow-md m-2 p-4">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
-            <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
-          </div>
+
+        <!-- Fertilizer Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
+          <p class="text-sm text-gray-600 mb-2">Urea and NPK price trends impacting upstream production costs.</p>
+          <canvas id="fert-chart" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Diesel Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
+          <p class="text-sm text-gray-600 mb-2">Diesel is a major cost component for machinery and logistics in plantations.</p>
+          <canvas id="diesel-chart" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Crude Oil Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
+          <p class="text-sm text-gray-600 mb-2">Crude oil influences biodiesel demand and energy-related plantation costs.</p>
+          <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
+        </div>
+
+        <!-- Brent Oil Chart -->
+        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
+          <p class="text-sm text-gray-600 mb-2">Global benchmark for oil — used for hedging and price benchmarking.</p>
+          <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
         </div>
       </div>
     </section>
 
     <section id="mpobstats" class="tab-content hidden">
       <!-- Section Title -->
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Map</h2>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Geography</h2>
       </div>
-      <!-- Map -->
-      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px;"></div>
-      <!-- Gap after map -->
-      <div class="my-8"></div>
-      <!-- Weather Forecast Section -->
-      <div class="my-8 p-6 bg-white rounded-lg shadow-md" style="font-family: 'Inter', sans-serif;">
-        <!-- Title + Slider Row -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <!-- Title -->
-          <h3 class="text-lg font-semibold" style="color: #345f3c;">
-            Palm Oil's Concessions 7-Day Weather Forecast Summary
-            <span title="Shows weather distribution across palm oil concessions">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-              </svg>
-            </span>
-          </h3>
-          <!-- Slider + Date -->
-          <div class="flex-1 md:max-w-md">
-            <input
-              type="range"
-              id="date-slider"
-              min="0"
-              max="6"
-              value="0"
-              class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            >
-            <div id="selected-date" class="text-center font-medium mt-1" style="color: #345f3c;">2025-06-14</div>
-          </div>
+
+      <!-- Map Section -->
+      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Plantation Map & Forecast Slider</h3>
+      <p class="text-gray-600 mb-4">
+        View and interact with the palm oil map. Use the date slider below to view weather overlays over time. Colored regions represent varying rainfall conditions across plantation areas.
+      </p>
+      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px; position: relative;">
+        <!-- Slider inside map -->
+        <div id="sliderContainer"
+          style="
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.85);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+          ">
+          <label id="sliderLabel" class="block mb-2 text-sm font-medium text-gray-700">
+            Date:
+          </label>
+          <input type="range" id="dateSlider" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" />
         </div>
+      </div>
+
+      <!-- Weather Forecast Section -->
+      <div id="forecast" class="my-10 p-6 bg-white rounded-lg shadow-md" style="font-family: 'Inter', sans-serif;">
+        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">
+          🌦️ Palm Oil Estates 7-Day Weather Forecast Summary
+        </h3>
+        <p class="text-gray-600 mb-4">
+          This section shows the number of palm oil plantation areas under different forecasted weather conditions (clear, windy, rainy, storm) over the next 7 days.
+        </p>
+
+        <div class="flex flex-col items-center justify-center md:max-w-md w-full mx-auto">
+          <label for="date-select" class="mb-2 text-sm font-medium text-gray-700 text-center">
+            Select Date:
+          </label>
+          <select
+            id="date-select"
+            class="block w-full max-w-xs p-2 border border-gray-300 rounded-md text-sm text-center"
+            style="font-family: 'Inter', sans-serif; color: #345f3c;"
+          ></select>
+        </div>
+
         <!-- Scorecards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <!-- Tiada Hujan / Cerah -->
+          <!-- Cerah -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #f8fff8; border-left: 4px solid #2ecc71;">
               <div class="flex-1">
@@ -299,6 +340,7 @@
               </svg>
             </div>
           </div>
+
           <!-- Berangin -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #f8f9ff; border-left: 4px solid #dad01a;">
@@ -311,6 +353,7 @@
               </svg>
             </div>
           </div>
+
           <!-- Hujan -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #faf5ff; border-left: 4px solid #cc6e0a;">
@@ -323,6 +366,7 @@
               </svg>
             </div>
           </div>
+
           <!-- Ribut Petir -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #fff5f5; border-left: 4px solid #e74c3c;">
@@ -338,48 +382,53 @@
         </div>
       </div>
 
-      <div class="flex justify-between items-center mb-2">
-        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil related Aqueduct Risks</h2>
-      </div>
-      <!-- Charts Section -->
-      <div class="space-y-10">
-        <!-- Chart 1: Coastal Flood Risk -->
-        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
-          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
-            Coastal Flood Risk Composition
-            <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-              </svg>
-            </span>
-          </h3>
-          <canvas id="cfr-bar-chart"></canvas>
-        </div>
+      <!-- Aqueduct Risks -->
+      <div id="risks" class="my-10">
+        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌊 Palm Oil Related Environmental Risks</h3>
+        <p class="text-gray-600 mb-4">
+          The following risk breakdowns are derived from the Aqueduct Global Water Risk Atlas and assess the vulnerability of plantation areas to flooding and drought conditions.
+        </p>
 
-        <!-- Chart 2: Riverine Flood Risk -->
-        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
-          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
-            Riverine Flood Risk Composition
-            <span title="Riverine floods occur when rivers overflow their banks due to prolonged rainfall or snowmelt. Areas near large rivers and floodplains are especially vulnerable.">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-              </svg>
-            </span>
-          </h3>
-          <canvas id="rfr-bar-chart"></canvas>
-        </div>
+        <!-- Charts Section -->
+        <div class="space-y-10">
+          <!-- Chart 1 -->
+          <div class="bg-white rounded-lg shadow-md m-2 p-4">
+            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+              Coastal Flood Risk Composition
+              <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+              </span>
+            </h4>
+            <canvas id="cfr-bar-chart"></canvas>
+          </div>
 
-        <!-- Chart 3: Drought Risk -->
-        <div class = "bg-white rounded-lg shadow-md m-2 p-4">
-          <h3 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">
-            Drought Risk Composition
-            <span title="Drought risk refers to the probability of water shortages caused by prolonged periods of low rainfall. It affects agriculture, water supply, and ecosystems.">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-              </svg>
-            </span>
-          </h3>
-          <canvas id="drr-bar-chart"></canvas>
+          <!-- Chart 2 -->
+          <div class="bg-white rounded-lg shadow-md m-2 p-4">
+            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+              Riverine Flood Risk Composition
+              <span title="Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+              </span>
+            </h4>
+            <canvas id="rfr-bar-chart"></canvas>
+          </div>
+
+          <!-- Chart 3 -->
+          <div class="bg-white rounded-lg shadow-md m-2 p-4">
+            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+              Drought Risk Composition
+              <span title="Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity.">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+              </span>
+            </h4>
+            <canvas id="drr-bar-chart"></canvas>
+          </div>
         </div>
       </div>
     </section>
@@ -457,26 +506,46 @@
     </section>
 
     <section id="aboutus" class="tab-content hidden">
-      <div class="flex flex-col items-center justify-center min-h-screen p-8">
-        <!-- Profile Picture & Name Container -->
-        <div class="flex items-center mb-6">
-          <!-- Circular Profile Picture Frame -->
-          <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-blue-200 overflow-hidden mr-6">
-            <img src="static/my_pfp.jpg" alt="Derrick Gan" class="w-full h-full object-cover">
+      <div class="flex flex-col md:flex-row items-center justify-center min-h-screen p-8 gap-8">
+  
+        <!-- Derrick Gan Card -->
+        <div class="bg-white shadow-lg border rounded-xl p-6 w-full md:w-1/2 text-center">
+          <!-- Profile Picture -->
+          <div class="flex justify-center mb-4">
+            <img src="static/my_pfp.jpg" alt="Derrick Gan" class="w-32 h-32 rounded-full border-4 border-blue-200 object-cover">
           </div>
-          <!-- Name -->
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Derrick Gan</h1>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Derrick Gan</h1>
+          <p class="text-xl md:text-2xl text-blue-600 font-medium mb-2">Data Engineer</p>
+          <div class="text-lg text-gray-600 mb-2">
+            Developer and Data Scientist of Bursa PalmAI
+          </div>
+          <div class="flex justify-center items-center gap-2 text-gray-700 mt-2">
+            <i class="fab fa-github text-2xl"></i>
+            <a href="https://github.com/derrickgzq" target="_blank" class="hover:underline hover:text-black font-mono">@derrickgzq</a>
+          </div>
         </div>
-        <!-- Title -->
-        <p class="text-xl md:text-2xl text-blue-600 font-medium mb-4">Data Engineer at Maybank</p>
-        <!-- Details -->
-        <div class="flex items-center text-lg text-gray-600 space-x-4">
-          <span>Gym Enthusiast</span>
-          <span class="text-gray-300">|</span>
-          <span>Founder of Bursa PalmAI</span>
+
+        <!-- Azrul Hakimi Card -->
+        <div class="bg-white shadow-lg border rounded-xl p-6 w-full md:w-1/2 text-center">
+          <!-- Profile Picture -->
+          <div class="flex justify-center mb-4">
+            <img src="static/kimi_pfp.jpg" alt="Azrul Hakimi" class="w-32 h-32 rounded-full border-4 border-green-200 object-cover">
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Azrul Hakimi</h1>
+          <p class="text-xl md:text-2xl text-green-600 font-medium mb-2">Front-End Developer</p>
+          <div class="text-lg text-gray-600 mb-2">
+            Advisor of Bursa PalmAI
+          </div>
+          <div class="flex justify-center items-center gap-2 text-gray-700 mt-2">
+            <i class="fab fa-github text-2xl"></i>
+            <a href="https://github.com/rulkimi" target="_blank" class="hover:underline hover:text-black font-mono">@rulkimi</a>
+          </div>
         </div>
+
       </div>
+
     </section>
+
 
     <footer class="mt-10 text-center text-sm text-gray-700">
       © 2025 Bursa PalmAI. All rights reserved.

@@ -50,53 +50,65 @@ app.add_middleware(
 )
 
 #define weather forecast comp
+# 1. Fetch weather forecast
 response = requests.get('https://api.data.gov.my/weather/forecast')
 wfcast_json = response.json()
 wfcast_df = pd.json_normalize(wfcast_json)
 
+# 2. Normalize and clean
 wfcast_df = wfcast_df[['date', 'summary_forecast', 'min_temp', 'max_temp', 'location.location_name']]
 wfcast_df.rename(columns={'location.location_name': 'location_name'}, inplace=True)
-points_df = pd.read_csv('weather_station_base.csv')
+wfcast_df['date'] = pd.to_datetime(wfcast_df['date'])
 
+# 3. Load weather station coordinates
+points_df = pd.read_csv('weather_station_base.csv')  # Has base_latitude, base_longitude
+
+# 4. Merge weather with station coordinates
 rain_table = wfcast_df.merge(points_df, on='location_name', how='left')
 weather_gdf = gpd.GeoDataFrame(
     rain_table,
-    geometry=gpd.points_from_xy(rain_table.Longitude, rain_table.Latitude),
+    geometry=gpd.points_from_xy(rain_table.base_longitude, rain_table.base_latitude),
     crs="EPSG:4326"
 )
-weather_gdf['date'] = pd.to_datetime(weather_gdf['date'])
 
-earliest_date = weather_gdf['date'].min()
+# 5. Load concessions and convert to centroids only
+concessions = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
+concessions = concessions.to_crs("EPSG:4326")
+concessions = concessions[concessions['country'] == 'Malaysia']
 
-concessions = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp").to_crs("EPSG:4326")
-concessions = concessions[concessions['country'].isin(['Malaysia'])]
+# ➤ Convert polygons to centroids and drop heavy geometry
+concessions['geometry'] = concessions.geometry.centroid
+concessions['Latitude'] = concessions.geometry.y
+concessions['Longitude'] = concessions.geometry.x
 
-station_points = weather_gdf[['location_name', 'Longitude', 'Latitude']].drop_duplicates()
-station_points['geometry'] = gpd.points_from_xy(station_points.Longitude, station_points.Latitude)
+# 6. Prepare station GeoDataFrame
+station_points = weather_gdf[['location_name', 'base_longitude', 'base_latitude']].drop_duplicates()
+station_points['geometry'] = gpd.points_from_xy(station_points.base_longitude, station_points.base_latitude)
 station_gdf = gpd.GeoDataFrame(station_points, geometry='geometry', crs='EPSG:4326')
 
-# Find nearest station and calculate distance
+# 7. Match nearest station using geodesic distance (lightweight)
 def get_nearest_station_info(row):
-    concession_centroid = row.geometry.centroid
-    nearest_station = station_gdf.geometry.distance(concession_centroid).sort_values().index[0]
-    nearest_row = station_gdf.loc[nearest_station]
-    
-    # Compute geodesic distance in km
-    dist_km = geodesic(
-        (concession_centroid.y, concession_centroid.x),
-        (nearest_row.Latitude, nearest_row.Longitude)
-    ).km
-    
+    concession_point = (row['Latitude'], row['Longitude'])
+    distances = station_gdf.apply(
+        lambda x: geodesic(concession_point, (x.base_latitude, x.base_longitude)).km,
+        axis=1
+    )
+    nearest_idx = distances.idxmin()
+    nearest_station = station_gdf.loc[nearest_idx]
     return pd.Series({
-        'nearest_station': nearest_row.location_name,
-        'distance_km': round(dist_km, 2)
+        'nearest_station': nearest_station.location_name,
+        'distance_km': round(distances[nearest_idx], 2)
     })
 
-# Apply to concessions
 concessions[['nearest_station', 'distance_km']] = concessions.apply(get_nearest_station_info, axis=1)
 
-# Merge 7-day forecast from the matched station
+# 8. Merge weather forecast from nearest station
 concessions_forecast = pd.merge(concessions, weather_gdf, left_on='nearest_station', right_on='location_name', how='left')
+
+# 9. Drop unneeded geometries to reduce memory
+concessions_forecast = concessions_forecast.drop(columns=['geometry_x', 'geometry_y'], errors='ignore')
+
+# 10. Reset index
 concessions_forecast_comp = concessions_forecast.reset_index(drop=True)
 #define weather forecast comp
 
@@ -278,7 +290,7 @@ def get_news():
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')
+    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')[:5]
 
     data = []
     for item in news_items:
@@ -318,8 +330,8 @@ def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
         
         # Query data for the specific company
         query = f"""
-        SELECT * FROM company_mthly_prod 
-        WHERE company = '{company.upper()}'
+        SELECT * FROM company_monthly_production 
+        WHERE company_short_name = '{company.upper()}'
         """
         
         df = pd.read_sql(query, conn)
@@ -384,8 +396,8 @@ def get_ext_rates(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
     try:
         conn = sqlite3.connect(SQLITE_DB)
         query = """
-        SELECT * FROM company_ext_rate 
-        WHERE UPPER(company) = UPPER(?)
+        SELECT * FROM company_extraction_rate 
+        WHERE UPPER(company_short_name) = UPPER(?)
         """
         
         df = pd.read_sql(query, conn, params=(company,))
@@ -688,14 +700,23 @@ async def weather_stations():
 # rspolayer
 @app.get("/rsposhapefile")
 def get_shapefile():
-    rspo_gdf = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
-    rspo_gdf = rspo_gdf[rspo_gdf['country'].isin(['Malaysia'])]
+    #rspo_gdf = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
+    #rspo_gdf = rspo_gdf[rspo_gdf['country'].isin(['Malaysia'])]
 
-    for col in rspo_gdf.columns:
-        if rspo_gdf[col].dtype.name.startswith("datetime"):
-            rspo_gdf[col] = rspo_gdf[col].astype(str)
+    #for col in rspo_gdf.columns:
+    #    if rspo_gdf[col].dtype.name.startswith("datetime"):
+    #        rspo_gdf[col] = rspo_gdf[col].astype(str)
 
-    rspo_geojson = rspo_gdf.to_crs(epsg=4326).to_json()
+    #rspo_geojson = rspo_gdf.to_crs(epsg=4326).to_json()
+    gdf = df_lab.copy()
+    gdf['geometry'] = gpd.points_from_xy(gdf['Longitude'], gdf['Latitude'])
+    gdf = gpd.GeoDataFrame(gdf, geometry='geometry', crs="EPSG:4326")
+
+    for col in gdf.columns:
+        if pd.api.types.is_datetime64_any_dtype(gdf[col]):
+            gdf[col] = gdf[col].dt.strftime('%Y-%m-%d')
+
+    rspo_geojson = gdf.to_json()
     return JSONResponse(content=json.loads(rspo_geojson))
 
 # oplayer
@@ -716,7 +737,7 @@ def get_shapefile():
 def get_mills():
     try:
         conn = sqlite3.connect(SQLITE_DB)
-        mill_df = pd.read_sql("SELECT * FROM universal_mill_list", conn)
+        mill_df = pd.read_sql("SELECT * FROM universal_mill_list where ISO = 'MYS'", conn)
         
         if mill_df.empty:
             raise HTTPException(
