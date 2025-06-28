@@ -17,6 +17,41 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.anychart.com/releases/8.12.0/js/anychart-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <style>
+    .chart-container {
+      position: relative;
+      height: 600px;
+      max-width: 1000px; /* Constrain maximum width */
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0.5rem auto; /* Center the container */
+      padding: 1rem;
+      box-sizing: border-box; /* Include padding in dimensions */
+      overflow: hidden; /* Prevent overflow */
+    }
+    .dropdown-container {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10; /* Ensure dropdown is above chart */
+    }
+    #chart-select {
+      padding: 5px;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #chart-title {
+      text-align: left; /* Center the title */
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
   <script>
     // Protect Chart.js from AnyChart namespace conflicts
     window.ChartJS = Chart;
@@ -103,117 +138,119 @@
     </section>
 
     <section id="company" class="tab-content hidden font-[Inter]">
-      <div class="p-6 bg-white rounded-lg shadow-md">
-        <!-- Header Section -->
-        <div class="mb-6">
-          <!-- Title and Dropdown in one row -->
-          <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-            <h2 id="company-title" class="text-2xl font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
-              Kuala Lumpur Kepong Berhad
-            </h2>
-            <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
-              <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
-              <option value="IOI|1961.KL">IOI Corporation Berhad</option>
-              <option value="SDG|5285.KL">Sime Darby Guthrie</option>
-              <option value="FGV|5222.KL">FGV Holdings Berhad</option>
-            </select>
-          </div>
-          <!-- Description below -->
-          <p id="company-description" class="text-justify" style="color: #345f3c; font-family: 'Inter', sans-serif;"></p>
+      <!-- Header Section -->
+      <div class="mb-6">
+        <!-- Title and Dropdown -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+          <h2 id="company-title" class="text-2xl font-bold" style="color: #014422;">Kuala Lumpur Kepong Berhad</h2>
+          <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
+            <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
+            <option value="IOI|1961.KL">IOI Corporation Berhad</option>
+            <option value="SDG|5285.KL">Sime Darby Guthrie</option>
+            <option value="FGV|5222.KL">FGV Holdings Berhad</option>
+          </select>
         </div>
+        <!-- Company Description -->
+        <p id="company-description" class="text-justify" style="color: #345f3c;"></p>
+      </div>
 
-        <!-- Charts Section -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Share Price Chart -->
-          <div class="h-[400px] min-h-[300px]">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Company Share Price</h3>
-            <div class="relative h-full w-full">
-              <canvas id="price-chart"></canvas>
-            </div>
-          </div>
-          <!-- Monthly Production Chart -->
-          <div class="h-[400px] min-h-[300px]">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Monthly Production</h3>
-            <div class="relative h-full w-full">
-              <canvas id="prod-chart"></canvas>
-            </div>
+      <!-- Charts: Share Price & Monthly Production -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-gray-50 rounded-lg p-4 shadow">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Company Share Price</h3>
+          <div class="relative h-[400px] min-h-[300px] w-full">
+            <canvas id="price-chart"></canvas>
           </div>
         </div>
 
-        <!-- Quarterly Earnings Chart Section -->
-        <div class="mt-8 h-[450px] min-h-[300px] col-span-1 md:col-span-2">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Company Quarterly Earnings</h3>
-          <div class="relative h-full w-full">
-            <canvas id="earnings-chart"></canvas>
+        <div class="bg-gray-50 rounded-lg p-4 shadow">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Monthly Production</h3>
+          <div class="relative h-[400px] min-h-[300px] w-full">
+            <canvas id="prod-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quarterly Earnings Chart -->
+      <div class="mt-8 bg-gray-50 rounded-lg p-4 shadow">
+        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Company Quarterly Earnings</h3>
+        <div class="relative h-[450px] min-h-[300px] w-full">
+          <canvas id="earnings-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Planted Area & Extraction Rate -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        <div class="bg-gray-50 rounded-lg p-4 shadow">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Planted Area</h3>
+          <div class="relative h-[400px] min-h-[300px] w-full">
+            <canvas id="plt-area-chart"></canvas>
+          </div>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4 shadow">
+          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Extraction Rate</h3>
+          <div class="relative h-[400px] min-h-[300px] w-full">
+            <canvas id="ext-rates-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- In-depth Forecast & Key Metrics -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold mb-4" style="color: #345f3c;">Forecast Highlights & Key Metrics</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Revenue Forecast Box -->
+          <div class="h-[450px] min-h-[450px] bg-gray-50 rounded-lg p-4 shadow">
+            <h4 class="text-md font-medium mb-2" style="color: #345f3c;">Revenue Forecast</h4>
+            <div class="relative h-full w-full">
+              <canvas id="revenue-forecast-chart"></canvas>
+            </div>
+          </div>
+          <!-- 3 Key Metrics Box -->
+          <div class="grid grid-rows-3 gap-4 h-[450px]">
+            <!-- Metric Card 1 -->
+            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
+              <div>
+                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">FCPO ↑ 10%</h4>
+                <p class="text-sm text-gray-600">Revenue ↑ 7.5%</p>
+              </div>
+              <div class="text-3xl font-bold text-[#014422]">📈</div>
+            </div>
+
+            <!-- Metric Card 2 -->
+            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
+              <div>
+                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">Rainfall >150mm</h4>
+                <p class="text-sm text-gray-600">Extraction ↓ 4%</p>
+              </div>
+              <div class="text-3xl font-bold text-[#014422]">🌧️</div>
+            </div>
+
+            <!-- Metric Card 3 -->
+            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
+              <div>
+                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">CPO ↑ 5%</h4>
+                <p class="text-sm text-gray-600">Exports ↑ 3%</p>
+              </div>
+              <div class="text-3xl font-bold text-[#014422]">🌍</div>
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <!-- Planted Area Chart -->
-          <div class="h-[400px] min-h-[300px]">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Planted Area</h3>
-            <div class="relative h-full w-full">
-              <canvas id="plt-area-chart"></canvas>
-            </div>
+        <!-- Revenue Weightage Cards -->
+        <div id="weightage-cards" class="flex flex-wrap items-center gap-4 mt-6">
+          <span class="text-lg font-medium" style="color: #345f3c;">Forecasted revenue contribution by products:</span>
+          <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
+            <h4 class="text-sm font-medium">FFB Weightage</h4>
+            <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
           </div>
-          <!-- Extraction Rate Chart -->
-          <div class="h-[400px] min-h-[300px]">
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Extraction Rate</h3>
-            <div class="relative h-full w-full">
-              <canvas id="ext-rates-chart"></canvas>
-            </div>
+          <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
+            <h4 class="text-sm font-medium">CPO Weightage</h4>
+            <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
           </div>
-        </div>
-
-        <!-- In-depth Analysis Section -->
-        <div class="mt-8">
-          <h3 class="text-lg font-semibold mb-4" style="color: #345f3c; font-family: 'Inter', sans-serif;">In-depth analysis and revenue forecasting</h3>
-          <!-- Row of 2 divs side by side -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <!-- Left div - Revenue forecasting bar chart -->
-            <div class="h-[450px] min-h-[450px] bg-gray-50 rounded-lg p-4">
-              <h4 class="text-md font-medium mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Revenue Forecast</h4>
-              <div class="relative h-full w-full">
-                <canvas id="revenue-forecast-chart"></canvas>
-              </div>
-            </div>
-            <!-- Right div - 3 stacked divs -->
-            <div class="grid grid-rows-3 gap-4 h-[450px]">
-              <div class="bg-gray-50 rounded-lg p-4">
-                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 1</h4>
-                <p class="text-sm mt-2">Placeholder for first analysis point</p>
-              </div>
-              <div class="bg-gray-50 rounded-lg p-4">
-                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 2</h4>
-                <p class="text-sm mt-2">Placeholder for second analysis point</p>
-              </div>
-              <div class="bg-gray-50 rounded-lg p-4">
-                <h4 class="text-md font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Key Metric 3</h4>
-                <p class="text-sm mt-2">Placeholder for third analysis point</p>
-              </div>
-            </div>
-          </div>
-          <!-- Revenue composition section -->
-          <div id="weightage-cards" class="flex flex-wrap items-center gap-4 mt-6">
-            <span class="text-lg font-medium" style="color: #345f3c; font-family: 'Inter', sans-serif;">Forecasted revenue contribution by products: </span>
-
-            <!-- FFB Weightage Card -->
-            <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
-              <h4 class="text-sm font-medium">FFB Weightage</h4>
-              <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
-            </div>
-
-            <!-- CPO Weightage Card -->
-            <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
-              <h4 class="text-sm font-medium">CPO Weightage</h4>
-              <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
-            </div>
-
-            <!-- PK Weightage Card -->
-            <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
-              <h4 class="text-sm font-medium">PK Weightage</h4>
-              <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
-            </div>
+          <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
+            <h4 class="text-sm font-medium">PK Weightage</h4>
+            <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
           </div>
         </div>
       </div>
@@ -487,16 +524,17 @@
           </div>
         </div>
 
-        <!-- Animal, Vegetable Oils, Fats, and Waxes Chart -->
-        <div class="h-[600px] bg-white rounded-lg shadow-md m-2 p-4">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Animal, Vegetable Oils, Fats and Waxes Export and Import</h3>
-          <canvas id="4th-chart" class="w-full h-full"></canvas>
-        </div>
-
-        <!-- Chemical and Related Products NEC Chart -->
-        <div class="h-[600px] bg-white rounded-lg shadow-md m-2 p-4">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Chemical and Related Products NEC Export and Import</h3>
-          <canvas id="5th-chart" class="w-full h-full"></canvas>
+        <!-- Chart container with dropdown -->
+        <div class="chart-container">
+          <div class="dropdown-container">
+            <select id="chart-select" onchange="toggleChart()">
+              <option value="4th-chart" selected>Animal, Vegetable Oils, Fats, Waxes</option>
+              <option value="5th-chart">Chemical and Related Products</option>
+            </select>
+          </div>
+          <h3 id="chart-title" class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Palm Oil End Products Export & Import</h3>
+          <canvas id="4th-chart" class="w-full h-full" style="display: block;"></canvas>
+          <canvas id="5th-chart" class="w-full h-full" style="display: none;"></canvas>
         </div>
       </div>
     </section>

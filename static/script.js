@@ -225,12 +225,23 @@ function initMainpage() {
       data.news.forEach(item => {
         const card = document.createElement('div');
         card.className = 'w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition';
+
+        // Format published date if exists
+        const published = item.published
+          ? `<p class="text-xs text-gray-500 mb-2">${item.published}</p>`
+          : '';
+
         card.innerHTML = `
-          <h3 class="text-lg font-bold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">
+          <h3 class="text-lg font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
             <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="hover:underline">${item.headline}</a>
           </h3>
-          <p class="flex-grow" style="color: #345f3c; font-family: 'Inter', sans-serif;">${item.description}</p>
-          <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="mt-4 text-sm text-green-600 hover:underline">Read more</a>
+          ${published}
+          <p class="flex-grow mt-1" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+            ${item.description}
+          </p>
+          <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="mt-4 text-sm text-green-600 hover:underline">
+            Read more
+          </a>
         `;
         newsCardsContainer.appendChild(card);
       });
@@ -238,7 +249,6 @@ function initMainpage() {
       console.error('Failed to load news:', error);
     }
   }
-
   loadNews();
 }
 
@@ -511,11 +521,11 @@ async function buildRevenueForecastChart(data, company, prodData) {
   const latestRevenue = latestQuarter["Total Revenue"];
   const latestQuarterLabel = latestQuarter.Quarter;
 
-  // Get the latest three months from prodData
-  const months = [...new Set(prodData.map(item => item.month))].sort((a, b) => new Date(b) - new Date(a));
+  // Get unique dates, sort them descending
+  const months = [...new Set(prodData.map(item => item.date))].sort((a, b) => new Date(b) - new Date(a));
   const latestThreeMonths = months.slice(0, 3);
 
-  // Sum volumes for each raw_mat over the latest three months
+  // Sum volumes for each raw_material over the latest three months
   const volumeSums = {
     "Fresh Fruit Bunches": 0,
     "Crude Palm Oil": 0,
@@ -524,13 +534,12 @@ async function buildRevenueForecastChart(data, company, prodData) {
   };
 
   prodData
-  .filter(item => latestThreeMonths.includes(item.month))
-  .forEach(item => {
-    if (item.raw_mat && item.raw_mat.includes("Fresh Fruit Bunches")) {
-      volumeSums["Fresh Fruit Bunches"] += Number(item.volume);
-    } else if (["Crude Palm Oil", "Palm Kernel", "Rubber"].includes(item.raw_mat)) {
-      volumeSums[item.raw_mat] += Number(item.volume);
-    }
+    .filter(item => latestThreeMonths.includes(item.date))
+    .forEach(item => {
+      const mat = item.raw_material;
+      if (volumeSums.hasOwnProperty(mat)) {
+        volumeSums[mat] += Number(item.volume);
+      }
   });
 
   // Assign dynamic values for forecasting
@@ -539,11 +548,11 @@ async function buildRevenueForecastChart(data, company, prodData) {
   const pkProdVol = volumeSums["Palm Kernel"];
   const rubberProdVol = volumeSums["Rubber"];
 
-  // Static values for prices
+  // Static price values
   const fcpoPrice = 3000;
   const pkPrice = 2000;
 
-  // Define company-specific formulas
+  // Company-specific coefficients
   const formulas = {
     KLK: {
       intercept: 3.129,
@@ -556,31 +565,31 @@ async function buildRevenueForecastChart(data, company, prodData) {
       scale: 1000
     },
     IOI: {
-      intercept: 1.062, 
+      intercept: 1.062,
       ffbCoef: 7.685e-6,
-      cpoCoef: -5.236e-5, 
-      pkCoef: 1.236e-4, 
-      rubberCoef: -7.351e-7, 
-      fcpoCoef: -1.675e-4, 
-      pkPriceCoef: 1.089e-3, 
+      cpoCoef: -5.236e-5,
+      pkCoef: 1.236e-4,
+      rubberCoef: -7.351e-7,
+      fcpoCoef: -1.675e-4,
+      pkPriceCoef: 1.089e-3,
       scale: 1000
     },
     SDG: {
-      intercept: 4.383, 
+      intercept: 4.383,
       ffbCoef: 4.893e-6,
-      cpoCoef: -2.636e-5, 
-      pkCoef: 4.647e-5, 
-      rubberCoef: 0, 
-      fcpoCoef: -4.38e-4, 
-      pkPriceCoef: 4.555e-4, 
+      cpoCoef: -2.636e-5,
+      pkCoef: 4.647e-5,
+      rubberCoef: 0,
+      fcpoCoef: -4.38e-4,
+      pkPriceCoef: 4.555e-4,
       scale: 1000
     }
   };
 
-  // Select formula based on company, default to KLK if company not found
+  // Select formula
   const formula = formulas[company] || formulas.KLK;
 
-  // Forecast revenue using the company-specific formula
+  // Forecasted revenue calculation
   const forecastedRevenue = (
     formula.intercept +
     ffbProdVol * formula.ffbCoef +
@@ -589,20 +598,19 @@ async function buildRevenueForecastChart(data, company, prodData) {
     rubberProdVol * formula.rubberCoef +
     fcpoPrice * formula.fcpoCoef +
     pkPrice * formula.pkPriceCoef
-  ) * formula.scale;  
+  ) * formula.scale;
 
-  // Calculate weightages for FFB, CPO, and PK
+  // Weightage calculation
   const ffbContribution = Math.abs(ffbProdVol * formula.ffbCoef);
   const cpoContribution = Math.abs(cpoProdVol * formula.cpoCoef);
   const pkContribution = Math.abs(pkProdVol * formula.pkCoef);
   const totalContribution = ffbContribution + cpoContribution + pkContribution;
 
-  // Avoid division by zero
   const ffbWeightage = totalContribution > 0 ? (ffbContribution / totalContribution * 100).toFixed(1) : 0;
   const cpoWeightage = totalContribution > 0 ? (cpoContribution / totalContribution * 100).toFixed(1) : 0;
   const pkWeightage = totalContribution > 0 ? (pkContribution / totalContribution * 100).toFixed(1) : 0;
 
-  // Update values in the HTML
+  // Update DOM
   const ffbWeightElement = document.getElementById('ffb-weight');
   const cpoWeightElement = document.getElementById('cpo-weight');
   const pkWeightElement = document.getElementById('pk-weight');
@@ -614,28 +622,21 @@ async function buildRevenueForecastChart(data, company, prodData) {
   if (pkWeightElement) pkWeightElement.innerText = `${pkWeightage}%`;
   else console.error('Element with ID "pk-weight" not found');
 
+  // Utility to get next quarter label
   function getNextQuarterLabel(latestQuarterLabel) {
-  // Parse the date (e.g., "2025-03-31")
-  const date = new Date(latestQuarterLabel);
-  if (isNaN(date.getTime())) {
-    console.error("Invalid date format for latestQuarterLabel:", latestQuarterLabel);
-    return "Invalid Quarter";
-  }
+    const date = new Date(latestQuarterLabel);
+    if (isNaN(date.getTime())) {
+      console.error("Invalid date format for latestQuarterLabel:", latestQuarterLabel);
+      return "Invalid Quarter";
+    }
 
-  // Get year and month (0-based: January = 0, March = 2, etc.)
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  
-  // Determine current quarter (Q1: Jan-Mar, Q2: Apr-Jun, Q3: Jul-Sep, Q4: Oct-Dec)
-  const currentQuarter = Math.floor(month / 3) + 1;
-  
-  // Calculate next quarter (3 months later)
-  const nextQuarter = currentQuarter === 4 ? 1 : currentQuarter + 1;
-  const nextYear = currentQuarter === 4 ? year + 1 : year;
-  
-  // Return formatted next quarter label
-  return `${nextYear}Q${nextQuarter}`;
-}
+    const year = date.getFullYear();
+    const month = date.getMonth(); // 0-based
+    const currentQuarter = Math.floor(month / 3) + 1;
+    const nextQuarter = currentQuarter === 4 ? 1 : currentQuarter + 1;
+    const nextYear = currentQuarter === 4 ? year + 1 : year;
+    return `${nextYear}Q${nextQuarter}`;
+  }
 
 // Usage
 const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
@@ -651,7 +652,7 @@ const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
       datasets: [{
         label: 'Revenue (RM mil)',
         data: [latestRevenue, forecastedRevenue],
-        backgroundColor: ['rgba(1, 68, 34, 0.7)', 'rgba(128, 128, 128, 0.7)'], // Grey for forecast
+        backgroundColor: ['rgba(1, 68, 34, 0.7)', 'rgba(128, 128, 128, 0.7)'],
         borderColor: ['rgba(1, 68, 34, 1)', 'rgba(128, 128, 128, 1)'],
         borderWidth: 1
       }]
@@ -660,28 +661,65 @@ const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'top', labels: { color: 'black' } },
-        title: { 
-          display: true, 
-          text: `${nameMap[company]} Revenue and Forecast`, 
+        legend: {
+          position: 'top',
+          labels: { color: 'black' }
+        },
+        title: {
+          display: true,
+          text: `${nameMap[company]} Revenue and Forecast`,
           color: 'black',
           font: { family: 'Inter', size: 16, weight: 'bold' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.raw;
+              return `Revenue: RM ${(value / 1000).toFixed(2)}B`;
+            }
+          }
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          color: '#014422',
+          font: {
+            family: 'Inter',
+            size: 12,
+            weight: 'bold'
+          },
+          formatter: function(value) {
+            return `${(value / 1000).toFixed(2)}B`;
+          }
         }
       },
       scales: {
-        x: { 
-          title: { display: true, text: 'Quarter' }, 
+        x: {
+          title: {
+            display: true,
+            text: 'Quarter'
+          },
           grid: { display: false },
-          ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }
+          ticks: {
+            font: { family: 'Inter', size: 12 },
+            color: '#00321f'
+          }
         },
-        y: { 
-          beginAtZero: true, 
-          title: { display: true, text: 'Revenue (RM Million)' }, 
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Revenue (RM Million)'
+          },
           grid: { display: false },
-          ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }
+          ticks: {
+            font: { family: 'Inter', size: 12 },
+            color: '#00321f'
+          }
         }
       }
-    }
+    },
+    plugins: [ChartDataLabels] // Make sure you include this plugin
   });
 }
 
@@ -992,557 +1030,573 @@ let eximChart1 = null;
 let eximChart2 = null;
 
 async function initExportImport() {
-  try {
-    // Fetch trade data
-    const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
-    if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
-    const tradeData = await tradeResponse.json();
+    try {
+      // Fetch trade data
+      const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
+      if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
+      const tradeData = await tradeResponse.json();
 
-    // Debug: Log trade data sample
-    console.log('Trade Data Sample (first 5 rows):', tradeData.slice(0, 5));
+      // Debug: Log trade data sample
+      console.log('Trade Data Sample (first 5 rows):', tradeData.slice(0, 5));
 
-    // Check if vis.js is loaded
-    if (typeof vis === 'undefined') {
-      console.error('vis.js library is not loaded. Please ensure the vis-network script is included.');
-      const container = document.getElementById("graphtheory");
-      if (container) {
-        container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: Unable to load trade network visualization. Please try again later.</p>';
-      }
-      return; // Skip graph rendering but continue with other charts
-    }
-
-    // Filter out invalid data and exclude 'World' to reduce graph size
-    const validData = tradeData.filter(row => 
-      row.reporterISO && row.partnerISO && 
-      row.reporterISO !== 'World' && row.partnerISO !== 'World' && 
-      ['X', 'M'].includes(row.reporterDesc) && 
-      !isNaN(Number(row.fobvalue)) && 
-      !isNaN(Number(row.refMonth))
-    );
-
-    // Extract unique years from refMonth (as numbers)
-    const years = [...new Set(validData.map(row => Number(row.refMonth)))].sort((a, b) => a - b);
-    const yearSlider = document.getElementById("yearSlider");
-    const selectedYearEl = document.getElementById("selectedYear");
-    const physicsToggle = document.getElementById("physicsToggle");
-    const playButton = document.getElementById("playButton");
-    
-    if (!yearSlider || !selectedYearEl || years.length === 0) {
-      console.error('Year slider or data missing');
-      const container = document.getElementById("graphtheory");
-      if (container) {
-        container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: No valid years available for filtering.</p>';
-      }
-      return;
-    }
-
-    if (!playButton) {
-      console.warn('Play button not found; animation control will be unavailable.');
-    }
-
-    // Set up slider
-    yearSlider.min = 0;
-    yearSlider.max = years.length - 1;
-    yearSlider.value = years.length - 1; // Default to latest year
-    selectedYearEl.textContent = years[years.length - 1];
-
-    // Store node positions
-    let nodePositions = {};
-
-    // Helper function to format fobvalue compactly
-    const formatFobValue = (value) => {
-      if (value >= 1_000_000_000) {
-        return `USD ${(value / 1_000_000_000).toFixed(2)}B`;
-      } else if (value >= 1_000_000) {
-        return `USD ${(value / 1_000_000).toFixed(2)}M`;
-      } else if (value >= 1_000) {
-        return `USD ${(value / 1_000).toFixed(2)}K`;
-      }
-      return `USD ${value.toFixed(2)}`;
-    };
-
-    // Initialize network and datasets
-    const container = document.getElementById("graphtheory");
-    if (!container) throw new Error("Graph theory container not found");
-
-    // Global node ID mapping
-    const isoToNodeId = {};
-    let nextNodeId = 1;
-    validData.forEach(row => {
-      if (!isoToNodeId[row.reporterISO]) isoToNodeId[row.reporterISO] = nextNodeId++;
-      if (!isoToNodeId[row.partnerISO]) isoToNodeId[row.partnerISO] = nextNodeId++;
-    });
-
-    // Initialize DataSets
-    const nodesDataSet = new vis.DataSet([]);
-    const edgesDataSet = new vis.DataSet([]);
-    const graphData = { nodes: nodesDataSet, edges: edgesDataSet };
-
-    // Network options
-    const options = {
-      nodes: {
-        shape: 'dot',
-        font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
-      },
-      edges: {
-        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
-        color: { color: '#3b3c36' },
-        smooth: { type: 'continuous' },
-        font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
-      },
-      height: '100%',
-      width: '100%',
-      physics: {
-        enabled: physicsToggle ? physicsToggle.checked : true,
-        solver: 'barnesHut',
-        barnesHut: {
-          gravitationalConstant: -1200,
-          centralGravity: 0.1,
-          springLength: 150,
-          springConstant: 0.03,
-          damping: 0.2,
-          avoidOverlap: 0.3
-        },
-        maxVelocity: 50,
-        minVelocity: 0.1,
-        stabilization: {
-          enabled: true,
-          iterations: 200,
-          updateInterval: 25
+      // Check if vis.js is loaded
+      if (typeof vis === 'undefined') {
+        console.error('vis.js library is not loaded. Please ensure the vis-network script is included.');
+        const container = document.getElementById("graphtheory");
+        if (container) {
+          container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: Unable to load trade network visualization. Please try again later.</p>';
         }
-      },
-      interaction: {
-        dragNodes: true,
-        hover: true
+        return; // Skip graph rendering but continue with other charts
       }
-    };
 
-    // Initialize network
-    let network = new vis.Network(container, graphData, options);
+      // Filter out invalid data and exclude 'World' to reduce graph size
+      const validData = tradeData.filter(row => 
+        row.reporterISO && row.partnerISO && 
+        row.reporterISO !== 'World' && row.partnerISO !== 'World' && 
+        ['X', 'M'].includes(row.reporterDesc) && 
+        !isNaN(Number(row.fobvalue)) && 
+        !isNaN(Number(row.refMonth))
+      );
 
-    // Debounce function
-    function debounce(func, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+      // Extract unique years from refMonth (as numbers)
+      const years = [...new Set(validData.map(row => Number(row.refMonth)))].sort((a, b) => a - b);
+      const yearSlider = document.getElementById("yearSlider");
+      const selectedYearEl = document.getElementById("selectedYear");
+      const physicsToggle = document.getElementById("physicsToggle");
+      const playButton = document.getElementById("playButton");
+      
+      if (!yearSlider || !selectedYearEl || years.length === 0) {
+        console.error('Year slider or data missing');
+        const container = document.getElementById("graphtheory");
+        if (container) {
+          container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: No valid years available for filtering.</p>';
+        }
+        return;
+      }
+
+      if (!playButton) {
+        console.warn('Play button not found; animation control will be unavailable.');
+      }
+
+      // Set up slider
+      yearSlider.min = 0;
+      yearSlider.max = years.length - 1;
+      yearSlider.value = years.length - 1; // Default to latest year
+      selectedYearEl.textContent = years[years.length - 1];
+
+      // Store node positions
+      let nodePositions = {};
+
+      // Helper function to format fobvalue compactly
+      const formatFobValue = (value) => {
+        if (value >= 1_000_000_000) {
+          return `USD ${(value / 1_000_000_000).toFixed(2)}B`;
+        } else if (value >= 1_000_000) {
+          return `USD ${(value / 1_000_000).toFixed(2)}M`;
+        } else if (value >= 1_000) {
+          return `USD ${(value / 1_000).toFixed(2)}K`;
+        }
+        return `USD ${value.toFixed(2)}`;
       };
-    }
 
-    // Animation state
-    let isPlaying = false;
-    let animationInterval = null;
+      // Initialize network and datasets
+      const container = document.getElementById("graphtheory");
+      if (!container) throw new Error("Graph theory container not found");
 
-    // Function to render graph and table for a given year
-    const renderGraphAndTable = (selectedYear) => {
-      // Filter data by selected year and limit to top 100 edges by fobvalue
-      let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
-      filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 200);
+      // Global node ID mapping
+      const isoToNodeId = {};
+      let nextNodeId = 1;
+      validData.forEach(row => {
+        if (!isoToNodeId[row.reporterISO]) isoToNodeId[row.reporterISO] = nextNodeId++;
+        if (!isoToNodeId[row.partnerISO]) isoToNodeId[row.partnerISO] = nextNodeId++;
+      });
 
-      // Debug: Log filtered data sample
-      console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
+      // Initialize DataSets
+      const nodesDataSet = new vis.DataSet([]);
+      const edgesDataSet = new vis.DataSet([]);
+      const graphData = { nodes: nodesDataSet, edges: edgesDataSet };
 
-      // Determine trade types for each country
-      const tradeTypes = {};
-      filteredData.forEach(row => {
-        const reporter = row.reporterISO;
-        const partner = row.partnerISO;
-        if (!tradeTypes[reporter]) tradeTypes[reporter] = { hasExport: false, hasImport: false };
-        if (!tradeTypes[partner]) tradeTypes[partner] = { hasExport: false, hasImport: false };
-        if (row.reporterDesc === 'X') {
-          tradeTypes[reporter].hasExport = true;
-          tradeTypes[partner].hasImport = true;
-        } else if (row.reporterDesc === 'M') {
-          tradeTypes[reporter].hasImport = true;
-          tradeTypes[partner].hasExport = true;
+      // Network options
+      const options = {
+        nodes: {
+          shape: 'dot',
+          font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
+        },
+        edges: {
+          arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+          color: { color: '#3b3c36' },
+          smooth: { type: 'continuous' },
+          font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
+        },
+        height: '100%',
+        width: '100%',
+        physics: {
+          enabled: physicsToggle ? physicsToggle.checked : true,
+          solver: 'barnesHut',
+          barnesHut: {
+            gravitationalConstant: -1200,
+            centralGravity: 0.1,
+            springLength: 150,
+            springConstant: 0.03,
+            damping: 0.2,
+            avoidOverlap: 0.3
+          },
+          maxVelocity: 50,
+          minVelocity: 0.1,
+          stabilization: {
+            enabled: true,
+            iterations: 200,
+            updateInterval: 25
+          }
+        },
+        interaction: {
+          dragNodes: true,
+          hover: true
         }
-      });
+      };
 
-      // Debug: Log trade types
-      console.log(`Trade Types for ${selectedYear}:`, tradeTypes);
+      // Initialize network
+      let network = new vis.Network(container, graphData, options);
 
-      // Create unique nodes
-      const nodeSet = new Set();
-      filteredData.forEach(row => {
-        nodeSet.add(row.reporterISO);
-        nodeSet.add(row.partnerISO);
-      });
-
-      // Calculate node degrees
-      const nodeDegrees = {};
-      filteredData.forEach(row => {
-        const reporter = row.reporterISO;
-        const partner = row.partnerISO;
-        if (!nodeDegrees[reporter]) nodeDegrees[reporter] = new Set();
-        if (!nodeDegrees[partner]) nodeDegrees[partner] = new Set();
-        nodeDegrees[reporter].add(partner);
-        nodeDegrees[partner].add(reporter);
-      });
-      for (const iso in nodeDegrees) {
-        nodeDegrees[iso] = nodeDegrees[iso].size;
+      // Debounce function
+      function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
       }
 
-      // Determine min and max degrees for scaling
-      const degrees = Object.values(nodeDegrees);
-      const minDegree = Math.min(...degrees, 1);
-      const maxDegree = Math.max(...degrees, 1);
-      const minSize = 15;
-      const maxSize = 45;
+      // Animation state
+      let isPlaying = false;
+      let animationInterval = null;
 
-      // Prepare new nodes
-      const newNodes = Array.from(nodeSet).map(id => {
-        let backgroundColor = '#345f3c';
-        if (tradeTypes[id]) {
-          const { hasExport, hasImport } = tradeTypes[id];
-          if (hasExport && !hasImport) backgroundColor = '#BCB98A';
-          else if (!hasExport && hasImport) backgroundColor = '#345f3c';
-          else if (hasExport && hasImport) backgroundColor = '#fff8dc';
-        }
-        const degree = nodeDegrees[id] || 0;
-        let size = minSize;
-        if (maxDegree > minDegree) {
-          size = minSize + ((degree - minDegree) / (maxDegree - minDegree)) * (maxSize - minSize);
-        } else if (degree > 0) {
-          size = maxSize;
-        }
-        return {
-          id: isoToNodeId[id],
-          label: id,
-          title: id,
-          ...(nodePositions[id] ? { x: nodePositions[id].x, y: nodePositions[id].y } : {}),
-          color: { background: backgroundColor, border: '#2e4f36' },
-          size: size
-        };
-      });
+      // Function to render graph and table for a given year
+      const renderGraphAndTable = (selectedYear) => {
+        // Filter data by selected year and limit to top 100 edges by fobvalue
+        let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
+        filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 280);
 
-      // Calculate total nodes and FOB value
-      const totalNodes = nodeSet.size;
-      const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
+        // Debug: Log filtered data sample
+        console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
 
-      // Update table with stats
-      const totalNodesEl = document.getElementById("totalNodes");
-      const totalFobValueEl = document.getElementById("totalFobValue");
-      if (totalNodesEl) totalNodesEl.textContent = totalNodes;
-      if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
-
-      // Prepare new edges
-      const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1);
-      const newEdges = filteredData.map((row, index) => {
-        const isExport = row.reporterDesc === 'X';
-        const isImport = row.reporterDesc === 'M';
-        return {
-          id: `edge-${selectedYear}-${index}`,
-          from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
-          to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
-          arrows: 'to',
-          width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
-          title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`,
-          label: '',
-          fobvalue: row.fobvalue
-        };
-      }).filter(edge => edge.from && edge.to);
-
-      // Debug: Log graph details
-      console.log(`Year ${selectedYear}: ${newNodes.length} nodes, ${newEdges.length} edges, Total FOB: ${totalFobValue}`);
-
-      // Update nodes
-      const currentNodeIds = nodesDataSet.getIds();
-      const newNodeIds = newNodes.map(n => n.id);
-      const nodesToRemove = currentNodeIds.filter(id => !newNodeIds.includes(id));
-      nodesDataSet.remove(nodesToRemove);
-      nodesDataSet.update(newNodes);
-
-      // Update edges
-      const currentEdgeIds = edgesDataSet.getIds();
-      const newEdgeIds = newEdges.map(e => e.id);
-      const edgesToRemove = currentEdgeIds.filter(id => !newEdgeIds.includes(id));
-      edgesDataSet.remove(edgesToRemove);
-      edgesDataSet.add(newEdges);
-
-      // Update node positions after stabilization
-      network.on('stabilized', () => {
-        newNodes.forEach(node => {
-          const pos = network.getPositions([node.id])[node.id];
-          if (pos) {
-            nodePositions[node.label] = { x: pos.x, y: pos.y };
+        // Determine trade types for each country
+        const tradeTypes = {};
+        filteredData.forEach(row => {
+          const reporter = row.reporterISO;
+          const partner = row.partnerISO;
+          if (!tradeTypes[reporter]) tradeTypes[reporter] = { hasExport: false, hasImport: false };
+          if (!tradeTypes[partner]) tradeTypes[partner] = { hasExport: false, hasImport: false };
+          if (row.reporterDesc === 'X') {
+            tradeTypes[reporter].hasExport = true;
+            tradeTypes[partner].hasImport = true;
+          } else if (row.reporterDesc === 'M') {
+            tradeTypes[reporter].hasImport = true;
+            tradeTypes[partner].hasExport = true;
           }
         });
-        console.log(`Graph stabilized for year ${selectedYear}`);
-        network.stopSimulation();
-      });
 
-      // Force stop physics after 1 second
-      setTimeout(() => {
-        if (network) {
-          network.stopSimulation();
-          console.log(`Physics stopped for year ${selectedYear} after timeout`);
+        // Debug: Log trade types
+        console.log(`Trade Types for ${selectedYear}:`, tradeTypes);
+
+        // Create unique nodes
+        const nodeSet = new Set();
+        filteredData.forEach(row => {
+          nodeSet.add(row.reporterISO);
+          nodeSet.add(row.partnerISO);
+        });
+
+        // Calculate node degrees
+        const nodeDegrees = {};
+        filteredData.forEach(row => {
+          const reporter = row.reporterISO;
+          const partner = row.partnerISO;
+          if (!nodeDegrees[reporter]) nodeDegrees[reporter] = new Set();
+          if (!nodeDegrees[partner]) nodeDegrees[partner] = new Set();
+          nodeDegrees[reporter].add(partner);
+          nodeDegrees[partner].add(reporter);
+        });
+        for (const iso in nodeDegrees) {
+          nodeDegrees[iso] = nodeDegrees[iso].size;
         }
-      }, 1200);
-    };
 
-    // Initial render
-    renderGraphAndTable(years[years.length - 1]);
+        // Determine min and max degrees for scaling
+        const degrees = Object.values(nodeDegrees);
+        const minDegree = Math.min(...degrees, 1);
+        const maxDegree = Math.max(...degrees, 1);
+        const minSize = 15;
+        const maxSize = 45;
 
-    // Animation control
-    const toggleAnimation = () => {
-      if (isPlaying) {
-        clearInterval(animationInterval);
-        animationInterval = null;
-        isPlaying = false;
-        if (playButton) playButton.textContent = '▶️ Play';
-        console.log('Animation stopped');
-      } else {
-        isPlaying = true;
-        if (playButton) playButton.textContent = '⏸️ Pause';
-        let currentIndex = parseInt(yearSlider.value);
-        animationInterval = setInterval(() => {
-          currentIndex = (currentIndex + 1) % years.length; // Loop back to start
-          yearSlider.value = currentIndex;
-          selectedYearEl.textContent = years[currentIndex];
-          renderGraphAndTable(years[currentIndex]);
-        }, 1500); // 1 second per year
-        console.log('Animation started');
-      }
-    };
-
-    // Play button event listener
-    if (playButton) {
-      playButton.addEventListener('click', toggleAnimation);
-    }
-
-    // Debounced slider event listener
-    const debouncedRender = debounce((selectedIndex) => {
-      if (isPlaying) {
-        toggleAnimation(); // Stop animation on manual slider interaction
-      }
-      selectedYearEl.textContent = years[selectedIndex];
-      renderGraphAndTable(years[selectedIndex]);
-    }, 100);
-
-    yearSlider.addEventListener('input', () => {
-      const selectedIndex = parseInt(yearSlider.value);
-      debouncedRender(selectedIndex);
-    });
-
-    // Physics toggle event listener
-    if (physicsToggle) {
-      physicsToggle.addEventListener('change', () => {
-        if (network) {
-          network.setOptions({ physics: { enabled: physicsToggle.checked } });
-          if (!physicsToggle.checked) {
-            network.stopSimulation();
-            console.log('Physics disabled via toggle');
-          } else {
-            console.log('Physics enabled via toggle');
+        // Prepare new nodes
+        const newNodes = Array.from(nodeSet).map(id => {
+          let backgroundColor = '#345f3c';
+          if (tradeTypes[id]) {
+            const { hasExport, hasImport } = tradeTypes[id];
+            if (hasExport && !hasImport) backgroundColor = '#BCB98A';
+            else if (!hasExport && hasImport) backgroundColor = '#345f3c';
+            else if (hasExport && hasImport) backgroundColor = '#fff8dc';
           }
+          const degree = nodeDegrees[id] || 0;
+          let size = minSize;
+          if (maxDegree > minDegree) {
+            size = minSize + ((degree - minDegree) / (maxDegree - minDegree)) * (maxSize - minSize);
+          } else if (degree > 0) {
+            size = maxSize;
+          }
+          return {
+            id: isoToNodeId[id],
+            label: id,
+            title: id,
+            ...(nodePositions[id] ? { x: nodePositions[id].x, y: nodePositions[id].y } : {}),
+            color: { background: backgroundColor, border: '#2e4f36' },
+            size: size
+          };
+        });
+
+        // Calculate total nodes and FOB value
+        const totalNodes = nodeSet.size;
+        const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
+
+        // Update table with stats
+        const totalNodesEl = document.getElementById("totalNodes");
+        const totalFobValueEl = document.getElementById("totalFobValue");
+        if (totalNodesEl) totalNodesEl.textContent = totalNodes;
+        if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
+
+        // Prepare new edges
+        const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1);
+        const newEdges = filteredData.map((row, index) => {
+          const isExport = row.reporterDesc === 'X';
+          const isImport = row.reporterDesc === 'M';
+          return {
+            id: `edge-${selectedYear}-${index}`,
+            from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
+            to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
+            arrows: 'to',
+            width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
+            title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`,
+            label: '',
+            fobvalue: row.fobvalue
+          };
+        }).filter(edge => edge.from && edge.to);
+
+        // Debug: Log graph details
+        console.log(`Year ${selectedYear}: ${newNodes.length} nodes, ${newEdges.length} edges, Total FOB: ${totalFobValue}`);
+
+        // Update nodes
+        const currentNodeIds = nodesDataSet.getIds();
+        const newNodeIds = newNodes.map(n => n.id);
+        const nodesToRemove = currentNodeIds.filter(id => !newNodeIds.includes(id));
+        nodesDataSet.remove(nodesToRemove);
+        nodesDataSet.update(newNodes);
+
+        // Update edges
+        const currentEdgeIds = edgesDataSet.getIds();
+        const newEdgeIds = newEdges.map(e => e.id);
+        const edgesToRemove = currentEdgeIds.filter(id => !newEdgeIds.includes(id));
+        edgesDataSet.remove(edgesToRemove);
+        edgesDataSet.add(newEdges);
+
+        // Update node positions after stabilization
+        network.on('stabilized', () => {
+          newNodes.forEach(node => {
+            const pos = network.getPositions([node.id])[node.id];
+            if (pos) {
+              nodePositions[node.label] = { x: pos.x, y: pos.y };
+            }
+          });
+          console.log(`Graph stabilized for year ${selectedYear}`);
+          network.stopSimulation();
+        });
+
+        // Force stop physics after 1 second
+        setTimeout(() => {
+          if (network) {
+            network.stopSimulation();
+            console.log(`Physics stopped for year ${selectedYear} after timeout`);
+          }
+        }, 1200);
+      };
+
+      // Initial render
+      renderGraphAndTable(years[years.length - 1]);
+
+      // Animation control
+      const toggleAnimation = () => {
+        if (isPlaying) {
+          clearInterval(animationInterval);
+          animationInterval = null;
+          isPlaying = false;
+          if (playButton) playButton.textContent = '▶️ Play';
+          console.log('Animation stopped');
+        } else {
+          isPlaying = true;
+          if (playButton) playButton.textContent = '⏸️ Pause';
+          let currentIndex = parseInt(yearSlider.value);
+          animationInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % years.length; // Loop back to start
+            yearSlider.value = currentIndex;
+            selectedYearEl.textContent = years[currentIndex];
+            renderGraphAndTable(years[currentIndex]);
+          }, 1500); // 1 second per year
+          console.log('Animation started');
+        }
+      };
+
+      // Play button event listener
+      if (playButton) {
+        playButton.addEventListener('click', toggleAnimation);
+      }
+
+      // Debounced slider event listener
+      const debouncedRender = debounce((selectedIndex) => {
+        if (isPlaying) {
+          toggleAnimation(); // Stop animation on manual slider interaction
+        }
+        selectedYearEl.textContent = years[selectedIndex];
+        renderGraphAndTable(years[selectedIndex]);
+      }, 100);
+
+      yearSlider.addEventListener('input', () => {
+        const selectedIndex = parseInt(yearSlider.value);
+        debouncedRender(selectedIndex);
+      });
+
+      // Physics toggle event listener
+      if (physicsToggle) {
+        physicsToggle.addEventListener('change', () => {
+          if (network) {
+            network.setOptions({ physics: { enabled: physicsToggle.checked } });
+            if (!physicsToggle.checked) {
+              network.stopSimulation();
+              console.log('Physics disabled via toggle');
+            } else {
+              console.log('Physics enabled via toggle');
+            }
+          }
+        });
+      } else {
+        console.warn('Physics toggle not found; defaulting to static graph');
+      }
+
+      // Hover edge events
+      network.on('hoverEdge', (event) => {
+        const edgeId = event.edge;
+        const edge = edgesDataSet.get(edgeId);
+        if (edge && edge.fobvalue !== undefined) {
+          edgesDataSet.update({
+            id: edgeId,
+            label: formatFobValue(edge.fobvalue),
+            font: { color: '#000', strokeWidth: 0, align: 'top' }
+          });
         }
       });
-    } else {
-      console.warn('Physics toggle not found; defaulting to static graph');
-    }
 
-    // Hover edge events
-    network.on('hoverEdge', (event) => {
-      const edgeId = event.edge;
-      const edge = edgesDataSet.get(edgeId);
-      if (edge && edge.fobvalue !== undefined) {
+      network.on('blurEdge', (event) => {
+        const edgeId = event.edge;
         edgesDataSet.update({
           id: edgeId,
-          label: formatFobValue(edge.fobvalue),
-          font: { color: '#000', strokeWidth: 0, align: 'top' }
+          label: '',
+          font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 }
         });
-      }
-    });
-
-    network.on('blurEdge', (event) => {
-      const edgeId = event.edge;
-      edgesDataSet.update({
-        id: edgeId,
-        label: '',
-        font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 }
       });
-    });
 
-    // Debug: Log drag events
-    network.on('dragEnd', () => {
-      console.log('Node dragged, physics should respond with bounce');
-    });
+      // Debug: Log drag events
+      network.on('dragEnd', () => {
+        console.log('Node dragged, physics should respond with bounce');
+      });
 
-    // Existing export/import charts
-    // Existing export/import charts
-    const res = await fetch(BACKEND_URL + "/exim-data");
-    if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
-    const chartData = await res.json();
+      // Existing export/import charts
+      const res = await fetch(BACKEND_URL + "/exim-data");
+      if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
+      const chartData = await res.json();
 
-    const labels = chartData.date;
-    const animal_exports = chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
-    const animal_imports = chartData.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
-    const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
-    const chemical_exports = chartData.exports_Chemical_and_Related_Products_NEC;
-    const chemical_imports = chartData.imports_Chemical_and_Related_Products_NEC;
-    const chemical_net = chemical_exports.map((val, i) => val - chemical_imports[i]);
+      const labels = chartData.date;
+      const animal_exports = chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
+      const animal_imports = chartData.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
+      const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
+      const chemical_exports = chartData.exports_Chemical_and_Related_Products_NEC;
+      const chemical_imports = chartData.imports_Chemical_and_Related_Products_NEC;
+      const chemical_net = chemical_exports.map((val, i) => val - chemical_imports[i]);
 
-    const ctx1 = document.getElementById("4th-chart")?.getContext("2d");
-    if (!ctx1) throw new Error("4th-chart canvas context not found");
+      const ctx1 = document.getElementById("4th-chart")?.getContext("2d");
+      if (!ctx1) throw new Error("4th-chart canvas context not found");
 
-    if (eximChart1) eximChart1.destroy();
+      if (eximChart1) eximChart1.destroy();
 
-    eximChart1 = new Chart(ctx1, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Net Trade", // Base label for dataset
-            data: animal_net,
-            backgroundColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"),
-            borderColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"),
-            borderWidth: 1,
-            type: 'bar',
-            yAxisID: 'y'
-          },
-          {
-            label: "Exports",
-            data: animal_exports,
-            borderColor: "rgba(1,68,34,0.8)",
-            backgroundColor: "rgba(1,68,34,0.1)",
-            type: "line",
-            yAxisID: 'y'
-          },
-          {
-            label: "Imports",
-            data: animal_imports,
-            borderColor: "rgba(137,154,92,0.8)",
-            backgroundColor: "rgba(137,154,92,0.1)",
-            type: "line",
-            yAxisID: 'y'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              generateLabels: function(chart) {
-                const datasets = chart.data.datasets;
-                return datasets.map((dataset, i) => {
-                  if (dataset.label === "Net Trade") {
-                    // Check the first non-zero data point to determine label
-                    const netValue = dataset.data.find(v => v !== 0) || 0;
+      eximChart1 = new Chart(ctx1, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Net Trade",
+              data: animal_net,
+              backgroundColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"),
+              borderColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"),
+              borderWidth: 1,
+              type: 'bar',
+              yAxisID: 'y'
+            },
+            {
+              label: "Exports",
+              data: animal_exports,
+              borderColor: "rgba(1,68,34,0.8)",
+              backgroundColor: "rgba(1,68,34,0.1)",
+              type: "line",
+              yAxisID: 'y'
+            },
+            {
+              label: "Imports",
+              data: animal_imports,
+              borderColor: "rgba(137,154,92,0.8)",
+              backgroundColor: "rgba(137,154,92,0.1)",
+              type: "line",
+              yAxisID: 'y'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                generateLabels: function(chart) {
+                  const datasets = chart.data.datasets;
+                  return datasets.map((dataset, i) => {
+                    if (dataset.label === "Net Trade") {
+                      const netValue = dataset.data.find(v => v !== 0) || 0;
+                      return {
+                        text: netValue >= 0 ? "Net Export" : "Net Import",
+                        fillStyle: dataset.backgroundColor[0],
+                        strokeStyle: dataset.borderColor[0],
+                        lineWidth: dataset.borderWidth,
+                        hidden: !chart.isDatasetVisible(i),
+                        datasetIndex: i
+                      };
+                    }
                     return {
-                      text: netValue >= 0 ? "Net Export" : "Net Import",
-                      fillStyle: dataset.backgroundColor[0],
-                      strokeStyle: dataset.borderColor[0],
+                      text: dataset.label,
+                      fillStyle: dataset.backgroundColor,
+                      strokeStyle: dataset.borderColor,
                       lineWidth: dataset.borderWidth,
                       hidden: !chart.isDatasetVisible(i),
                       datasetIndex: i
                     };
-                  }
-                  return {
-                    text: dataset.label,
-                    fillStyle: dataset.backgroundColor,
-                    strokeStyle: dataset.borderColor,
-                    lineWidth: dataset.borderWidth,
-                    hidden: !chart.isDatasetVisible(i),
-                    datasetIndex: i
-                  };
-                });
+                  });
+                }
               }
             }
+          },
+          scales: {
+            x: { title: { display: true, text: "Date" }, grid: { display: false } },
+            y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
           }
-        },
-        scales: {
-          x: { title: { display: true, text: "Date" }, grid: { display: false } },
-          y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
         }
-      }
-    });
+      });
 
-    const ctx2 = document.getElementById("5th-chart")?.getContext("2d");
-    if (!ctx2) throw new Error("5th-chart canvas context not found");
+      const ctx2 = document.getElementById("5th-chart")?.getContext("2d");
+      if (!ctx2) throw new Error("5th-chart canvas context not found");
 
-    if (eximChart2) eximChart2.destroy();
+      if (eximChart2) eximChart2.destroy();
 
-    eximChart2 = new Chart(ctx2, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Net Trade", // Base label for dataset
-            data: chemical_net,
-            backgroundColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"),
-            borderColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"),
-            borderWidth: 1,
-            type: 'bar',
-            yAxisID: 'y'
-          },
-          {
-            label: "Exports",
-            data: chemical_exports,
-            borderColor: "rgba(1,68,34,0.8)",
-            backgroundColor: "rgba(1,68,34,0.1)",
-            type: "line",
-            yAxisID: 'y'
-          },
-          {
-            label: "Imports",
-            data: chemical_imports,
-            borderColor: "rgba(137,154,92,0.8)",
-            backgroundColor: "rgba(137,154,92,0.1)",
-            type: "line",
-            yAxisID: 'y'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              generateLabels: function(chart) {
-                const datasets = chart.data.datasets;
-                return datasets.map((dataset, i) => {
-                  if (dataset.label === "Net Trade") {
-                    // Check the first non-zero data point to determine label
-                    const netValue = dataset.data.find(v => v !== 0) || 0;
+      eximChart2 = new Chart(ctx2, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Net Trade",
+              data: chemical_net,
+              backgroundColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"),
+              borderColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"),
+              borderWidth: 1,
+              type: 'bar',
+              yAxisID: 'y'
+            },
+            {
+              label: "Exports",
+              data: chemical_exports,
+              borderColor: "rgba(1,68,34,0.8)",
+              backgroundColor: "rgba(1,68,34,0.1)",
+              type: "line",
+              yAxisID: 'y'
+            },
+            {
+              label: "Imports",
+              data: chemical_imports,
+              borderColor: "rgba(137,154,92,0.8)",
+              backgroundColor: "rgba(137,154,92,0.1)",
+              type: "line",
+              yAxisID: 'y'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "top",
+              labels: {
+                generateLabels: function(chart) {
+                  const datasets = chart.data.datasets;
+                  return datasets.map((dataset, i) => {
+                    if (dataset.label === "Net Trade") {
+                      const netValue = dataset.data.find(v => v !== 0) || 0;
+                      return {
+                        text: netValue >= 0 ? "Net Export" : "Net Import",
+                        fillStyle: dataset.backgroundColor[0],
+                        strokeStyle: dataset.borderColor[0],
+                        lineWidth: dataset.borderWidth,
+                        hidden: !chart.isDatasetVisible(i),
+                        datasetIndex: i
+                      };
+                    }
                     return {
-                      text: netValue >= 0 ? "Net Export" : "Net Import",
-                      fillStyle: dataset.backgroundColor[0],
-                      strokeStyle: dataset.borderColor[0],
+                      text: dataset.label,
+                      fillStyle: dataset.backgroundColor,
+                      strokeStyle: dataset.borderColor,
                       lineWidth: dataset.borderWidth,
                       hidden: !chart.isDatasetVisible(i),
                       datasetIndex: i
                     };
-                  }
-                  return {
-                    text: dataset.label,
-                    fillStyle: dataset.backgroundColor,
-                    strokeStyle: dataset.borderColor,
-                    lineWidth: dataset.borderWidth,
-                    hidden: !chart.isDatasetVisible(i),
-                    datasetIndex: i
-                  };
-                });
+                  });
+                }
               }
             }
+          },
+          scales: {
+            x: { title: { display: true, text: "Date" }, grid: { display: false } },
+            y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
           }
-        },
-        scales: {
-          x: { title: { display: true, text: "Date" }, grid: { display: false } },
-          y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
         }
-      }
-    });
-  } catch (error) {
-    console.error("Error initializing Export Import charts:", error);
+      });
+    } catch (error) {
+      console.error("Error initializing Export Import charts:", error);
+    }
   }
-}
+
+  // Function to toggle chart visibility
+  function toggleChart() {
+    const select = document.getElementById("chart-select");
+    const selectedChart = select.value;
+    const chart4 = document.getElementById("4th-chart");
+    const chart5 = document.getElementById("5th-chart");
+
+    if (selectedChart === "4th-chart") {
+      chart4.style.display = "block";
+      chart5.style.display = "none";
+    } else {
+      chart4.style.display = "none";
+      chart5.style.display = "block";
+    }
+  }
+
+  // Initialize everything
+  initExportImport();
 
 let map;
 let forecastLayer = null;

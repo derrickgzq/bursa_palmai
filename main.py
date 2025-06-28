@@ -298,6 +298,11 @@ def get_news():
         headline_tag = item.find('span', class_='NewsList_newsListItemHead__dg7eK')
         description_tag = item.find('span', class_='NewsList_newsList__2fXyv')
 
+        # Traverse parent to get date
+        parent = item.parent
+        date_tag = parent.find('div', class_='NewsList_infoNewsListSubMobile__SPmAG')
+        publish_date = date_tag.find('span').get_text(strip=True) if date_tag else None
+
         img_tag = item.find_previous_sibling('div')
         if img_tag:
             img_tag = img_tag.find('img', class_='NewsList_newsImage__j_h0a')
@@ -314,7 +319,8 @@ def get_news():
                 'headline': headline,
                 'link': link,
                 'description': description,
-                'image_url': image_url
+                'image_url': image_url,
+                'published': publish_date
             })
 
     return {"news": data}
