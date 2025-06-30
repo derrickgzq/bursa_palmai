@@ -1,5 +1,5 @@
-//const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
-const BACKEND_URL = "https://bursa-palmai.onrender.com"
+const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
+//const BACKEND_URL = "https://bursa-palmai.onrender.com"
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
@@ -60,51 +60,100 @@ function initMainpage() {
   });
 
   // KLCI chart
-  fetch(BACKEND_URL + "/klci-data")
-    .then(response => response.json())
-    .then(data => {
-      const ctx = document.getElementById("klciChart")?.getContext("2d");
-      if (!ctx) throw new Error("KLCI chart canvas context not found");
+fetch(BACKEND_URL + "/klci-data")
+  .then(response => response.json())
+  .then(data => {
+    const ctx = document.getElementById("klciChart")?.getContext("2d");
+    if (!ctx) throw new Error("KLCI chart canvas context not found");
 
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: data.dates,
-          datasets: [{
-            label: "KLCI Index",
-            data: data.prices,
-            borderColor: "#014422",
-            borderWidth: 2,
-            fill: false,
-            pointRadius: 0,
-            pointHoverRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
-            title: {
-              display: true,
-              text: 'Kuala Lumpur Composite Index (KLCI), Last 30 days',
-              color: '#00321f',
-              font: { family: 'Inter', size: 16, weight: 'bold' },
-              padding: { top: 10, bottom: 20 }
-            },
-            tooltip: {
-              bodyFont: { family: 'Inter', size: 12 },
-              titleFont: { family: 'Inter', size: 14, weight: 'bold' }
+    const latestIndex = data.prices.length - 1;
+    const latestLabel = data.dates[latestIndex];
+    const latestValue = data.prices[latestIndex];
+
+    // Custom plugin to show value above last point
+    const showLatestLabelPlugin = {
+      id: 'showLatestLabel',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        const dataset = chart.data.datasets[0];
+        const meta = chart.getDatasetMeta(0);
+        const lastPoint = meta.data[dataset.data.length - 1];
+
+        if (lastPoint) {
+          const value = dataset.data[dataset.data.length - 1];
+          const roundedValue = parseFloat(value).toFixed(2);  // ✅ Round to 2 decimal places
+
+          ctx.save();
+          ctx.font = "bold 12px Inter";
+          ctx.fillStyle = "#014422";
+          ctx.textAlign = "center";
+          ctx.fillText(roundedValue, lastPoint.x, lastPoint.y - 8);
+          ctx.restore();
+        }
+      }
+    };
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.dates,
+        datasets: [{
+          label: "KLCI Index",
+          data: data.prices,
+          borderColor: "#014422",
+          borderWidth: 2,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+            labels: {
+              font: { family: 'Inter', size: 12 },
+              color: '#00321f'
             }
           },
-          scales: {
-            x: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f', autoSkip: true, maxTicksLimit: 15 }, grid: { display: false } },
-            y: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }, beginAtZero: false, grid: { display: false } }
+          title: {
+            display: true,
+            text: 'Kuala Lumpur Composite Index (KLCI), Last 30 days',
+            color: '#00321f',
+            font: { family: 'Inter', size: 16, weight: 'bold' },
+            padding: { top: 10, bottom: 20 }
+          },
+          tooltip: {
+            bodyFont: { family: 'Inter', size: 12 },
+            titleFont: { family: 'Inter', size: 14, weight: 'bold' }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              font: { family: 'Inter', size: 12 },
+              color: '#00321f',
+              autoSkip: true,
+              maxTicksLimit: 15
+            },
+            grid: { display: false }
+          },
+          y: {
+            ticks: {
+              font: { family: 'Inter', size: 12 },
+              color: '#00321f'
+            },
+            beginAtZero: false,
+            grid: { display: false }
           }
         }
-      });
-    })
-    .catch(error => console.error("Error fetching KLCI data:", error));
+      },
+      plugins: [showLatestLabelPlugin]
+    });
+  })
+  .catch(error => console.error("Error fetching KLCI data:", error));
 
   // Latest share price
   let allData = [];
@@ -1036,9 +1085,6 @@ async function initExportImport() {
       if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
       const tradeData = await tradeResponse.json();
 
-      // Debug: Log trade data sample
-      console.log('Trade Data Sample (first 5 rows):', tradeData.slice(0, 5));
-
       // Check if vis.js is loaded
       if (typeof vis === 'undefined') {
         console.error('vis.js library is not loaded. Please ensure the vis-network script is included.');
@@ -1177,9 +1223,6 @@ async function initExportImport() {
         let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
         filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 280);
 
-        // Debug: Log filtered data sample
-        console.log(`Filtered Data for ${selectedYear} (first 5 rows):`, filteredData.slice(0, 5));
-
         // Determine trade types for each country
         const tradeTypes = {};
         filteredData.forEach(row => {
@@ -1195,9 +1238,6 @@ async function initExportImport() {
             tradeTypes[partner].hasExport = true;
           }
         });
-
-        // Debug: Log trade types
-        console.log(`Trade Types for ${selectedYear}:`, tradeTypes);
 
         // Create unique nodes
         const nodeSet = new Set();
@@ -1263,6 +1303,37 @@ async function initExportImport() {
         if (totalNodesEl) totalNodesEl.textContent = totalNodes;
         if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
 
+        // Calculate FOB value for the previous year
+        const previousYear = years[years.indexOf(Number(selectedYear)) - 1];
+        let fobValueChange = '-';
+        if (previousYear !== undefined) {
+          const previousData = validData.filter(row => Number(row.refMonth) === Number(previousYear));
+          const previousFobValue = previousData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
+          if (previousFobValue > 0) {
+            const percentageChange = ((totalFobValue - previousFobValue) / previousFobValue) * 100;
+            fobValueChange = percentageChange.toFixed(2) + '%';
+            if (percentageChange > 0) fobValueChange = '+' + fobValueChange;
+          }
+        }
+        const fobValueChangeEl = document.getElementById("fobValueChange");
+        if (fobValueChangeEl) fobValueChangeEl.textContent = fobValueChange;
+
+        // Calculate change in number of nodes
+        let nodesChange = '-';
+        if (previousYear !== undefined) {
+          const previousData = validData.filter(row => Number(row.refMonth) === Number(previousYear));
+          const previousNodeSet = new Set();
+          previousData.forEach(row => {
+            previousNodeSet.add(row.reporterISO);
+            previousNodeSet.add(row.partnerISO);
+          });
+          const previousNodes = previousNodeSet.size;
+          const nodeDifference = totalNodes - previousNodes;
+          nodesChange = nodeDifference >= 0 ? `+${nodeDifference}` : `${nodeDifference}`;
+        }
+        const nodesChangeEl = document.getElementById("nodesChange");
+        if (nodesChangeEl) nodesChangeEl.textContent = nodesChange;
+
         // Prepare new edges
         const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1);
         const newEdges = filteredData.map((row, index) => {
@@ -1279,9 +1350,6 @@ async function initExportImport() {
             fobvalue: row.fobvalue
           };
         }).filter(edge => edge.from && edge.to);
-
-        // Debug: Log graph details
-        console.log(`Year ${selectedYear}: ${newNodes.length} nodes, ${newEdges.length} edges, Total FOB: ${totalFobValue}`);
 
         // Update nodes
         const currentNodeIds = nodesDataSet.getIds();
@@ -1709,7 +1777,6 @@ const baseLayers = {
   fetch(BACKEND_URL + "/rsposhapefile")
     .then(res => res.json())
     .then(data => {
-      console.log("RSPO Forecast Response:", data);
       allForecastData = data.features || [];
       if (!allForecastData.length) {
         console.warn("No forecast data found");

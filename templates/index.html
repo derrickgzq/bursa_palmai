@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bursa PalmAI</title>
   <link rel="icon" href="/static/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-  .leaflet-interactive {transition: fill 0.4s ease, stroke 0.4s ease, r 0.3s ease, opacity 0.4s ease;}
+    .leaflet-interactive { transition: fill 0.4s ease, stroke 0.4s ease, r 0.3s ease, opacity 0.4s ease; }
   </style>
   <script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,108 +21,126 @@
   <style>
     .chart-container {
       position: relative;
-      height: 600px;
-      max-width: 1000px; /* Constrain maximum width */
+      height: 400px; /* Reduced height for mobile */
+      max-width: 100%;
       background-color: white;
       border-radius: 0.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin: 0.5rem auto; /* Center the container */
+      margin: 0.5rem auto;
       padding: 1rem;
-      box-sizing: border-box; /* Include padding in dimensions */
-      overflow: hidden; /* Prevent overflow */
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .dropdown-container {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      z-index: 10; /* Ensure dropdown is above chart */
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 10;
     }
     #chart-select {
       padding: 5px;
-      font-size: 16px;
+      font-size: 14px;
       font-family: 'Inter', sans-serif;
       border: 1px solid #ccc;
       border-radius: 4px;
+      width: 100%;
+      max-width: 200px;
     }
     #chart-title {
-      text-align: left; /* Center the title */
+      text-align: left;
+      font-size: 1rem; /* Smaller title for mobile */
     }
     canvas {
       width: 100% !important;
       height: 100% !important;
+    }
+    @media (max-width: 640px) {
+      .chart-container {
+        height: 300px; /* Further reduce height for small screens */
+      }
+      #chart-title {
+        font-size: 0.9rem;
+      }
+      #chart-select {
+        font-size: 12px;
+        max-width: 150px;
+      }
     }
   </style>
   <script>
     // Protect Chart.js from AnyChart namespace conflicts
     window.ChartJS = Chart;
   </script>
-  <!-- Load Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <!-- Load MarkerCluster plugin (after Leaflet!) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </head>
-<body class="font-sans bg-gray-50 text-black min-h-screen flex">
+<body class="font-sans bg-gray-50 text-black min-h-screen flex flex-col md:flex-row">
   <!-- Sidebar -->
-  <aside class="w-64 min-h-screen sticky top-0 bg-white shadow-md p-6 flex flex-col justify-between">
+  <aside class="w-full md:w-64 min-h-[auto] md:min-h-screen sticky top-0 bg-white shadow-md p-4 md:p-6 flex flex-col justify-between z-20">
     <div>
-      
-      <h2 class="text-2xl font-bold mb-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
-      <nav class="space-y-4" id="sidebar-nav">
-        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold" style="font-family: 'Inter', sans-serif;">Market Overview</a>
-        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Company Profiles</a>
-        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Commodity Trends</a>
-        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Geography Insights</a>
-        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">Trade Chain & Flows</a>
-        <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
-        <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500" style="font-family: 'Inter', sans-serif;">About us</a>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl md:text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
+        <button id="sidebar-toggle" class="md:hidden text-gray-700 focus:outline-none">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+      <nav id="sidebar-nav" class="space-y-2 hidden md:block">
+        <a href="#" data-tab="mainpage" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">Market Overview</a>
+        <a href="#" data-tab="company" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">Company Profiles</a>
+        <a href="#" data-tab="commodities" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">Commodity Trends</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">Geography Insights</a>
+        <a href="#" data-tab="exportimport" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">Trade Chain & Flows</a>
+        <a href="#" data-tab="aichatbot" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
+        <a href="#" data-tab="aboutus" class="tab-link block text-gray-700 hover:text-green-500 font-semibold py-2" style="font-family: 'Inter', sans-serif;">About us</a>
       </nav>
     </div>
   </aside>
 
   <!-- Main content -->
-  <div class="flex-1 p-6 max-w-5xl mx-auto">
+  <div class="flex-1 p-4 md:p-6 max-w-full md:max-w-5xl mx-auto">
     <!-- Tab Contents -->
-    <section id="mainpage" class="tab-content px-4">
-      <header class="text-center mb-8">
-        <h1 class="text-5xl font-extrabold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
-        <p class="text-lg mb-6" style="color: #91b7a2; font-family: 'Inter', sans-serif;">
+    <section id="mainpage" class="tab-content px-2 md:px-4">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-5xl font-extrabold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
+        <p class="text-base md:text-lg mb-4" style="color: #91b7a2; font-family: 'Inter', sans-serif;">
           An AI, data-powered Bursa Malaysia Plantation Dashboard App
         </p>
       </header>
 
       <!-- Chart Row -->
-      <div class="flex flex-wrap justify-center gap-6 mb-8">
+      <div class="flex flex-col md:flex-row flex-wrap justify-center gap-4 md:gap-6 mb-6">
         <!-- Treemap container -->
-        <div class="w-full md:w-[48%] border rounded-lg shadow">
+        <div class="w-full border rounded-lg shadow">
           <div class="p-2 font-medium text-sm text-[#345f3c]">📊 Plantation Stock Treemap</div>
-          <div id="treemap" class="h-[400px]"></div>
+          <div id="treemap" class="h-[300px] md:h-[400px]"></div>
         </div>
         <!-- KLCI Chart container -->
-        <div class="w-full md:w-[48%] border rounded-lg shadow">
+        <div class="w-full border rounded-lg shadow">
+          <div class="pADAS2/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/21/22/23/24/25/26/27/28/29/30/31/32/33/34/35/36/37/38/39/40/41/42/43/44/45/46/47/48/49/50/51/52/53/54/55/56/57/58/59/60/61/62/63/64/65/66/67/68/69/70/71/72/73/74/75/76/77/78/79/80/81/82/83/84/85/86/87/88/89/90/91/92/93/94/95/96/97/98/99/100/101/102/103/104/105/106/107/108/109/110/111/112/113/114/115/116/117/118/119/120/121/122/123/124/125/126/127/128/129/130/131/132/133/134/135/136/137/138/139/140/141/142/143/144/145/146/147/148/149/150/151/152/153/154/155/156/157/158/159/160/161/162/163/164/165/166/167/168/169/170/171/172/173/174/175/176/177/178/179/180/181/182/183/184/185/186/187/188/189/190/191/192/193/194/195/196/197/198/199/200/201/202/203/204/205/206/207/208/209/210/211/212/213/214/215/216/217/218/219/220/221/222/223/224/225/226/227/228/229/230/231/232/233/234/235/236/237/238/239/240/241/242/243/244/245/246/247/248/249/250/251/252/253/254/255/256/257/258/259/260/261/262/263/264/265/266/267/268/269/270/271/272/273/274/275/276/277/278/279/280/281/282/283/284/285/286/287/288/289/290/291/292/293/294/295/296/297/298/299/300/301/302/303/304/305/306/307/308/309/310/311/312/313/314/315/316/317/318/319/320/321/322/323/324/325/326/327/328/329/330/331/332/333/334/335/336/337/338/339/340/341/342/343/344/345/346/347/348/349/350/351/352/353/354/355/356/357/358/359/360/361/362/363/364/365/366/367/368/369/370/371/372/373/374/375/376/377/378/379/380/381/382/383/384/385/386/387/388/389/390/391/392/393/394/395/396/397/398/399/400/401/402/403/404/405/406/407/408/409/410/411/412/413/414/415/416/417/418/419/420/421/422/423/424/425/426/427/428/429/430/431/432/433/434/435/436/437/438/439/440/441/442/443/444/445/446/447/448/449/450/451/452/453/454/455/456/457/458/459/460/461/462/463/464/465/466/467/468/469/470/471/472/473/474/475/476/477/478/479/480/481/482/483/484/485/486/487/488/489/490/491/492/493/494/495/496/497/498/499/500/501/502/503/504/505/506/507/508/509/510/511/512/513/514/515/516/517/518/519/520/521/522/523/524/525/526/527/528/529/530/531/532/533/534/535/536/537/538/539/540/541/542/543/544/545/546/547/548/549/550/551/552/553/554/
+
           <div class="p-2 font-medium text-sm text-[#345f3c]">📈 KLCI vs Plantation Performance</div>
-          <div class="relative h-[400px]">
+          <div class="relative h-[300px] md:h-[400px] p-4">
             <canvas id="klciChart" class="absolute inset-0 w-full h-full"></canvas>
           </div>
         </div>
       </div>
 
       <!-- Scorecards Row -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="scoreCards">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6" id="scoreCards">
         <!-- Cards injected by JS -->
       </div>
 
       <!-- Navigation Buttons -->
-      <div class="flex justify-center space-x-4 mb-12">
+      <div class="flex justify-center space-x-4 mb-8">
         <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
         <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
       </div>
 
       <!-- News Heading -->
-      <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+      <h2 class="text-xl md:text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
         📰 Latest Palm Oil News
       </h2>
 
@@ -140,171 +158,149 @@
     <section id="company" class="tab-content hidden font-[Inter]">
       <!-- Header Section -->
       <div class="mb-6">
-        <!-- Title and Dropdown -->
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-          <h2 id="company-title" class="text-2xl font-bold" style="color: #014422;">Kuala Lumpur Kepong Berhad</h2>
-          <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
+          <h2 id="company-title" class="text-xl md:text-2xl font-bold" style="color: #014422;">Kuala Lumpur Kepong Berhad</h2>
+          <select id="company-select" class="border p-2 rounded bg-gray-50 w-full sm:w-auto">
             <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
             <option value="IOI|1961.KL">IOI Corporation Berhad</option>
             <option value="SDG|5285.KL">Sime Darby Guthrie</option>
             <option value="FGV|5222.KL">FGV Holdings Berhad</option>
           </select>
         </div>
-        <!-- Company Description -->
         <p id="company-description" class="text-justify" style="color: #345f3c;"></p>
       </div>
 
       <!-- Charts: Share Price & Monthly Production -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div class="bg-gray-50 rounded-lg p-4 shadow">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Company Share Price</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">Company Share Price</h3>
+          <div class="relative h-[300px] md:h-[400px] min-h-[300px] w-full">
             <canvas id="price-chart"></canvas>
           </div>
         </div>
-
         <div class="bg-gray-50 rounded-lg p-4 shadow">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Monthly Production</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">Monthly Production</h3>
+          <div class="relative h-[300px] md:h-[400px] min-h-[300px] w-full">
             <canvas id="prod-chart"></canvas>
           </div>
         </div>
       </div>
 
       <!-- Quarterly Earnings Chart -->
-      <div class="mt-8 bg-gray-50 rounded-lg p-4 shadow">
-        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Company Quarterly Earnings</h3>
-        <div class="relative h-[450px] min-h-[300px] w-full">
+      <div class="mt-6 bg-gray-50 rounded-lg p-4 shadow">
+        <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">Company Quarterly Earnings</h3>
+        <div class="relative h-[350px] md:h-[450px] min-h-[300px] w-full">
           <canvas id="earnings-chart"></canvas>
         </div>
       </div>
 
       <!-- Planted Area & Extraction Rate -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
         <div class="bg-gray-50 rounded-lg p-4 shadow">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Planted Area</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">Planted Area</h3>
+          <div class="relative h-[300px] md:h-[400px] min-h-[300px] w-full">
             <canvas id="plt-area-chart"></canvas>
           </div>
         </div>
         <div class="bg-gray-50 rounded-lg p-4 shadow">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Extraction Rate</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">Extraction Rate</h3>
+          <div class="relative h-[300px] md:h-[400px] min-h-[300px] w-full">
             <canvas id="ext-rates-chart"></canvas>
           </div>
         </div>
       </div>
 
       <!-- In-depth Forecast & Key Metrics -->
-      <div class="mt-8">
-        <h3 class="text-lg font-semibold mb-4" style="color: #345f3c;">Forecast Highlights & Key Metrics</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- Revenue Forecast Box -->
-          <div class="h-[450px] min-h-[450px] bg-gray-50 rounded-lg p-4 shadow">
-            <h4 class="text-md font-medium mb-2" style="color: #345f3c;">Revenue Forecast</h4>
+      <div class="mt-6">
+        <h3 class="text-base md:text-lg font-semibold mb-4" style="color: #345f3c;">Forecast Highlights & Key Metrics</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
+          <div class="h-[350px] md:h-[450px] min-h-[350px] bg-gray-50 rounded-lg p-4 shadow">
+            <h4 class="text-sm md:text-md font-medium mb-2" style="color: #345f3c;">Revenue Forecast</h4>
             <div class="relative h-full w-full">
               <canvas id="revenue-forecast-chart"></canvas>
             </div>
           </div>
-          <!-- 3 Key Metrics Box -->
-          <div class="grid grid-rows-3 gap-4 h-[450px]">
-            <!-- Metric Card 1 -->
+          <div class="grid grid-rows-3 gap-4 h-[350px] md:h-[450px]">
             <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
               <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">FCPO ↑ 10%</h4>
+                <h4 class="text-sm md:text-md font-medium mb-1" style="color: #345f3c;">FCPO ↑ 10%</h4>
                 <p class="text-sm text-gray-600">Revenue ↑ 7.5%</p>
               </div>
-              <div class="text-3xl font-bold text-[#014422]">📈</div>
+              <div class="text-2xl md:text-3xl font-bold text-[#014422]">📈</div>
             </div>
-
-            <!-- Metric Card 2 -->
             <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
               <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">Rainfall >150mm</h4>
+                <h4 class="text-sm md:text-md font-medium mb-1" style="color: #345f3c;">Rainfall >150mm</h4>
                 <p class="text-sm text-gray-600">Extraction ↓ 4%</p>
               </div>
-              <div class="text-3xl font-bold text-[#014422]">🌧️</div>
+              <div class="text-2xl md:text-3xl font-bold text-[#014422]">🌧️</div>
             </div>
-
-            <!-- Metric Card 3 -->
             <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
               <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">CPO ↑ 5%</h4>
+                <h4 class="text-sm md:text-md font-medium mb-1" style="color: #345f3c;">CPO ↑ 5%</h4>
                 <p class="text-sm text-gray-600">Exports ↑ 3%</p>
               </div>
-              <div class="text-3xl font-bold text-[#014422]">🌍</div>
+              <div class="text-2xl md:text-3xl font-bold text-[#014422]">🌍</div>
             </div>
           </div>
         </div>
 
         <!-- Revenue Weightage Cards -->
         <div id="weightage-cards" class="flex flex-wrap items-center gap-4 mt-6">
-          <span class="text-lg font-medium" style="color: #345f3c;">Forecasted revenue contribution by products:</span>
-          <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
+          <span class="text-base md:text-lg font-medium" style="color: #345f3c;">Forecasted revenue contribution by products:</span>
+          <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[100px] text-center">
             <h4 class="text-sm font-medium">FFB Weightage</h4>
-            <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
+            <p id="ffb-weight" class="text-lg md:text-xl font-bold mt-1">70%</p>
           </div>
-          <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
+          <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[100px] text-center">
             <h4 class="text-sm font-medium">CPO Weightage</h4>
-            <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
+            <p id="cpo-weight" class="text-lg md:text-xl font-bold mt-1">20%</p>
           </div>
-          <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
+          <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[100px] text-center">
             <h4 class="text-sm font-medium">PK Weightage</h4>
-            <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
+            <p id="pk-weight" class="text-lg md:text-xl font-bold mt-1">10%</p>
           </div>
         </div>
       </div>
     </section>
 
     <section id="commodities" class="tab-content hidden">
-      <!-- Section Header -->
       <div class="mb-6">
-        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">🌾 Commodity Market Insights</h2>
-        <p class="text-gray-700 mt-2 max-w-4xl" style="font-family: 'Inter', sans-serif;">
+        <h2 class="text-xl md:text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">🌾 Commodity Market Insights</h2>
+        <p class="text-gray-700 mt-2 max-w-4xl text-sm md:text-base" style="font-family: 'Inter', sans-serif;">
           This section presents key commodities that influence palm oil markets — including crop prices, fuel costs, and agricultural inputs. Use the insights below to monitor external factors affecting plantation economics.
         </p>
       </div>
 
-      <!-- Grid Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- MPOB Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
           <p class="text-sm text-gray-600 mb-2">Latest official data from MPOB including production, stocks, and exports.</p>
           <canvas id="mpobChart" class="w-full h-full"></canvas>
         </div>
-
-        <!-- Soybean Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
           <p class="text-sm text-gray-600 mb-2">Global soybean prices — a key substitute for palm oil in the vegetable oil market.</p>
           <canvas id="soy-price-chart" class="w-full h-full"></canvas>
         </div>
-
-        <!-- Fertilizer Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
           <p class="text-sm text-gray-600 mb-2">Urea and NPK price trends impacting upstream production costs.</p>
           <canvas id="fert-chart" class="w-full h-full"></canvas>
         </div>
-
-        <!-- Diesel Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
           <p class="text-sm text-gray-600 mb-2">Diesel is a major cost component for machinery and logistics in plantations.</p>
           <canvas id="diesel-chart" class="w-full h-full"></canvas>
         </div>
-
-        <!-- Crude Oil Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
           <p class="text-sm text-gray-600 mb-2">Crude oil influences biodiesel demand and energy-related plantation costs.</p>
           <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
-        </div>
+        </divევ
 
-        <!-- Brent Oil Chart -->
-        <div class="bg-white rounded-lg shadow-md p-4 h-[600px]">
-          <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
+        <div class="bg-white rounded-lg shadow-md p-4 h-[400px] md:h-[500px]">
+          <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
           <p class="text-sm text-gray-600 mb-2">Global benchmark for oil — used for hedging and price benchmarking.</p>
           <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
         </div>
@@ -312,18 +308,14 @@
     </section>
 
     <section id="mpobstats" class="tab-content hidden">
-      <!-- Section Title -->
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Geography</h2>
+        <h2 class="text-xl md:text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">Palm Oil Geography</h2>
       </div>
-
-      <!-- Map Section -->
-      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Plantation Map & Forecast Slider</h3>
-      <p class="text-gray-600 mb-4">
+      <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Plantation Map & Forecast Slider</h3>
+      <p class="text-gray-600 mb-4 text-sm md:text-base">
         View and interact with the palm oil map. Use the date slider below to view weather overlays over time. Colored regions represent varying rainfall conditions across plantation areas.
       </p>
-      <div id="map" style="height: 80vh; width: 100%; border-radius: 12px; position: relative;">
-        <!-- Slider inside map -->
+      <div id="map" style="height: 60vh; width: 100%; border-radius: 12px; position: relative;">
         <div id="sliderContainer"
           style="
             position: absolute;
@@ -343,15 +335,13 @@
         </div>
       </div>
 
-      <!-- Weather Forecast Section -->
-      <div id="forecast" class="my-10 p-6 bg-white rounded-lg shadow-md" style="font-family: 'Inter', sans-serif;">
-        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">
+      <div id="forecast" class="my-8 p-4 md:p-6 bg-white rounded-lg shadow-md" style="font-family: 'Inter', sans-serif;">
+        <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">
           🌦️ Palm Oil Estates 7-Day Weather Forecast Summary
         </h3>
-        <p class="text-gray-600 mb-4">
+        <p class="text-gray-600 mb-4 text-sm md:text-base">
           This section shows the number of palm oil plantation areas under different forecasted weather conditions (clear, windy, rainy, storm) over the next 7 days.
         </p>
-
         <div class="flex flex-col items-center justify-center md:max-w-md w-full mx-auto">
           <label for="date-select" class="mb-2 text-sm font-medium text-gray-700 text-center">
             Select Date:
@@ -362,56 +352,47 @@
             style="font-family: 'Inter', sans-serif; color: #345f3c;"
           ></select>
         </div>
-
-        <!-- Scorecards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <!-- Cerah -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #f8fff8; border-left: 4px solid #2ecc71;">
               <div class="flex-1">
                 <h4 class="font-medium text-gray-600">Cerah</h4>
-                <p id="tiada-hujan-value" class="text-2xl font-bold mt-1" style="color: #2ecc71;">114</p>
+                <p id="tiada-hujan-value" class="text-xl md:text-2xl font-bold mt-1" style="color: #2ecc71;">114</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #2ecc71;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" style="color: #2ecc71;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </div>
           </div>
-
-          <!-- Berangin -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #f8f9ff; border-left: 4px solid #dad01a;">
               <div class="flex-1">
                 <h4 class="font-medium text-gray-600">Berangin</h4>
-                <p id="berangin-value" class="text-2xl font-bold mt-1" style="color: #dad01a;">0</p>
+                <p id="berangin-value" class="text-xl md:text-2xl font-bold mt-1" style="color: #dad01a;">0</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #dad01a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" style="color: #dad01a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
               </svg>
             </div>
           </div>
-
-          <!-- Hujan -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #faf5ff; border-left: 4px solid #cc6e0a;">
               <div class="flex-1">
                 <h4 class="font-medium text-gray-600">Hujan</h4>
-                <p id="hujan-value" class="text-2xl font-bold mt-1" style="color: #cc6e0a;">226</p>
+                <p id="hujan-value" class="text-xl md:text-2xl font-bold mt-1" style="color: #cc6e0a;">226</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #cc6e0a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" style="color: #cc6e0a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
               </svg>
             </div>
           </div>
-
-          <!-- Ribut Petir -->
           <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center p-4" style="background-color: #fff5f5; border-left: 4px solid #e74c3c;">
               <div class="flex-1">
                 <h4 class="font-medium text-gray-600">Ribut Petir</h4>
-                <p id="ribut-petir-value" class="text-2xl font-bold mt-1" style="color: #e74c3c;">452</p>
+                <p id="ribut-petir-value" class="text-xl md:text-2xl font-bold mt-1" style="color: #e74c3c;">452</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #e74c3c;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" style="color: #e74c3c;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -419,18 +400,14 @@
         </div>
       </div>
 
-      <!-- Aqueduct Risks -->
-      <div id="risks" class="my-10">
-        <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌊 Palm Oil Related Environmental Risks</h3>
-        <p class="text-gray-600 mb-4">
+      <div id="risks" class="my-8">
+        <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c;">🌊 Palm Oil Related Environmental Risks</h3>
+        <p class="text-gray-600 mb-4 text-sm md:text-base">
           The following risk breakdowns are derived from the Aqueduct Global Water Risk Atlas and assess the vulnerability of plantation areas to flooding and drought conditions.
         </p>
-
-        <!-- Charts Section -->
-        <div class="space-y-10">
-          <!-- Chart 1 -->
-          <div class="bg-white rounded-lg shadow-md m-2 p-4">
-            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+        <div class="space-y-6">
+          <div class="bg-white rounded-lg shadow-md p-4">
+            <h4 class="text-base md:text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
               Coastal Flood Risk Composition
               <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -440,10 +417,8 @@
             </h4>
             <canvas id="cfr-bar-chart"></canvas>
           </div>
-
-          <!-- Chart 2 -->
-          <div class="bg-white rounded-lg shadow-md m-2 p-4">
-            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+          <div class="bg-white rounded-lg shadow-md p-4">
+            <h4 class="text-base md:text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
               Riverine Flood Risk Composition
               <span title="Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -453,10 +428,8 @@
             </h4>
             <canvas id="rfr-bar-chart"></canvas>
           </div>
-
-          <!-- Chart 3 -->
-          <div class="bg-white rounded-lg shadow-md m-2 p-4">
-            <h4 class="text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
+          <div class="bg-white rounded-lg shadow-md p-4">
+            <h4 class="text-base md:text-lg font-semibold mb-2 flex items-center gap-2" style="color: #345f3c;">
               Drought Risk Composition
               <span title="Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity.">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -471,68 +444,80 @@
     </section>
 
     <section id="exportimport" class="tab-content hidden">
-      <div class="flex flex-col space-y-8">
-        <!-- Graph theory visualization and stats table -->
-        <div class="h-[600px] flex flex-row space-x-4 bg-white rounded-lg shadow-md m-2 p-4">
+      <div class="flex flex-col space-y-6">
+        <div class="h-[500px] md:h-[600px] flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 bg-white rounded-lg shadow-md p-4">
           <div class="flex-1">
-            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil Trade Network</h3>
+            <h3 class="text-xl md:text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil Trade Network</h3>
             <div class="flex items-center mb-2">
-              <label for="yearSlider" class="mr-2 text-gray-800" style="font-family: 'Inter', sans-serif;">Year:</label>
-              <input type="range" id="yearSlider" class="w-1/2" min="0" max="0" value="0">
-              <span id="selectedYear" class="ml-2 text-gray-800" style="font-family: 'Inter', sans-serif;">-</span>
-              <button id="playButton" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded" style="font-family: 'Inter', sans-serif;">▶️ Play</button>
+              <label for="yearSlider" class="mr-2 text-gray-800 text-sm" style="font-family: 'Inter', sans-serif;">Year:</label>
+              <input type="range" id="yearSlider" class="w-full md:w-1/2 h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" min="0" max="0" value="0">
+              <span id="selectedYear" class="ml-2 text-gray-800 text-sm" style="font-family: 'Inter', sans-serif;">-</span>
+              <button id="playButton" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm" style="font-family: 'Inter', sans-serif;">▶️ Play</button>
             </div>
-            <div id="graphtheory" class="w-full h-[500px]"></div>
+            <div id="graphtheory" class="w-full h-[400px] md:h-[500px]"></div>
           </div>
-          <div class="w-1/4">
+          <div class="w-full md:w-1/4">
             <div class="mb-4">
-              <h4 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Node Legend</h4>
+              <h4 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Legend</h4>
               <ul style="font-family: 'Inter', sans-serif; list-style: none; padding: 0;">
                 <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #BCB98A; margin-right: 8px;"></span>
-                  <span class="text-gray-800">Export Only</span>
+                  <span style="width: 18px; height: 18px; border-radius: 50%; background-color: #BCB98A; margin-right: 8px;"></span>
+                  <span class="text-gray-800 text-sm">Export Only</span>
                 </li>
                 <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #345f3c; margin-right: 8px;"></span>
-                  <span class="text-gray-800">Import Only</span>
+                  <span style="width: 18px; height: 18px; border-radius: 50%; background-color: #345f3c; margin-right: 8px;"></span>
+                  <span class="text-gray-800 text-sm">Import Only</span>
                 </li>
                 <li style="display: inline-flex; align-items: center;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #fff8dc; margin-right: 8px;"></span>
-                  <span class="text-gray-800">Both Import and Export</span>
+                  <span style="width: 18px; height: 18px; border-radius: 50%; background-color: #fff8dc; margin-right: 8px;"></span>
+                  <span class="text-gray-800 text-sm">Both Import and Export</span>
                 </li>
               </ul>
             </div>
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Overall Statistics</h3>
+            <div class="mb-4">
+              <label for="countryDropdown" class="text-gray-800 text-sm" style="font-family: 'Inter', sans-serif;">Select Country: </label>
+              <select id="countryDropdown" class="w-full p-2 border rounded text-sm" style="font-family: 'Inter', sans-serif;">
+                <option value="">Select a country</option>
+              </select>
+            </div>
+            <h3 class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Overall Statistics</h3>
             <table id="graphStats" class="w-full border-collapse" style="font-family: 'Inter', sans-serif;">
               <thead>
                 <tr style="background-color: #345f3c; color: white;">
-                  <th class="p-2 text-left">Metric</th>
-                  <th class="p-2 text-right">Value</th>
+                  <th class="p-2 text-left text-sm">Metric</th>
+                  <th class="p-2 text-right text-sm">Value</th>
                 </tr>
               </thead>
               <tbody>
                 <tr class="border-b">
-                  <td class="p-2 text-gray-800">Total Countries</td>
-                  <td id="totalNodes" class="p-2 text-right text-gray-800">-</td>
+                  <td class="p-2 text-gray-800 text-sm">Total Countries</td>
+                  <td id="totalNodes" class="p-2 text-right text-gray-800 text-sm">-</td>
                 </tr>
                 <tr class="border-b">
-                  <td class="p-2 text-gray-800">Total Value Traded (USD)</td>
-                  <td id="totalFobValue" class="p-2 text-right text-gray-800">-</td>
+                  <td class="p-2 text-gray-800 text-sm">Change in Countries</td>
+                  <td id="nodesChange" class="p-2 text-right text-gray-800 text-sm">-</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 text-gray-800 text-sm">Total Value Traded (USD)</td>
+                  <td id="totalFobValue" class="p-2 text-right text-gray-800 text-sm">-</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 text-gray-800 text-sm">FOB Value Change (%)</td>
+                  <td id="fobValueChange" class="p-2 text-right text-gray-800 text-sm">-</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Chart container with dropdown -->
         <div class="chart-container">
           <div class="dropdown-container">
-            <select id="chart-select" onchange="toggleChart()">
+            <select id="chart-select" onchange="toggleChart()" class="w-full sm:w-auto">
               <option value="4th-chart" selected>Animal, Vegetable Oils, Fats, Waxes</option>
               <option value="5th-chart">Chemical and Related Products</option>
             </select>
           </div>
-          <h3 id="chart-title" class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Palm Oil End Products Export & Import</h3>
+          <h3 id="chart-title" class="text-base md:text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Palm Oil End Products Export & Import</h3>
           <canvas id="4th-chart" class="w-full h-full" style="display: block;"></canvas>
           <canvas id="5th-chart" class="w-full h-full" style="display: none;"></canvas>
         </div>
@@ -540,56 +525,54 @@
     </section>
 
     <section id="aichatbot" class="tab-content hidden">
-      <p class="text-center py-10">Bursa PalmAI chatbot content goes here... (Currently unavailable)</p>
+      <p class="text-center py-10 text-sm md:text-base">Bursa PalmAI chatbot content goes here... (Currently unavailable)</p>
     </section>
 
     <section id="aboutus" class="tab-content hidden">
-      <div class="flex flex-col md:flex-row items-center justify-center min-h-screen p-8 gap-8">
-  
-        <!-- Derrick Gan Card -->
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 p-4 md:p-8">
         <div class="bg-white shadow-lg border rounded-xl p-6 w-full md:w-1/2 text-center">
-          <!-- Profile Picture -->
           <div class="flex justify-center mb-4">
-            <img src="static/my_pfp.jpg" alt="Derrick Gan" class="w-32 h-32 rounded-full border-4 border-blue-200 object-cover">
+            <img src="static/my_pfp.jpg" alt="Derrick Gan" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-blue-200 object-cover">
           </div>
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Derrick Gan</h1>
-          <p class="text-xl md:text-2xl text-blue-600 font-medium mb-2">Data Engineer</p>
-          <div class="text-lg text-gray-600 mb-2">
+          <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mb-2">Derrick Gan</h1>
+          <p class="text-lg md:text-xl text-blue-600 font-medium mb-2">Data Engineer</p>
+          <div class="text-base md:text-lg text-gray-600 mb-2">
             Developer and Data Scientist of Bursa PalmAI
           </div>
           <div class="flex justify-center items-center gap-2 text-gray-700 mt-2">
-            <i class="fab fa-github text-2xl"></i>
-            <a href="https://github.com/derrickgzq" target="_blank" class="hover:underline hover:text-black font-mono">@derrickgzq</a>
+            <i class="fab fa-github text-xl md:text-2xl"></i>
+            <a href="https://github.com/derrickgzq" target="_blank" class="hover:underline hover:text-black font-mono text-sm md:text-base">@derrickgzq</a>
           </div>
         </div>
-
-        <!-- Azrul Hakimi Card -->
         <div class="bg-white shadow-lg border rounded-xl p-6 w-full md:w-1/2 text-center">
-          <!-- Profile Picture -->
           <div class="flex justify-center mb-4">
-            <img src="static/kimi_pfp.jpg" alt="Azrul Hakimi" class="w-32 h-32 rounded-full border-4 border-green-200 object-cover">
+            <img src="static/kimi_pfp.jpg" alt="Azrul Hakimi" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-green-200 object-cover">
           </div>
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2">Azrul Hakimi</h1>
-          <p class="text-xl md:text-2xl text-green-600 font-medium mb-2">Front-End Developer</p>
-          <div class="text-lg text-gray-600 mb-2">
+          <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mb-2">Azrul Hakimi</h1>
+          <p class="text-lg md:text-xl text-green-600 font-medium mb-2">Front-End Developer</p>
+          <div class="text-base md:text-lg text-gray-600 mb-2">
             Advisor of Bursa PalmAI
           </div>
           <div class="flex justify-center items-center gap-2 text-gray-700 mt-2">
-            <i class="fab fa-github text-2xl"></i>
-            <a href="https://github.com/rulkimi" target="_blank" class="hover:underline hover:text-black font-mono">@rulkimi</a>
+            <i class="fab fa-github text-xl md:text-2xl"></i>
+            <a href="https://github.com/rulkimi" target="_blank" class="hover:underline hover:text-black font-mono text-sm md:text-base">@rulkimi</a>
           </div>
         </div>
-
       </div>
-
     </section>
 
-
-    <footer class="mt-10 text-center text-sm text-gray-700">
+    <footer class="mt-8 text-center text-sm text-gray-700">
       © 2025 Bursa PalmAI. All rights reserved.
     </footer>
   </div>
 
+  <script>
+    // Sidebar toggle for mobile
+    document.getElementById('sidebar-toggle').addEventListener('click', () => {
+      const nav = document.getElementById('sidebar-nav');
+      nav.classList.toggle('hidden');
+    });
+  </script>
   <script src="/static/script.js"></script>
 </body>
 </html>
