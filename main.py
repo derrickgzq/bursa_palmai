@@ -341,6 +341,7 @@ def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
         """
         
         df = pd.read_sql(query, conn)
+        df = df[df['date'] > '2024-01-01']
         
         if df.empty:
             raise HTTPException(
@@ -436,10 +437,7 @@ def get_company_description(ticker):
     info = stock.info
     summary = info.get('longBusinessSummary', '')
 
-    # Clean ONLY leading/trailing quotes — including smart quotes
     summary = summary.strip().strip('"').strip("“”").strip("'")
-
-    # Extra safety: use regex to remove quotes only at the start and end
     summary = re.sub(r'^[\"“”\']+|[\"“”\']+$', '', summary)
 
     return summary
@@ -448,7 +446,7 @@ def get_company_description(ticker):
 @app.get("/price-data")
 def get_company_price_data(ticker: str):
     end = datetime.today()
-    start = end - timedelta(days=180)  # last 6 months
+    start = end - timedelta(days=30) 
     data = yf.download(ticker, start=start, end=end)
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
@@ -592,7 +590,7 @@ def get_fuel_prices():
     df = pd.read_csv(fuel_source)
 
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
-    df_filtered = df[df['date'] > '2022-12-31'][['date', 'diesel', 'diesel_eastmsia']]
+    df_filtered = df[df['date'] > '2025-01-31'][['date', 'diesel', 'diesel_eastmsia']]
     df_filtered = df_filtered[~((df_filtered['diesel'].fillna(0) == 0) & (df_filtered['diesel_eastmsia'].fillna(0) == 0))]
     df_filtered = df_filtered.drop_duplicates(subset='date', keep='first')
     df_filtered = df_filtered.sort_values(by='date')

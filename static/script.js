@@ -322,10 +322,10 @@ async function fetchCompanyData(company) {
 function getColor(index) {
   const colors = [
     "rgba(0, 50, 31, 1)",
-    "rgba(1, 68, 34, 1)",
-    "rgba(52, 95, 60, 1)",
     "rgba(127, 154, 131, 1)",
+    "rgba(52, 95, 60, 1)",
     "rgba(137, 154, 92, 1)",
+    "rgba(1, 68, 34, 1)",
     "rgba(188, 185, 138, 1)"
   ];
   return colors[index % colors.length];
@@ -388,10 +388,9 @@ function drawPriceChart(data, ticker) {
     data: {
       labels,
       datasets: [{
-        label: `${ticker} Closing Price`,
+        label: `Closing Price`,
         data: prices,
         borderColor: 'rgba(52, 95, 60, 1)',
-        backgroundColor: 'rgba(0, 50, 31, 1)',
         fill: true,
         tension: 0.3
       }]
@@ -501,14 +500,14 @@ function buildPlantedAreaPieChart(data, company) {
   if (window.plantedAreaChart) window.plantedAreaChart.destroy();
 
   window.plantedAreaChart = new Chart(ctx, {
-    type: 'pie',
+    type: 'doughnut',
     data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: "#fff", borderWidth: 1 }] },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom', labels: { color: "black" } },
-        title: { display: true, text: `${nameMap[company]} Planted Area (${latestYear})`, color: "black" }
+        title: { display: true, text: `Planted Area (${latestYear})`, color: "black" }
       }
     }
   });
@@ -555,7 +554,7 @@ function buildExtractionRateChart(data, company) {
       },
       plugins: {
         legend: { position: 'bottom', labels: { color: 'black' } },
-        title: { display: true, text: `${nameMap[company]} Extraction Rates by Year`, color: 'black' }
+        title: { display: false, text: `${nameMap[company]} Extraction Rates by Year`, color: 'black' }
       }
     }
   });
@@ -976,8 +975,8 @@ async function initCommodities() {
         data: {
           labels,
           datasets: [
-            { label: "Diesel (West Malaysia)", data: diesel, borderColor: "green", backgroundColor: "rgba(1,68,34,0.8)", fill: true, tension: 0.3 },
-            { label: "Diesel (East Malaysia)", data: dieselEastMsia, borderColor: "darkgreen", backgroundColor: "rgba(137,154,92,0.8)", fill: true, tension: 0.3 }
+            { label: "Diesel (West Malaysia)", data: diesel, borderColor: "green", backgroundColor: "rgba(1,68,34,0.8)", fill: false, tension: 0.3 },
+            { label: "Diesel (East Malaysia)", data: dieselEastMsia, borderColor: "darkgreen", backgroundColor: "rgba(137,154,92,0.8)", fill: false, tension: 0.3 }
           ]
         },
         options: {
@@ -1910,10 +1909,48 @@ const baseLayers = {
         "🏭 Palm Oil Mills": millCluster
       };
 
+      // Create the layer control
       layerControl = L.control.layers(baseLayers, overlayMaps, {
         position: 'topright',
-        collapsed: false
-      }).addTo(map);
+        collapsed: true // Start collapsed
+      });
+
+      // Add the control to the map
+      layerControl.addTo(map);
+
+      // Customize the layer control container
+      const controlContainer = layerControl.getContainer();
+      controlContainer.classList.add('custom-layer-control');
+
+      // Create a toggle button/ribbon
+      const toggleButton = document.createElement('div');
+      toggleButton.className = 'layer-control-toggle';
+      toggleButton.innerHTML = '<i class="fas fa-layer-group"></i>'; // Font Awesome icon
+      toggleButton.title = 'Toggle Layer Control';
+
+      // Append toggle button to the map container
+      const mapContainer = map.getContainer();
+      mapContainer.appendChild(toggleButton);
+
+      // Toggle visibility on click
+      toggleButton.addEventListener('click', () => {
+        controlContainer.classList.toggle('collapsed');
+        toggleButton.classList.toggle('active');
+      });
+
+      // Show on hover
+      toggleButton.addEventListener('mouseenter', () => {
+        if (controlContainer.classList.contains('collapsed')) {
+          controlContainer.classList.remove('collapsed');
+        }
+      });
+
+      // Hide on mouse leave (unless clicked to stay open)
+      controlContainer.addEventListener('mouseleave', () => {
+        if (!toggleButton.classList.contains('active')) {
+          controlContainer.classList.add('collapsed');
+        }
+      });
     }
   }
 
@@ -1978,81 +2015,154 @@ const baseLayers = {
 
   initializeWeatherDropdown();
 
+  // Normalize data to percentages for 100% stacked bar chart
+  function normalizeData(data) {
+    const normalizedDatasets = data.datasets.map(dataset => ({ ...dataset, data: [...dataset.data] }));
+    const labels = data.labels;
 
-  // CFR bar chart
-  fetch(BACKEND_URL + "/cfr-bar-top6")
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById("cfr-bar-chart")?.getContext("2d");
-      if (!ctx) return;
+    // Calculate total for each label (company)
+    const totals = labels.map((_, index) => {
+      return data.datasets.reduce((sum, dataset) => sum + (dataset.data[index] || 0), 0);
+    });
 
-      new Chart(ctx, {
+    // Normalize each dataset to percentages
+    normalizedDatasets.forEach(dataset => {
+      dataset.data = dataset.data.map((value, index) => {
+        const total = totals[index];
+        return total > 0 ? (value / total * 100).toFixed(2) : 0;
+      });
+    });
+
+    return { labels, datasets: normalizedDatasets };
+  }
+
+  // Risk bar chart with dropdown
+  let riskChart = null;
+  const riskData = { cfr: null, rfr: null, drr: null };
+
+  async function initRiskChart() {
+    try {
+      const [cfrData, rfrData, drrData] = await Promise.all([
+        fetch(BACKEND_URL + "/cfr-bar-top6").then(res => res.json()),
+        fetch(BACKEND_URL + "/rfr-bar-top6").then(res => res.json()),
+        fetch(BACKEND_URL + "/drr-bar-top6").then(res => res.json())
+      ]);
+
+      // Normalize data to percentages
+      riskData.cfr = normalizeData(cfrData);
+      riskData.rfr = normalizeData(rfrData);
+      riskData.drr = normalizeData(drrData);
+
+      const ctx = document.getElementById("risk-bar-chart")?.getContext("2d");
+      if (!ctx) {
+        console.error("Canvas context for risk-bar-chart not found");
+        return;
+      }
+
+      // Initialize Chart.js instance as 100% stacked bar chart
+      riskChart = new Chart(ctx, {
         type: 'bar',
-        data: { labels: data.labels, datasets: data.datasets },
+        data: riskData.cfr,
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: 'Major Plantation Companies with Coastal Flood Risks Composition' }
+            legend: { position: 'right' },
+            title: { display: true, text: 'Major Plantation Companies with Coastal Flood Risks Composition' },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label || '';
+                  const value = context.parsed.y;
+                  return `${label}: ${value}%`;
+                }
+              }
+            }
           },
           scales: {
-            x: { stacked: true, grid: { display: false } },
-            y: { beginAtZero: true, stacked: true, title: { display: true, text: 'Count' }, grid: { display: false } }
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10,
+                maxRotation: 45,
+                minRotation: 0,
+                font: { size: 12 }
+              }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              max: 100,
+              title: { display: true, text: 'Percentage (%)' },
+              grid: { display: false },
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
+            }
+          },
+          layout: {
+            padding: {
+              top: 10,
+              bottom: 50,
+              left: 10,
+              right: 10
+            }
           }
         }
       });
-    })
-    .catch(error => console.error("Error fetching CFR bar chart data:", error));
 
-  // RFR bar chart
-  fetch(BACKEND_URL + "/rfr-bar-top6")
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById("rfr-bar-chart")?.getContext("2d");
-      if (!ctx) return;
+      // Set up dropdown event listener
+      const select = document.getElementById("risk-select");
+      if (select) {
+        select.addEventListener('change', updateRiskChart);
+      } else {
+        console.error("Dropdown element risk-select not found");
+      }
+    } catch (error) {
+      console.error("Error fetching risk bar chart data:", error);
+    }
+  }
 
-      new Chart(ctx, {
-        type: 'bar',
-        data: { labels: data.labels, datasets: data.datasets },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: 'Major Plantation Companies with Riverine Flood Risks Composition' }
-          },
-          scales: {
-            x: { stacked: true, grid: { display: false } },
-            y: { beginAtZero: true, stacked: true, title: { display: true, text: 'Count' }, grid: { display: false } }
-          }
-        }
-      });
-    })
-    .catch(error => console.error("Error fetching RFR bar chart data:", error));
+  function updateRiskChart() {
+    const select = document.getElementById("risk-select");
+    const title = document.getElementById("risk-chart-title");
+    const selectedRisk = select.value;
 
-  // DRR bar chart
-  fetch(BACKEND_URL + "/drr-bar-top6")
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById("drr-bar-chart")?.getContext("2d");
-      if (!ctx) return;
+    const titles = {
+      cfr: "Coastal Flood Risk Composition",
+      rfr: "Riverine Flood Risk Composition",
+      drr: "Drought Risk Composition"
+    };
 
-      new Chart(ctx, {
-        type: 'bar',
-        data: { labels: data.labels, datasets: data.datasets },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: 'Major Plantation Companies with Drought Risks Composition' }
-          },
-          scales: {
-            x: { stacked: true, grid: { display: false } },
-            y: { beginAtZero: true, stacked: true, title: { display: true, text: 'Count' }, grid: { display: false } }
-          }
-        }
-      });
-    })
-    .catch(error => console.error("Error fetching DRR bar chart data:", error));
+    const tooltips = {
+      cfr: "Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.",
+      rfr: "Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.",
+      drr: "Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity."
+    };
+
+    if (riskChart && riskData[selectedRisk]) {
+      riskChart.data = riskData[selectedRisk];
+      riskChart.options.plugins.title.text = `Major Plantation Companies with ${titles[selectedRisk]}`;
+      title.innerHTML = `
+        ${titles[selectedRisk]}
+        <span title="${tooltips[selectedRisk]}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+          </svg>
+        </span>
+      `;
+      riskChart.update();
+    } else {
+      console.error("Chart or data not available for", selectedRisk);
+    }
+  }
+
+  // Call the initialization function
+  initRiskChart();
 }
 
 // TAB SWITCHING LOGIC
