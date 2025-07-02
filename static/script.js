@@ -856,11 +856,29 @@ async function initCommodities() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // --- Start of changes for MPOB Chart ---
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 20 // Increased bottom padding for x-axis labels
+            }
+          },
+          // --- End of changes for MPOB Chart ---
           plugins: {
             legend: { position: "top" }
           },
           scales: {
-            x: { title: { display: true, text: "Month Year" } },
+            x: {
+              title: { display: true, text: "Month Year" },
+              ticks: {
+                autoSkip: true, // Automatically skips labels to prevent overlap
+                maxRotation: 45, // Rotate labels up to 45 degrees
+                minRotation: 45, // Ensure labels rotate if needed
+                padding: 10 // Add padding between ticks and the axis line
+              }
+            },
             y: { beginAtZero: true, title: { display: true, text: "Volume / Stocks / Export" }, position: "left" },
             y1: { beginAtZero: true, position: "right", title: { display: true, text: "FFB Price (RM)" }, grid: { drawOnChartArea: false } }
           }
@@ -898,9 +916,33 @@ async function initCommodities() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        // --- Start of changes for Soybean Price Chart ---
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 20 // Increased bottom padding
+          }
+        },
+        // --- End of changes for Soybean Price Chart ---
         scales: {
-          x: { title: { display: true, text: "Date" }, ticks: { color: "black" }, grid: { display: false } },
-          y: { title: { display: true, text: "Price (USD)" }, ticks: { color: "black" }, grid: { display: false } }
+          x: {
+            title: { display: true, text: "Date" },
+            ticks: {
+              color: "black",
+              autoSkip: true,
+              maxRotation: 45,
+              minRotation: 45,
+              padding: 10
+            },
+            grid: { display: false }
+          },
+          y: {
+            title: { display: true, text: "Price (USD)" },
+            ticks: { color: "black" },
+            grid: { display: false }
+          }
         },
         plugins: {
           legend: { labels: { color: "black" } }
@@ -946,11 +988,30 @@ async function initCommodities() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        // --- Start of changes for Fertilizer Chart ---
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 20 // Increased bottom padding
+          }
+        },
+        // --- End of changes for Fertilizer Chart ---
         plugins: {
           legend: { position: 'bottom' }
         },
         scales: {
-          x: { title: { display: true, text: "Month" }, grid: { display: false } },
+          x: {
+            title: { display: true, text: "Month" },
+            ticks: {
+              autoSkip: true,
+              maxRotation: 45,
+              minRotation: 45,
+              padding: 10
+            },
+            grid: { display: false }
+          },
           y: { title: { display: true, text: "Price (MYR)" }, grid: { display: false } }
         }
       }
@@ -982,8 +1043,27 @@ async function initCommodities() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // --- Start of changes for Diesel Chart ---
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 20 // Increased bottom padding
+            }
+          },
+          // --- End of changes for Diesel Chart ---
           scales: {
-            x: { title: { display: true, text: "Date" }, ticks: { maxRotation: 45, minRotation: 45 }, grid: { display: false } },
+            x: {
+              title: { display: true, text: "Date" },
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                autoSkip: true, // Added autoSkip here
+                padding: 10
+              },
+              grid: { display: false }
+            },
             y: { title: { display: true, text: "Price (RM)" }, beginAtZero: false, grid: { display: false } }
           },
           plugins: { legend: { position: "top" }, tooltip: { mode: "index", intersect: false } }
@@ -1016,6 +1096,16 @@ async function initCommodities() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // --- Start of changes for Crude Oil Chart ---
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 20 // Increased bottom padding
+            }
+          },
+          // --- End of changes for Crude Oil Chart ---
           plugins: {
             legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
             tooltip: {
@@ -1024,7 +1114,16 @@ async function initCommodities() {
             }
           },
           scales: {
-            x: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f', autoSkip: true, maxTicksLimit: 15 }, grid: { display: false } },
+            x: {
+              ticks: {
+                font: { family: 'Inter', size: 12 },
+                color: '#00321f',
+                autoSkip: true,
+                maxTicksLimit: 15,
+                padding: 10
+              },
+              grid: { display: false }
+            },
             y: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }, beginAtZero: false, grid: { display: false } }
           }
         }
@@ -1056,6 +1155,16 @@ async function initCommodities() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          // --- Start of changes for Brent Oil Chart ---
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 20 // Increased bottom padding
+            }
+          },
+          // --- End of changes for Brent Oil Chart ---
           plugins: {
             legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
             tooltip: {
@@ -1064,7 +1173,16 @@ async function initCommodities() {
             }
           },
           scales: {
-            x: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f', autoSkip: true, maxTicksLimit: 15 }, grid: { display: false } },
+            x: {
+              ticks: {
+                font: { family: 'Inter', size: 12 },
+                color: '#00321f',
+                autoSkip: true,
+                maxTicksLimit: 15,
+                padding: 10
+              },
+              grid: { display: false }
+            },
             y: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }, beginAtZero: false, grid: { display: false } }
           }
         }
