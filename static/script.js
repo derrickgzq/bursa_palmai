@@ -1,5 +1,5 @@
-const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
-//const BACKEND_URL = "https://bursa-palmai.onrender.com"
+//const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
+const BACKEND_URL = "https://bursa-palmai.onrender.com"
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
@@ -44,7 +44,7 @@ function initMainpage() {
         title.hAlign('left');
 
         chart.tooltip()
-          .format("{%name}: {%value}B MYR")
+          .format("{%name}: RM {%value} Billion")
           .fontSize(12)
           .fontFamily('Inter');
 
@@ -1487,7 +1487,7 @@ async function initExportImport() {
               nodePositions[node.label] = { x: pos.x, y: pos.y };
             }
           });
-          console.log(`Graph stabilized for year ${selectedYear}`);
+          //console.log(`Graph stabilized for year ${selectedYear}`);
           network.stopSimulation();
         });
 
@@ -1495,7 +1495,7 @@ async function initExportImport() {
         setTimeout(() => {
           if (network) {
             network.stopSimulation();
-            console.log(`Physics stopped for year ${selectedYear} after timeout`);
+            //console.log(`Physics stopped for year ${selectedYear} after timeout`);
           }
         }, 1200);
       };

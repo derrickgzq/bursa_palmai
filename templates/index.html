@@ -6,8 +6,8 @@
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="Bursa PalmAI">
-  <meta property="og:description" content="An AI, data-powered Bursa Malaysia Palm Oil Dashboard App.">
-  <meta property="og:image" content="/static/favicon.png">
+  <meta property="og:description" content="An AI, data-powered Bursa Malaysia Palm Oil Dashboard App">
+  <meta property="og:image" content="/static/banner.jpg">
   <meta property="og:url" content="https://bursa-palmai.onrender.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Bursa PalmAI">
@@ -357,35 +357,51 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">MPOB Key Indicators</h3>
+      <div class="space-y-6">
+        <div class="chart-container h-96 w-full">
+          <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">MPOB Key Indicators</h3>
           <p class="text-sm text-gray-600 mb-2">Latest official data from MPOB including production, stocks, and exports.</p>
           <canvas id="mpobChart" class="w-full h-full"></canvas>
         </div>
 
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Soybean Futures</h3>
-          <p class="text-sm text-gray-600 mb-2">Global soybean prices — a key substitute for palm oil in the vegetable oil market.</p>
-          <canvas id="soy-price-chart" class="w-full h-full"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Soybean Futures</h3>
+            <p class="text-sm text-gray-600 mb-2">Global soybean prices — a key substitute for palm oil in the vegetable oil market.</p>
+            <canvas id="soy-price-chart" class="w-full h-full"></canvas>
+          </div>
+
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Crude Palm Oil Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Benchmark CPO prices impacting revenue and market direction.</p>
+            <canvas id="cpo-price-chart" class="w-full h-full"></canvas>
+          </div>
         </div>
 
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Fertilizer Prices</h3>
-          <p class="text-sm text-gray-600 mb-2">Urea and NPK price trends impacting upstream production costs.</p>
-          <canvas id="fert-chart" class="w-full h-full"></canvas>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Fertilizer Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Urea and NPK price trends impacting upstream production costs.</p>
+            <canvas id="fert-chart" class="w-full h-full"></canvas>
+          </div>
 
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Diesel Prices</h3>
-          <p class="text-sm text-gray-600 mb-2">Diesel is a major cost component for machinery and logistics in plantations.</p>
-          <canvas id="diesel-chart" class="w-full h-full"></canvas>
-        </div>
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Diesel Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Diesel is a major cost component for machinery and logistics in plantations.</p>
+            <canvas id="diesel-chart" class="w-full h-full"></canvas>
+          </div>
 
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Crude Oil Prices</h3>
-          <p class="text-sm text-gray-600 mb-2">Crude oil influences biodiesel demand and energy-related plantation costs.</p>
-          <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
-        </div>
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Crude Oil Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Crude oil influences biodiesel demand and energy-related plantation costs.</p>
+            <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
+          </div>
 
-        <div class="chart-container h-96"> <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Brent Oil Prices</h3>
-          <p class="text-sm text-gray-600 mb-2">Global benchmark for oil — used for hedging and price benchmarking.</p>
-          <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
+          <div class="chart-container h-96 w-full">
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Brent Oil Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Global benchmark for oil — used for hedging and price benchmarking.</p>
+            <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
+          </div>
         </div>
       </div>
     </section>
@@ -397,7 +413,7 @@
       </div>
 
       <!-- Map Section -->
-      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Plantation Map & Forecast Slider</h3>
+      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Palm Oil Map & Weather Forecast Slider</h3>
       <p class="text-gray-600 mb-4">
         View and interact with the palm oil map. Use the date slider below to view weather overlays over time. Colored regions represent varying rainfall conditions across plantation areas.
       </p>
