@@ -13,6 +13,8 @@ from typing import List, Dict, Any
 from io import BytesIO
 from openai import OpenAI
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from pandas.tseries.offsets import DateOffset
 import pandas as pd
 import yfinance as yf
 import os
@@ -130,6 +132,55 @@ def categorize_weather(weather):
 
 df_lab['summary_forecast'] = df_lab['summary_forecast'].apply(categorize_weather)
 # coloured palm oil layer 
+
+#revenue prediction
+# --- Coefficients Map ---
+coefficients_map = {
+    'KLK': {
+        'intercept': 3.129,
+        'scale': 1000,
+        'coefficients': {
+            'Fresh Fruit Bunches': 6.37e-6,
+            'Crude Palm Oil': -7.238e-5,
+            'Palm Kernel': 2.766e-4,
+            'Rubber': 1.508e-7,
+            'FCPO': -3.544e-4,
+            'PK Price': 1.069e-3
+        }
+    },
+    'IOI': {
+        'intercept': 1.062,
+        'scale': 1000,
+        'coefficients': {
+            'Fresh Fruit Bunches': 7.685e-6,
+            'Crude Palm Oil': -5.236e-5,
+            'Palm Kernel': 1.236e-4,
+            'Rubber': -7.351e-7,
+            'FCPO': -1.675e-4,
+            'PK Price': 1.089e-3
+        }
+    },
+    'SDG': {
+        'intercept': 4.383,
+        'scale': 1000,
+        'coefficients': {
+            'Fresh Fruit Bunches': 4.893e-6,
+            'Crude Palm Oil': -2.636e-5,
+            'Palm Kernel': 4.647e-5,
+            'Rubber': 0.0,
+            'FCPO': -4.38e-4,
+            'PK Price': 4.555e-4
+        }
+    }
+}
+
+raw_material_base_names = [
+    "Fresh Fruit Bunches",
+    "Crude Palm Oil",
+    "Palm Kernel",
+    "Rubber",
+    "Coconut"
+]
 
 # mainpage
 # market cap aka treemap
@@ -341,7 +392,7 @@ def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
         """
         
         df = pd.read_sql(query, conn)
-        df = df[df['date'] > '2024-01-01']
+        df = df[df['date'] > '2025-01-01']
         
         if df.empty:
             raise HTTPException(
@@ -456,52 +507,151 @@ def get_company_price_data(ticker: str):
 
 # company earnings
 @app.get("/company-earnings")
-def get_company_earnings(ticker):
-    stock = yf.Ticker(ticker)
-    earnings_df = stock.quarterly_financials
+def get_company_earnings(ticker: str):
+    conn = sqlite3.connect(SQLITE_DB)
+    query = "SELECT * FROM company_earnings_data"
+    eardata = pd.read_sql_query(query, conn)
 
-    if earnings_df.empty:
-        raise HTTPException(status_code=404, detail="No earnings data found")
+    # Ensure date is datetime
+    eardata["date"] = pd.to_datetime(eardata["date"], errors="coerce")
+    eardata = eardata[eardata["company_short_name"] == ticker]
 
-    # Transpose so that each row is a quarter
-    earnings_df = earnings_df.T.reset_index()
-    earnings_df.rename(columns={"index": "Quarter"}, inplace=True)
+    if eardata.empty:
+        raise HTTPException(status_code=404, detail="No earnings data found for this company")
 
-    # Keep only needed columns if available
-    needed_cols = ["Quarter"]
-    for col in ["Total Revenue", "Net Income", "Operating Income"]:
-        if col in earnings_df.columns:
-            needed_cols.append(col)
-
-    earnings_df = earnings_df[needed_cols]
-    earnings_df = earnings_df.dropna(how='all', subset=needed_cols[1:])  # Keep only rows with at least some data
-
-    earnings_df[needed_cols[1:]] = earnings_df[needed_cols[1:]].apply(pd.to_numeric, errors="coerce")
+    # Drop rows where revenue and net profit are both missing
+    eardata = eardata.dropna(subset=["revenue", "net_profit"], how="all")
 
     data = []
-    for _, row in earnings_df.iterrows():
-        total_revenue = row.get("Total Revenue", 0) or 0
-        net_income = row.get("Net Income", 0) or 0
-        operating_income = row.get("Operating Income", 0) or 0
-        margin = (operating_income / total_revenue * 100) if total_revenue else 0
-
-        quarter_str = row["Quarter"].strftime("%Y-%m-%d") if isinstance(row["Quarter"], pd.Timestamp) else str(row["Quarter"])
+    for _, row in eardata.iterrows():
+        revenue = row.get("revenue", 0) or 0
+        net_profit = row.get("net_profit", 0) or 0
+        margin = row.get("net_profit_margin", 0) or 0
+        date = row["date"]
 
         data.append({
-        "Quarter": quarter_str,
-        "Quarter_Date": row["Quarter"] if isinstance(row["Quarter"], pd.Timestamp) else pd.to_datetime(row["Quarter"]),
-        "Total Revenue": round(total_revenue / 1e6, 2),
-        "Net Income": round(net_income / 1e6, 2),
-        "Operating Margin": round(margin, 2)
+            "Quarter": date.strftime("%Y-%m-%d") if pd.notnull(date) else "Unknown",
+            "Quarter_Date": date,
+            "Revenue (Thousand Millions)": round(revenue / 1e9, 4),
+            "Net Profit (Thousand Millions)": round(net_profit / 1e9, 4),
+            "Net Profit Margin (%)": round(margin, 2)
         })
-    # Sort the data by Quarter_Date in chronological order
+
+    # Sort by date
     data = sorted(data, key=lambda x: x["Quarter_Date"])
 
-    # Remove the temporary Quarter_Date field if you don't need it
+    # Remove helper column
     for item in data:
         item.pop("Quarter_Date", None)
 
     return JSONResponse(content={"company": ticker, "data": data})
+
+@app.get("/predict-revenue")
+def forecast(company: str):
+    if company not in coefficients_map:
+        raise HTTPException(status_code=404, detail="No coefficients for company")
+
+    # Load DB
+    conn = sqlite3.connect(SQLITE_DB)
+    revenue_df = pd.read_sql("SELECT * FROM company_earnings_data", conn)
+    prod_df = pd.read_sql("SELECT * FROM company_monthly_production", conn)
+    conn.close()
+
+    # Prepare
+    revenue_df['date'] = pd.to_datetime(revenue_df['date'])
+    prod_df['date'] = pd.to_datetime(prod_df['date'])
+
+    latest_row = revenue_df[revenue_df['company_short_name'] == company].sort_values("date", ascending=False).head(1)
+    if latest_row.empty:
+        raise HTTPException(status_code=404, detail="No revenue found")
+
+    latest_revenue_date = latest_row.iloc[0]['date']
+    latest_revenue_value = latest_row.iloc[0]['revenue']
+    start_next_q = (latest_revenue_date + DateOffset(days=1)).replace(day=1)
+    end_next_q = (start_next_q + DateOffset(months=3)) - DateOffset(days=1)
+
+    month_ends = pd.date_range(start=start_next_q, end=end_next_q, freq='ME')
+
+    # Filter and normalize prod data
+    filtered = prod_df[(prod_df['company_short_name'] == company) & (prod_df['date'].isin(month_ends))]
+
+    def normalize_material(name):
+        for base in raw_material_base_names:
+            if name.startswith(base):
+                return base
+        return name
+
+    filtered = filtered.copy()
+    filtered['raw_material'] = filtered['raw_material'].apply(normalize_material)
+
+    available_months = set(filtered['date'].dt.to_period('M'))
+    expected_months = set(month_ends.to_period('M'))
+    missing_months = expected_months - available_months
+
+    dummy_rows = []
+    for m in missing_months:
+        for mat in coefficients_map[company]['coefficients'].keys():
+            dummy_rows.append({
+                'date': m.to_timestamp('M'),
+                'raw_material': mat,
+                'volume': 0,
+                'company_short_name': company
+            })
+    if dummy_rows:
+        dummy_df = pd.DataFrame(dummy_rows)
+        filtered = pd.concat([filtered, dummy_df], ignore_index=True)
+
+    features_df = (
+        filtered.groupby('raw_material')['volume']
+        .sum()
+        .reset_index()
+        .pivot_table(index=None, columns='raw_material', values='volume')
+        .fillna(0)
+    )
+
+    config = coefficients_map[company]
+    intercept = config['intercept']
+    scale = config['scale']
+    coefficients = config['coefficients']
+
+    features_df = features_df.reindex(columns=coefficients.keys(), fill_value=0)
+    # ... (previous unchanged code)
+
+    raw_values = features_df.to_dict(orient='records')[0]
+
+    # Compute predicted revenue
+    predicted_revenue = intercept + sum(
+        raw_values.get(feature, 0) * coef for feature, coef in coefficients.items()
+    )
+    predicted_revenue *= scale
+
+    # ✅ Compute revenue contribution per feature
+    contributions = {
+        feature: round(raw_values.get(feature, 0) * coef * scale, 2)
+        for feature, coef in coefficients.items()
+    }
+
+    # Filter only positive contributions for weightage (optional)
+    positive_contributions = {k: abs(v) for k, v in contributions.items()}
+    total_contribution = sum(positive_contributions.values())
+
+    # ✅ Add weightage if needed
+    contribution_weights = {
+        k: round((abs(v) / total_contribution) * 100, 1) if total_contribution else 0
+        for k, v in contributions.items()
+    }
+
+    return JSONResponse(content={
+        "company": company,
+        "latest_revenue_date": latest_revenue_date.strftime("%Y-%m-%d"),
+        "latest_actual_revenue_mil": round(latest_revenue_value / 1e6, 2),
+        "next_quarter": [start_next_q.strftime("%Y-%m-%d"), end_next_q.strftime("%Y-%m-%d")],
+        "missing_months_imputed": sorted([str(m) for m in missing_months]),
+        "features": raw_values,
+        "predicted_revenue": round(predicted_revenue, 2),
+        "contribution_by_feature": contributions,
+        "contribution_weights": contribution_weights
+    })
 # company
 
 # commodities

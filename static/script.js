@@ -1,5 +1,5 @@
-//const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
-const BACKEND_URL = "https://bursa-palmai.onrender.com"
+const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
+//const BACKEND_URL = "https://bursa-palmai.onrender.com"
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   // Treemap market cap
@@ -357,7 +357,7 @@ function buildBarChart(data, companyCode) {
       responsive: true,
       animation: { onComplete: () => { window.prodChart.resize(); } },
       scales: {
-        x: { title: { display: true, text: 'Month' }, grid: { display: false } },
+        x: { title: { display: false, text: 'Month' }, grid: { display: false } },
         y: { beginAtZero: true, title: { display: true, text: 'Volume' }, grid: { display: false } }
       },
       plugins: {
@@ -400,8 +400,8 @@ function drawPriceChart(data, ticker) {
       responsive: true,
       animation: { onComplete: () => { window.priceChart.resize(); } },
       scales: {
-        x: { title: { display: true, text: 'Date' }, grid: { display: false } },
-        y: { title: { display: true, text: 'Price (MYR)' }, grid: { display: false } }
+        x: { title: { display: false, text: 'Date' }, grid: { display: false } },
+        y: { title: { display: false, text: 'Price (MYR)' }, grid: { display: false } }
       },
       plugins: {
         legend: { labels: { color: "black" } },
@@ -442,9 +442,9 @@ function drawEarningsChart(data) {
   if (!ctx) return;
 
   const labels = data.data.map(d => d.Quarter);
-  const revenue = data.data.map(d => d["Total Revenue"]);
-  const netIncome = data.data.map(d => d["Net Income"]);
-  const margin = data.data.map(d => d["Operating Margin"]);
+  const revenue = data.data.map(d => d["Revenue (Thousand Millions)"]);
+  const netIncome = data.data.map(d => d["Net Profit (Thousand Millions)"]);
+  const margin = data.data.map(d => d["Net Profit Margin (%)"]);
 
   if (chartInstance) chartInstance.destroy();
 
@@ -453,10 +453,20 @@ function drawEarningsChart(data) {
     data: {
       labels,
       datasets: [
-        { label: "Total Revenue (RM mil)", data: revenue, backgroundColor: "rgba(1, 68, 34, 0.7)", yAxisID: 'y' },
-        { label: "Net Income (RM mil)", data: netIncome, backgroundColor: "rgba(137, 154, 92, 0.7)", yAxisID: 'y' },
         {
-          label: "Operating Margin (%)",
+          label: "Revenue (RM billion)",
+          data: revenue,
+          backgroundColor: "rgba(1, 68, 34, 0.7)",
+          yAxisID: 'y'
+        },
+        {
+          label: "Net Profit (RM billion)",
+          data: netIncome,
+          backgroundColor: "rgba(137, 154, 92, 0.7)",
+          yAxisID: 'y'
+        },
+        {
+          label: "Net Profit Margin (%)",
           data: margin,
           type: "line",
           borderColor: "rgba(188, 185, 138, 1)",
@@ -471,11 +481,34 @@ function drawEarningsChart(data) {
       responsive: true,
       interaction: { mode: 'index', intersect: false },
       stacked: false,
-      plugins: { title: { display: true } },
+      plugins: {
+        title: {
+          display: true,
+          text: "Quarterly Earnings"
+        }
+      },
       scales: {
-        x: { grid: { display: false } },
-        y: { type: 'linear', position: 'left', grid: { display: false }, title: { display: true, text: 'RM (Million)' } },
-        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Operating Margin (%)' } }
+        x: {
+          grid: { display: false }
+        },
+        y: {
+          type: 'linear',
+          position: 'left',
+          grid: { display: false },
+          title: {
+            display: true,
+            text: 'RM (Billion)'
+          }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          title: {
+            display: true,
+            text: 'Net Profit Margin (%)'
+          }
+        }
       }
     }
   });
@@ -549,7 +582,7 @@ function buildExtractionRateChart(data, company) {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: { title: { display: true, text: 'Year' }, grid: { display: false } },
+        x: { title: { display: false, text: 'Year' }, grid: { display: false } },
         y: { beginAtZero: true, title: { display: true, text: 'Extraction Rate (%)' }, grid: { display: false } }
       },
       plugins: {
@@ -560,143 +593,56 @@ function buildExtractionRateChart(data, company) {
   });
 }
 
-async function buildRevenueForecastChart(data, company, prodData) {
+async function buildRevenueForecastChart(data, company) {
   const ctx = document.getElementById("revenue-forecast-chart")?.getContext("2d");
   if (!ctx) return;
 
-  // Get the latest quarter's revenue and quarter label
-  const latestQuarter = data.data[data.data.length - 1];
-  const latestRevenue = latestQuarter["Total Revenue"];
-  const latestQuarterLabel = latestQuarter.Quarter;
+  // Step 1: Get latest actual revenue from FastAPI response
+  const forecastResponse = await fetch(`${BACKEND_URL}/predict-revenue?company=${company}`);
+  if (!forecastResponse.ok) {
+    console.error("Failed to fetch forecasted revenue from FastAPI");
+    return;
+  }
 
-  // Get unique dates, sort them descending
-  const months = [...new Set(prodData.map(item => item.date))].sort((a, b) => new Date(b) - new Date(a));
-  const latestThreeMonths = months.slice(0, 3);
+  const forecastData = await forecastResponse.json();
+  const latestRevenue = forecastData.latest_actual_revenue_mil;
+  const forecastedRevenue = forecastData.predicted_revenue;
 
-  // Sum volumes for each raw_material over the latest three months
-  const volumeSums = {
-    "Fresh Fruit Bunches": 0,
-    "Crude Palm Oil": 0,
-    "Palm Kernel": 0,
-    "Rubber": 0
-  };
+  const nextQuarterRange = forecastData.next_quarter; // e.g. ["2025-04-01", "2025-06-30"]
+  const nextQuarterLabel = `${new Date(nextQuarterRange[1]).getFullYear()}Q${Math.ceil((new Date(nextQuarterRange[1]).getMonth() + 1) / 3)}`;
 
-  prodData
-    .filter(item => latestThreeMonths.includes(item.date))
-    .forEach(item => {
-      const mat = item.raw_material;
-      if (volumeSums.hasOwnProperty(mat)) {
-        volumeSums[mat] += Number(item.volume);
-      }
-  });
+  // Step 2: Determine the current quarter label from latest_revenue_date
+  const latestQuarterLabel = (() => {
+    const date = new Date(forecastData.latest_revenue_date);
+    const year = date.getFullYear();
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
+    return `${year}Q${quarter}`;
+  })();
 
-  // Assign dynamic values for forecasting
-  const ffbProdVol = volumeSums["Fresh Fruit Bunches"];
-  const cpoProdVol = volumeSums["Crude Palm Oil"];
-  const pkProdVol = volumeSums["Palm Kernel"];
-  const rubberProdVol = volumeSums["Rubber"];
+  // Step 3: Show contribution weights manually (optional basic logic)
+  const features = forecastData.features || {};
+  const ffb = features["Fresh Fruit Bunches"] || 0;
+  const cpo = features["Crude Palm Oil"] || 0;
+  const pk = features["Palm Kernel"] || 0;
+  const total = ffb + cpo + pk;
 
-  // Static price values
-  const fcpoPrice = 3000;
-  const pkPrice = 2000;
-
-  // Company-specific coefficients
-  const formulas = {
-    KLK: {
-      intercept: 3.129,
-      ffbCoef: 6.37e-6,
-      cpoCoef: -7.238e-5,
-      pkCoef: 2.766e-4,
-      rubberCoef: 1.508e-7,
-      fcpoCoef: -3.544e-4,
-      pkPriceCoef: 1.069e-3,
-      scale: 1000
-    },
-    IOI: {
-      intercept: 1.062,
-      ffbCoef: 7.685e-6,
-      cpoCoef: -5.236e-5,
-      pkCoef: 1.236e-4,
-      rubberCoef: -7.351e-7,
-      fcpoCoef: -1.675e-4,
-      pkPriceCoef: 1.089e-3,
-      scale: 1000
-    },
-    SDG: {
-      intercept: 4.383,
-      ffbCoef: 4.893e-6,
-      cpoCoef: -2.636e-5,
-      pkCoef: 4.647e-5,
-      rubberCoef: 0,
-      fcpoCoef: -4.38e-4,
-      pkPriceCoef: 4.555e-4,
-      scale: 1000
-    }
-  };
-
-  // Select formula
-  const formula = formulas[company] || formulas.KLK;
-
-  // Forecasted revenue calculation
-  const forecastedRevenue = (
-    formula.intercept +
-    ffbProdVol * formula.ffbCoef +
-    cpoProdVol * formula.cpoCoef +
-    pkProdVol * formula.pkCoef +
-    rubberProdVol * formula.rubberCoef +
-    fcpoPrice * formula.fcpoCoef +
-    pkPrice * formula.pkPriceCoef
-  ) * formula.scale;
-
-  // Weightage calculation
-  const ffbContribution = Math.abs(ffbProdVol * formula.ffbCoef);
-  const cpoContribution = Math.abs(cpoProdVol * formula.cpoCoef);
-  const pkContribution = Math.abs(pkProdVol * formula.pkCoef);
-  const totalContribution = ffbContribution + cpoContribution + pkContribution;
-
-  const ffbWeightage = totalContribution > 0 ? (ffbContribution / totalContribution * 100).toFixed(1) : 0;
-  const cpoWeightage = totalContribution > 0 ? (cpoContribution / totalContribution * 100).toFixed(1) : 0;
-  const pkWeightage = totalContribution > 0 ? (pkContribution / totalContribution * 100).toFixed(1) : 0;
-
-  // Update DOM
+  const percent = v => total > 0 ? `${(v / total * 100).toFixed(1)}%` : "0%";
   const ffbWeightElement = document.getElementById('ffb-weight');
   const cpoWeightElement = document.getElementById('cpo-weight');
   const pkWeightElement = document.getElementById('pk-weight');
 
-  if (ffbWeightElement) ffbWeightElement.innerText = `${ffbWeightage}%`;
-  else console.error('Element with ID "ffb-weight" not found');
-  if (cpoWeightElement) cpoWeightElement.innerText = `${cpoWeightage}%`;
-  else console.error('Element with ID "cpo-weight" not found');
-  if (pkWeightElement) pkWeightElement.innerText = `${pkWeightage}%`;
-  else console.error('Element with ID "pk-weight" not found');
+  if (ffbWeightElement) ffbWeightElement.innerText = percent(ffb);
+  if (cpoWeightElement) cpoWeightElement.innerText = percent(cpo);
+  if (pkWeightElement) pkWeightElement.innerText = percent(pk);
 
-  // Utility to get next quarter label
-  function getNextQuarterLabel(latestQuarterLabel) {
-    const date = new Date(latestQuarterLabel);
-    if (isNaN(date.getTime())) {
-      console.error("Invalid date format for latestQuarterLabel:", latestQuarterLabel);
-      return "Invalid Quarter";
-    }
-
-    const year = date.getFullYear();
-    const month = date.getMonth(); // 0-based
-    const currentQuarter = Math.floor(month / 3) + 1;
-    const nextQuarter = currentQuarter === 4 ? 1 : currentQuarter + 1;
-    const nextYear = currentQuarter === 4 ? year + 1 : year;
-    return `${nextYear}Q${nextQuarter}`;
-  }
-
-// Usage
-const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
-
-  // Destroy existing chart if it exists
+  // Step 4: Destroy existing chart
   if (window.revenueForecastChart) window.revenueForecastChart.destroy();
 
-  // Create the bar chart
+  // Step 5: Build the chart
   window.revenueForecastChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: [latestQuarterLabel, nextQuarter],
+      labels: [latestQuarterLabel, nextQuarterLabel],
       datasets: [{
         label: 'Revenue (RM mil)',
         data: [latestRevenue, forecastedRevenue],
@@ -767,7 +713,7 @@ const nextQuarter = getNextQuarterLabel(latestQuarterLabel);
         }
       }
     },
-    plugins: [ChartDataLabels] // Make sure you include this plugin
+    plugins: [ChartDataLabels]
   });
 }
 
@@ -786,8 +732,8 @@ async function initCompanyTab() {
   const priceData = await fetchPriceData(shareCode);
   drawPriceChart(priceData, shareCode);
 
-  const earningsData = await fetchEarnings(shareCode);
-  drawEarningsChart(earningsData, shareCode);
+  const earningsData = await fetchEarnings(companyCode); 
+  drawEarningsChart(earningsData, companyCode);
 
   const areaData = await fetchPlantedAreaData(companyCode);
   buildPlantedAreaPieChart(areaData, companyCode);
@@ -795,7 +741,7 @@ async function initCompanyTab() {
   const extData = await fetchExtractionRateData(companyCode);
   buildExtractionRateChart(extData, companyCode);
 
-  await buildRevenueForecastChart(earningsData, companyCode, prodData);
+  await buildRevenueForecastChart(earningsData, companyCode);
 }
 
 companySelect.addEventListener("change", async (e) => {
@@ -811,8 +757,8 @@ companySelect.addEventListener("change", async (e) => {
   const priceData = await fetchPriceData(shareCode);
   drawPriceChart(priceData, shareCode);
 
-  const earningsData = await fetchEarnings(shareCode);
-  drawEarningsChart(earningsData, shareCode);
+  const earningsData = await fetchEarnings(companyCode);
+  drawEarningsChart(earningsData, companyCode);
 
   const areaData = await fetchPlantedAreaData(companyCode);
   buildPlantedAreaPieChart(areaData, companyCode);
@@ -820,72 +766,111 @@ companySelect.addEventListener("change", async (e) => {
   const extData = await fetchExtractionRateData(companyCode);
   buildExtractionRateChart(extData, companyCode);
 
-  await buildRevenueForecastChart(earningsData, companyCode, prodData);
+  await buildRevenueForecastChart(earningsData, companyCode);
 });
 
 // COMMODITIES INITIALIZATION
 async function initCommodities() {
   // MPOB stats
   fetch(BACKEND_URL + "/api/mpob")
-    .then(res => res.json())
-    .then(data => {
-      const ctx = document.getElementById("mpobChart")?.getContext("2d");
-      if (!ctx) return;
+  .then(res => res.json())
+  .then(data => {
+    const ctx = document.getElementById("mpobChart")?.getContext("2d");
+    if (!ctx) return;
 
-      const months = [...new Set(data.map(d => d.MONTH_YEAR))];
-      const items = [...new Set(data.map(d => d.ITEMS))];
-      const greenPalette = [
-        "rgba(0, 50, 31, 0.7)",
-        "rgba(1, 68, 34, 0.7)",
-        "rgba(52, 95, 60, 0.7)",
-        "rgba(127, 154, 131, 0.7)",
-        "rgba(137, 154, 92, 0.7)",
-        "rgba(188, 185, 138, 0.7)"
-      ];
+    const months = [...new Set(data.map(d => d.MONTH_YEAR))];
+    const items = [...new Set(data.map(d => d.ITEMS))];
+    const greenPalette = [
+      "rgba(0, 50, 31, 0.7)",
+      "rgba(1, 68, 34, 0.7)",
+      "rgba(52, 95, 60, 0.7)",
+      "rgba(127, 154, 131, 0.7)",
+      "rgba(137, 154, 92, 0.7)",
+      "rgba(188, 185, 138, 0.7)"
+    ];
 
-      const datasets = items.map((item, index) => ({
+    const datasets = items.map((item, index) => {
+    const values = months.map(month =>
+      data.find(d => d.MONTH_YEAR === month && d.ITEMS === item)?.VALUE || 0
+    );
+
+    if (item === "FFB price") {
+      return {
+        type: "line",
         label: item,
-        data: months.map(month => data.find(d => d.MONTH_YEAR === month && d.ITEMS === item)?.VALUE || 0),
-        backgroundColor: greenPalette[index % greenPalette.length],
-        yAxisID: item === "FFB (RM)" ? "y1" : "y"
-      }));
-
-      new Chart(ctx, {
+        data: values,
+        borderColor: "rgb(6, 84, 13)",
+        backgroundColor: "rgba(13, 80, 11, 0.98)",
+        borderWidth: 2,
+        yAxisID: "y1",
+        tension: 0.3,
+        fill: false,
+        pointRadius: 3
+      };
+    } else {
+      return {
         type: "bar",
-        data: { labels: months, datasets },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          // --- Start of changes for MPOB Chart ---
-          layout: {
-            padding: {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 20 // Increased bottom padding for x-axis labels
+        label: item,
+        data: values,
+        backgroundColor: greenPalette[index % greenPalette.length],
+        yAxisID: "y"
+      };
+    }
+  });
+
+    new Chart(ctx, {
+      data: {
+        labels: months,
+        datasets: datasets
+      },
+      options: {
+        indexAxis: 'x', // <-- Ensures vertical orientation
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 20
+          }
+        },
+        plugins: {
+          legend: {
+            position: "right",
+            labels: {
+              boxWidth: 12,
+              padding: 10
             }
-          },
-          // --- End of changes for MPOB Chart ---
-          plugins: {
-            legend: { position: "top" }
-          },
-          scales: {
-            x: {
-              title: { display: true, text: "Month Year" },
-              ticks: {
-                autoSkip: true, // Automatically skips labels to prevent overlap
-                maxRotation: 45, // Rotate labels up to 45 degrees
-                minRotation: 45, // Ensure labels rotate if needed
-                padding: 10 // Add padding between ticks and the axis line
-              }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Month Year" },
+            ticks: {
+              autoSkip: true,
+              maxRotation: 45,
+              minRotation: 45,
+              padding: 10
             },
-            y: { beginAtZero: true, title: { display: true, text: "Volume / Stocks / Export" }, position: "left" },
-            y1: { beginAtZero: true, position: "right", title: { display: true, text: "FFB Price (RM)" }, grid: { drawOnChartArea: false } }
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Volume / Stocks / Export" },
+            position: "left"
+          },
+          y1: {
+            beginAtZero: true,
+            position: "right",
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: "FFB Price (RM)" }
           }
         }
-      });
-    })
-    .catch(error => console.error("Error fetching MPOB data:", error));
+      }
+    });
+  })
+  .catch(error => console.error("Error fetching MPOB data:", error));
 
   // Soybean price
   async function fetchSoyPriceData() {
@@ -988,18 +973,27 @@ async function initCommodities() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        // --- Start of changes for Fertilizer Chart ---
         layout: {
-          padding: {
-            left: 10,
-            right: 10,
-            top: 10,
-            bottom: 20 // Increased bottom padding
+          padding: { left: 10, right: 10, top: 10, bottom: 20 }
+        },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: (tooltipItems) => `Month: ${tooltipItems[0].label}`,
+              label: (tooltipItem) => {
+                const label = tooltipItem.dataset.label || '';
+                const value = tooltipItem.formattedValue;
+                return `${label}: MYR ${value}`;
+              }
+            }
           }
         },
-        // --- End of changes for Fertilizer Chart ---
-        plugins: {
-          legend: { position: 'bottom' }
+        interaction: {
+          mode: 'index',
+          intersect: false
         },
         scales: {
           x: {
@@ -1012,7 +1006,10 @@ async function initCommodities() {
             },
             grid: { display: false }
           },
-          y: { title: { display: true, text: "Price (MYR)" }, grid: { display: false } }
+          y: {
+            title: { display: true, text: "Price (MYR)" },
+            grid: { display: false }
+          }
         }
       }
     });
@@ -2245,39 +2242,34 @@ const baseLayers = {
     }
   }
 
-  function updateRiskChart() {
-    const select = document.getElementById("risk-select");
-    const title = document.getElementById("risk-chart-title");
-    const selectedRisk = select.value;
+      function updateRiskChart() {
+      const select = document.getElementById("risk-select");
+      const title = document.getElementById("risk-chart-title");
+      const description = document.getElementById("risk-description"); // new paragraph element
+      const selectedRisk = select.value;
 
-    const titles = {
-      cfr: "Coastal Flood Risk Composition",
-      rfr: "Riverine Flood Risk Composition",
-      drr: "Drought Risk Composition"
-    };
+      const titles = {
+        cfr: "Coastal Flood Risk Composition",
+        rfr: "Riverine Flood Risk Composition",
+        drr: "Drought Risk Composition"
+      };
 
-    const tooltips = {
-      cfr: "Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.",
-      rfr: "Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.",
-      drr: "Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity."
-    };
+      const descriptions = {
+        cfr: "Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.",
+        rfr: "Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.",
+        drr: "Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity."
+      };
 
-    if (riskChart && riskData[selectedRisk]) {
-      riskChart.data = riskData[selectedRisk];
-      riskChart.options.plugins.title.text = `Major Plantation Companies with ${titles[selectedRisk]}`;
-      title.innerHTML = `
-        ${titles[selectedRisk]}
-        <span title="${tooltips[selectedRisk]}">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-          </svg>
-        </span>
-      `;
-      riskChart.update();
-    } else {
-      console.error("Chart or data not available for", selectedRisk);
+      if (riskChart && riskData[selectedRisk]) {
+        riskChart.data = riskData[selectedRisk];
+        riskChart.options.plugins.title.text = `Major Plantation Companies with ${titles[selectedRisk]}`;
+        title.textContent = titles[selectedRisk];              // just text, no span/svg
+        if (description) description.textContent = descriptions[selectedRisk];
+        riskChart.update();
+      } else {
+        console.error("Chart or data not available for", selectedRisk);
+      }
     }
-  }
 
   // Call the initialization function
   initRiskChart();

@@ -240,6 +240,7 @@
             <option value="IOI|1961.KL">IOI Corporation Berhad</option>
             <option value="SDG|5285.KL">Sime Darby Guthrie</option>
             <option value="FGV|5222.KL">FGV Holdings Berhad</option>
+            <option value="UTDPLT|2089.KL">UTD Plantations Berhad</option>
           </select>
         </div>
         <!-- Company Description -->
@@ -250,14 +251,14 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-gray-50 rounded-lg p-4 shadow">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Company Share Price</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <div class="relative h-[300px] min-h-[300px] w-full">
             <canvas id="price-chart"></canvas>
           </div>
         </div>
 
         <div class="bg-gray-50 rounded-lg p-4 shadow">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Monthly Production</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <div class="relative h-[300px] min-h-[300px] w-full">
             <canvas id="prod-chart"></canvas>
           </div>
         </div>
@@ -275,13 +276,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <div class="bg-gray-50 rounded-lg p-4 shadow">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Planted Area</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <div class="relative h-[300px] min-h-[300px] w-full">
             <canvas id="plt-area-chart"></canvas>
           </div>
         </div>
         <div class="bg-gray-50 rounded-lg p-4 shadow">
           <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">Extraction Rate</h3>
-          <div class="relative h-[400px] min-h-[300px] w-full">
+          <div class="relative h-[300px] min-h-[300px] w-full">
             <canvas id="ext-rates-chart"></canvas>
           </div>
         </div>
@@ -511,14 +512,15 @@
               <option value="drr">Drought Risk</option>
             </select>
           </div>
-          <h4 id="risk-chart-title" class="text-lg font-semibold mb-2" style="color: #345f3c;">
+
+          <h4 id="risk-chart-title" class="text-lg font-semibold mb-1" style="color: #345f3c;">
             Coastal Flood Risk Composition
-            <span title="Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-500 cursor-help" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-              </svg>
-            </span>
           </h4>
+
+          <p id="risk-description" class="text-sm text-gray-600 mb-2">
+            Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.
+          </p>
+
           <canvas id="risk-bar-chart"></canvas>
         </div>
       </div>
