@@ -1,11 +1,11 @@
-const BACKEND_URL = "/api";
-//const BACKEND_URL = "http://localhost:8000";
+//const BACKEND_URL = "/api";
+const BACKEND_URL = "http://localhost:8000";
 //const BACKEND_URL = "https://bursa-palmai.onrender.com";
 
 // MAINPAGE INITIALIZATION
 function initMainpage() {
   anychart.onDocumentReady(function () {
-    fetch(BACKEND_URL + "/marketcap-data")
+    fetch(BACKEND_URL + "/yf/marketcap-data")
       .then((response) => response.json())
       .then((apiData) => {
         const data = [
@@ -62,7 +62,7 @@ function initMainpage() {
   });
 
   // KLCI chart
-  fetch(BACKEND_URL + "/klci-data")
+  fetch(BACKEND_URL + "/yf/klci-data")
     .then((response) => response.json())
     .then((data) => {
       const ctx = document.getElementById("klciChart")?.getContext("2d");
@@ -234,7 +234,7 @@ function initMainpage() {
     document.getElementById("nextBtn").disabled = end >= allData.length;
   }
 
-  fetch(BACKEND_URL + "/api/share-prices")
+  fetch(BACKEND_URL + "/yf/share-prices")
     .then((res) => res.json())
     .then((data) => {
       allData = data;
@@ -274,7 +274,7 @@ function initMainpage() {
   // News cards
   async function loadNews() {
     try {
-      const response = await fetch(BACKEND_URL + "/api/news");
+      const response = await fetch(BACKEND_URL + "/the-edge/news");
       const data = await response.json();
       const newsCardsContainer = document.getElementById("newsCards");
       if (!newsCardsContainer) return;
@@ -323,8 +323,16 @@ const nameMap = {
   KMLOONG: "Kim Loong Resources Berhad",
 };
 
+const logoMap = {
+  KLK: "klk_logo.png",
+  IOI: "ioi_logo.png",
+  SDG: "sdg_logo.png",
+  FGV: "fgv_logo.png",
+  KMLOONG: "kmloong_logo.png"
+};
+
 async function fetchCompanyData(company) {
-  const response = await fetch(BACKEND_URL + `/prod-data?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/sqlite/prod-data?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -390,7 +398,7 @@ function buildBarChart(data, companyCode) {
 }
 
 async function fetchPriceData(ticker) {
-  const response = await fetch(BACKEND_URL + `/price-data?ticker=${ticker}`);
+  const response = await fetch(BACKEND_URL + `/yf/price-data?ticker=${ticker}`);
   const result = await response.json();
   return result;
 }
@@ -446,7 +454,7 @@ function drawPriceChart(data, ticker) {
 
 async function fetchCompanyDescription(ticker) {
   const response = await fetch(
-    BACKEND_URL + `/company-summary?ticker=${ticker}`
+    BACKEND_URL + `/yf/company-summary?ticker=${ticker}`
   );
   if (!response.ok) {
     console.error("Failed to fetch company description");
@@ -460,7 +468,7 @@ async function fetchCompanyDescription(ticker) {
 }
 
 async function fetchEarnings(ticker) {
-  const res = await fetch(BACKEND_URL + `/company-earnings?ticker=${ticker}`);
+  const res = await fetch(BACKEND_URL + `/sqlite/company-earnings?ticker=${ticker}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch earnings for ${ticker}`);
   }
@@ -548,7 +556,7 @@ function drawEarningsChart(data) {
 }
 
 async function fetchPlantedAreaData(company) {
-  const response = await fetch(BACKEND_URL + `/plt-area?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/sqlite/plt-area?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -594,7 +602,7 @@ function buildPlantedAreaPieChart(data, company) {
 }
 
 async function fetchExtractionRateData(company) {
-  const response = await fetch(BACKEND_URL + `/ext-rates?company=${company}`);
+  const response = await fetch(BACKEND_URL + `/sqlite/ext-rates?company=${company}`);
   const result = await response.json();
   return result.data;
 }
@@ -658,7 +666,7 @@ async function buildRevenueForecastChart(data, company) {
   if (!ctx) return;
 
   const forecastResponse = await fetch(
-    `${BACKEND_URL}/predict-revenue?company=${company}`
+    `${BACKEND_URL}/sqlite/predict-revenue?company=${company}`
   );
   if (!forecastResponse.ok) {
     console.error("Failed to fetch forecasted revenue from FastAPI");
@@ -878,6 +886,12 @@ async function initCompanyTab() {
 
     companyTitle.textContent = nameMap[companyCode];
 
+    const logoImg = document.getElementById("companyLogo");
+    if (logoImg && logoMap[companyCode]) {
+      logoImg.src = `/static/company_logo/${logoMap[companyCode]}`;
+      logoImg.alt = `${nameMap[companyCode]} company logo`;
+    }
+
     const description = await fetchCompanyDescription(shareCode);
     if (companyDescriptionEl) companyDescriptionEl.textContent = description;
 
@@ -910,6 +924,12 @@ companySelect.addEventListener("change", async (e) => {
   const [companyCode, shareCode] = e.target.value.split("|");
   companyTitle.textContent = nameMap[companyCode];
 
+  const logoImg = document.getElementById("companyLogo");
+  if (logoImg && logoMap[companyCode]) {
+    logoImg.src = `/static/company_logo/${logoMap[companyCode]}`;
+    logoImg.alt = `${nameMap[companyCode]} company logo`;
+  }
+
   const description = await fetchCompanyDescription(shareCode);
   if (companyDescriptionEl) companyDescriptionEl.textContent = description;
 
@@ -938,7 +958,7 @@ companySelect.addEventListener("change", async (e) => {
 // COMMODITIES INITIALIZATION
 async function initCommodities() {
   // MPOB stats
-  fetch(BACKEND_URL + "/api/mpob")
+  fetch(BACKEND_URL + "/sqlite/mpob")
     .then((res) => res.json())
     .then((data) => {
       const ctx = document.getElementById("mpobChart")?.getContext("2d");
@@ -1042,7 +1062,7 @@ async function initCommodities() {
 
   //Local Crude Palm Oil
   async function fetchPalmOilData() {
-    const response = await fetch(BACKEND_URL + "/api/commodities");
+    const response = await fetch(BACKEND_URL + "/sqlite/commodities");
     const result = await response.json();
 
     // Prepare data: extract dates and prices
@@ -1116,7 +1136,7 @@ async function initCommodities() {
 
   // Soybean price
   async function fetchSoyPriceData() {
-    const response = await fetch(BACKEND_URL + "/soy-price-data?ticker=ZL=F");
+    const response = await fetch(BACKEND_URL + "/yf/soy-price-data?ticker=ZL=F");
     const result = await response.json();
     return result;
   }
@@ -1188,7 +1208,7 @@ async function initCommodities() {
 
   // Fertilizer chart
   async function renderFertilizerChart() {
-    const response = await fetch(BACKEND_URL + "/fertilizer-data");
+    const response = await fetch(BACKEND_URL + "/ws/fertilizer-data");
     const data = await response.json();
 
     const ctx = document.getElementById("fert-chart")?.getContext("2d");
@@ -1264,7 +1284,7 @@ async function initCommodities() {
   renderFertilizerChart();
 
   // Diesel chart
-  fetch(BACKEND_URL + "/fuelprices")
+  fetch(BACKEND_URL + "/opendosm/fuelprices")
     .then((response) => response.json())
     .then((data) => {
       const ctx = document.getElementById("diesel-chart")?.getContext("2d");
@@ -1345,7 +1365,7 @@ let eximChart2 = null;
 
 async function initExportImport() {
   try {
-    const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
+    const tradeResponse = await fetch(BACKEND_URL + "/sqlite/trade-data");
     if (!tradeResponse.ok)
       throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
     const tradeData = await tradeResponse.json();
@@ -1794,7 +1814,7 @@ async function initExportImport() {
     });
 
     // Existing export/import charts
-    const res = await fetch(BACKEND_URL + "/exim-data");
+    const res = await fetch(BACKEND_URL + "/opendosm/exim-data");
     if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
     const chartData = await res.json();
 
@@ -2226,7 +2246,7 @@ async function initMpobStats() {
   }
 
   function loadMillData() {
-    fetch(BACKEND_URL + "/mills")
+    fetch(BACKEND_URL + "/sqlite/mills")
       .then((res) => res.json())
       .then((data) => {
         millCluster = L.markerClusterGroup();
@@ -2322,7 +2342,7 @@ async function initMpobStats() {
   // Weather slider
   async function fetchWeatherData() {
     try {
-      const response = await fetch(BACKEND_URL + "/weather_forecast_summary");
+      const response = await fetch(BACKEND_URL + "/opendosm/weather-forecast-summary");
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
@@ -2419,9 +2439,9 @@ async function initMpobStats() {
   async function initRiskChart() {
     try {
       const [cfrData, rfrData, drrData] = await Promise.all([
-        fetch(BACKEND_URL + "/cfr-bar-top6").then((res) => res.json()),
-        fetch(BACKEND_URL + "/rfr-bar-top6").then((res) => res.json()),
-        fetch(BACKEND_URL + "/drr-bar-top6").then((res) => res.json()),
+        fetch(BACKEND_URL + "/csv/cfr-bar-top6").then((res) => res.json()),
+        fetch(BACKEND_URL + "/csv/rfr-bar-top6").then((res) => res.json()),
+        fetch(BACKEND_URL + "/csv/drr-bar-top6").then((res) => res.json()),
       ]);
 
       // Normalize data to percentages
