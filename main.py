@@ -28,12 +28,12 @@ import re
 
 SQLITE_DB = "bursa_palmai_database.db"
 
-#load_dotenv()
-#api_key = os.getenv("OPENROUTER_API_KEY")
-#client = OpenAI(
-#  base_url="https://openrouter.ai/api/v1",
-#  api_key=api_key,
-#)
+load_dotenv()
+api_key = os.getenv("OPENROUTER_API_KEY")
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="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",
+)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -294,29 +294,29 @@ def get_share_prices():
     return data
 
 # ai summary news
-#@app.get("/ai-summary")
-#def get_ai_summary():
+@app.get("/ai-summary")
+def get_ai_summary():
     # Get the news data
-#    news_data = get_news()
-#    headlines = [item["headline"] for item in news_data["news"][:5]]  # Limit to 5 headlines
+    news_data = get_news()
+    headlines = [item["headline"] for item in news_data["news"]]
 
     # Join headlines into one prompt
-#    news_prompt = "Summarize the following palm oil news headlines in 20 words, focusing on price, production, and exports:\n\n"
-#    news_prompt += "\n".join(f"- {hl}" for hl in headlines)
+    news_prompt = "Without saying Here is a 20-word summary, summarize the palm oil related news headlines in 20 words, and conclude either is bullish, neutral or bearish:\n\n"
+    news_prompt += "\n".join(f"- {hl}" for hl in headlines)
 
     # Get AI summary from OpenRouter
-#    response = client.chat.completions.create(
-#        model="meta-llama/llama-3.1-8b-instruct",
-#        messages=[
-#            {
-#                "role": "user",
-#                "content": news_prompt
-#            }
-#        ]
-#    )
+    response = client.chat.completions.create(
+        model="meta-llama/llama-4-maverick:free",
+        messages=[
+            {
+                "role": "user",
+                "content": news_prompt
+            }
+        ]
+    )
 
-#    summary = response.choices[0].message.content
-#    return {"summary": summary}
+    summary = response.choices[0].message.content
+    return {"summary": summary}
 
 # news display
 @app.get("/the-edge/news")
@@ -342,7 +342,7 @@ def get_news():
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')[:5]
+    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')
 
     data = []
     for item in news_items:

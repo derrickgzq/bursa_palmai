@@ -273,7 +273,7 @@ function initMainpage() {
   });
 
   // ai summary news
-  /*const summaryDiv = document.getElementById("aiSummary");
+  const summaryDiv = document.getElementById("aiSummary");
 
   fetch(BACKEND_URL + "/ai-summary") 
     .then(response => response.json())
@@ -285,7 +285,7 @@ function initMainpage() {
     .catch(error => {
       console.error("Error fetching AI summary:", error);
       summaryDiv.innerHTML = `<p style="color: red;"><strong>Failed to load AI summary.</strong></p>`;
-    });*/
+    });
 
   // News cards
   async function loadNews() {
