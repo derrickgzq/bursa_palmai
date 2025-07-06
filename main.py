@@ -15,6 +15,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from pandas.tseries.offsets import DateOffset
+from mangum import Mangum
 import pandas as pd
 import yfinance as yf
 import os
@@ -241,7 +242,7 @@ def get_market_cap_data():
 
 # klci vs fbmplt chart
 @app.get("/klci-data")
-def get_klci_data():
+def get_klci_data():    
     end = datetime.today()
     start = end - timedelta(days=30)  # last 30 days
     data = yf.download('^KLSE', start=start, end=end)
@@ -380,7 +381,7 @@ def get_news():
 # company
 # company mthly production data
 @app.get("/prod-data")
-def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV)$")):
+def get_prod_data(company: str = Query(..., regex="^(KLK|IOI|SDG|FGV|KMLOONG)$")):
     try:
         # Connect to SQLite database
         conn = sqlite3.connect(SQLITE_DB)
@@ -679,6 +680,30 @@ def get_mpob_data():
         if 'conn' in locals():
             conn.close()
 
+# local crude palm oil
+@app.get("/api/commodities")
+def get_commodities_data():
+    try:
+        conn = sqlite3.connect(SQLITE_DB)
+        df = pd.read_sql("SELECT * FROM commodities_data", conn)
+        
+        if df.empty:
+            raise HTTPException(
+                status_code=404,
+                detail="No data found in commodities_data"
+            )
+            
+        return df.to_dict(orient="records")
+        
+    except sqlite3.Error as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Database error: {str(e)}"
+        )
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
 # soy futures chart
 @app.get("/soy-price-data")
 def get_soy_price_data(ticker: str):
@@ -747,30 +772,6 @@ def get_fuel_prices():
     df_filtered['date'] = df_filtered['date'].dt.strftime('%Y-%m-%d')
 
     return df_filtered.to_dict(orient='records')
-
-# crude oil chart
-@app.get("/crude-oil-data")
-def get_crude_oil_price_data():
-    end = datetime.today()
-    start = end - timedelta(days=180)  # last 6 months
-    data = yf.download("CL=F", start=start, end=end, progress=False, proxy="")
-
-    dates = list(data.index.strftime('%Y-%m-%d')) 
-    data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
-    prices = data['Close'].tolist()
-    return {"dates": dates, "prices": prices}
-
-# brent oil chart
-@app.get("/brent-oil-data")
-def get_brent_oil_price_data():
-    end = datetime.today()
-    start = end - timedelta(days=180)  # last 6 months
-    data = yf.download("BZ=F", start=start, end=end, progress=False, proxy="")
-
-    dates = list(data.index.strftime('%Y-%m-%d')) 
-    data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level
-    prices = data['Close'].tolist()
-    return {"dates": dates, "prices": prices}
 # commodities
 
 #export import
@@ -1077,3 +1078,6 @@ def drr_bar_top6():
         ]
     }
     return JSONResponse(content=chart_data)
+
+#For Azure Deployment
+handler = Mangum(app)

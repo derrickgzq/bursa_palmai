@@ -59,12 +59,22 @@
       background: linear-gradient(to bottom, #345f3c, #1a6d3a);
       border-radius: 0.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease-in-out;
+      width: 280px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      overflow-y: auto;
     }
     .sidebar-nav a {
       padding: 0.75rem 1rem;
       border-radius: 0.375rem;
       transition: background-color 0.2s ease, color 0.2s ease;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      display: block;
     }
     .sidebar-nav a:hover {
       background-color: rgba(255, 255, 255, 0.1);
@@ -75,12 +85,23 @@
       color: white;
       font-weight: bold;
     }
-    /* Mobile Navbar Styles */
-    .hamburger {
-      display: none;
-      font-size: 1.5rem;
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       color: white;
-      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s ease;
+    }
+    .user-profile:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .user-profile i {
+      font-size: 1.25rem;
     }
     @media (max-width: 768px) {
       .chart-container {
@@ -94,47 +115,23 @@
         font-size: 1rem;
       }
       .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
         width: 80%;
-        max-width: 280px;
-        transform: translateX(-100%);
-        z-index: 1000;
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      .hamburger {
-        display: block;
-      }
-      .sidebar-nav {
-        margin-top: 4rem;
+        max-width: 200px;
       }
       .sidebar-nav a {
         font-size: 0.9rem;
         padding: 0.5rem 0.75rem;
       }
-      .overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+      .user-profile {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
       }
-      .overlay.active {
-        display: block;
+      .user-profile i {
+        font-size: 1rem;
       }
     }
   </style>
-  <script>
-    // Protect Chart.js from AnyChart namespace conflicts
-    window.ChartJS = Chart;
-  </script>
+  
   <!-- Load Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -149,31 +146,23 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
 <body class="font-sans bg-gray-50 text-black min-h-screen flex">
-  <!-- Mobile Menu Button -->
-  <button class="hamburger fixed top-4 left-4 z-[1001] md:hidden" aria-label="Toggle navigation">
-    <i class="fas fa-bars"></i>
-  </button>
-  <!-- Overlay for mobile menu -->
-  <div class="overlay"></div>
-
   <!-- Sidebar -->
-  <aside class="w-64 min-h-screen sticky top-0 sidebar p-6 flex flex-col justify-between md:translate-x-0">
+  <aside class="sidebar p-6 flex flex-col justify-between">
     <div>
-      <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold mb-6 text-white" style="font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
-        <button class="hamburger close-btn text-white md:hidden" aria-label="Close navigation">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+      <h2 class="text-2xl font-bold mb-6 text-white" style="font-family: 'Inter', sans-serif;">Bursa PalmAI</h2>
       <nav class="sidebar-nav space-y-2" id="sidebar-nav">
-        <a href="#" data-tab="mainpage" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">Market Overview</a>
-        <a href="#" data-tab="company" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">Company Profiles</a>
-        <a href="#" data-tab="commodities" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">Commodity Trends</a>
-        <a href="#" data-tab="mpobstats" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">Geography Insights</a>
-        <a href="#" data-tab="exportimport" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">Trade Chain & Flows</a>
-        <a href="#" data-tab="aichatbot" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">PalmAI Chatbot</a>
-        <a href="#" data-tab="aboutus" class="tab-link block text-white font-semibold" style="font-family: 'Inter', sans-serif;">About us</a>
+        <a href="#" data-tab="mainpage" class="tab-link block">Market Overview</a>
+        <a href="#" data-tab="company" class="tab-link block">Company Profiles</a>
+        <a href="#" data-tab="commodities" class="tab-link block">Commodity Trends</a>
+        <a href="#" data-tab="mpobstats" class="tab-link block">Geography Insights</a>
+        <a href="#" data-tab="exportimport" class="tab-link block">Trade Chain & Flows</a>
+        <a href="#" data-tab="aichatbot" class="tab-link block">PalmAI Chatbot</a>
+        <a href="#" data-tab="aboutus" class="tab-link block">About us</a>
       </nav>
+    </div>
+    <div class="user-profile">
+      <i class="fas fa-users"></i>
+      <span>Guest Log In</span>
     </div>
   </aside>
 
@@ -214,12 +203,12 @@
       </div>
 
       <!-- News Heading -->
-      <h2 class="text-2xl font-bold text-center my- Zacharymy-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
+      <h2 class="text-2xl font-bold text-center my-6" style="color: #345f3c; font-family: 'Inter', sans-serif;">
         📰 Latest Palm Oil News
       </h2>
 
       <!-- AI Summary Output -->
-      <div id="aiSummary" class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto mb-6" style="font-family: 'Inter', sans-serif;">
+      <div id="aiSummary" class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto mt-6" style="font-family: 'Inter', sans-serif;">
         <p><em>Loading AI summary...</em></p>
       </div>
 
@@ -238,9 +227,9 @@
           <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
             <option value="KLK|2445.KL">Kuala Lumpur Kepong Berhad</option>
             <option value="IOI|1961.KL">IOI Corporation Berhad</option>
-            <option value="SDG|5285.KL">Sime Darby Guthrie</option>
+            <option value="SDG|5285.KL">Sime Darby Guthrie Berhad</option>
             <option value="FGV|5222.KL">FGV Holdings Berhad</option>
-            <option value="UTDPLT|2089.KL">UTD Plantations Berhad</option>
+            <option value="KMLOONG|5027.KL">Kim Loong Resources Berhad</option>
           </select>
         </div>
         <!-- Company Description -->
@@ -288,63 +277,68 @@
         </div>
       </div>
 
-      <!-- In-depth Forecast & Key Metrics -->
       <div class="mt-8">
-        <h3 class="text-lg font-semibold mb-4" style="color: #345f3c;">Forecast Highlights & Key Metrics</h3>
+        <h3 class="text-lg font-semibold mb-4" style="color: #345f3c;">Forecasting and in-depth analysis</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <!-- Revenue Forecast Box -->
-          <div class="h-[450px] min-h-[450px] bg-gray-50 rounded-lg p-4 shadow">
-            <h4 class="text-md font-medium mb-2" style="color: #345f3c;">Revenue Forecast</h4>
-            <div class="relative h-full w-full">
+          <!-- Revenue Forecast with Weightage Cards -->
+          <div class="h-[560px] bg-gray-50 rounded-lg p-4 shadow flex flex-col">
+            <h3 class="text-lg font-semibold mb-3" style="color: #345f3c;">Revenue Forecast</h3>
+            <div class="relative flex-grow w-full">
               <canvas id="revenue-forecast-chart"></canvas>
             </div>
+            <div id="weightage-cards" class="flex flex-wrap items-center gap-4 justify-center mt-4">
+              <span class="text-lg font-medium" style="color: #345f3c;">Forecasted contribution by products:</span>
+              <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
+                <h4 class="text-sm font-medium">FFB Weightage</h4>
+                <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
+              </div>
+              <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
+                <h4 class="text-sm font-medium">CPO Weightage</h4>
+                <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
+              </div>
+              <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
+                <h4 class="text-sm font-medium">PK Weightage</h4>
+                <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
+              </div>
+            </div>
           </div>
-          <!-- 3 Key Metrics Box -->
-          <div class="grid grid-rows-3 gap-4 h-[450px]">
-            <!-- Metric Card 1 -->
-            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
-              <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">FCPO ↑ 10%</h4>
-                <p class="text-sm text-gray-600">Revenue ↑ 7.5%</p>
-              </div>
-              <div class="text-3xl font-bold text-[#014422]">📈</div>
-            </div>
 
-            <!-- Metric Card 2 -->
-            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
-              <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">Rainfall >150mm</h4>
-                <p class="text-sm text-gray-600">Extraction ↓ 4%</p>
-              </div>
-              <div class="text-3xl font-bold text-[#014422]">🌧️</div>
+          <!-- Correlation Heatmap and Impact Analysis -->
+          <div class="flex flex-col h-[560px] justify-between space-y-4">
+            <div class="h-[500px] bg-white p-4 rounded-lg shadow flex flex-col">
+              <h3 class="text-lg font-semibold mb-2 text-[#345f3c]">Correlation Heatmap</h3>
+              <div id="correlationHeatmap" class="flex-1 w-full"></div>
             </div>
-
-            <!-- Metric Card 3 -->
-            <div class="bg-gray-50 rounded-lg p-4 shadow flex items-center justify-between">
-              <div>
-                <h4 class="text-md font-medium mb-1" style="color: #345f3c;">CPO ↑ 5%</h4>
-                <p class="text-sm text-gray-600">Exports ↑ 3%</p>
+            <div class="bg-[#f0fdf4] border border-green-200 rounded-lg p-6 shadow h-[38%] flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold" style="color: #345f3c;">Impact Analysis</h3>
+                <div class="flex items-center space-x-2">
+                  <label for="toggleSelect" class="text-sm font-medium text-gray-700">Choose Metric:</label>
+                  <select id="toggleSelect" class="border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-400">
+                    <option value="cpo">CPO</option>
+                    <option value="pk">PK</option>
+                    <option value="ffb">FFB</option>
+                  </select>
+                </div>
               </div>
-              <div class="text-3xl font-bold text-[#014422]">🌍</div>
+              <div class="flex items-center justify-between flex-grow">
+                <div>
+                  <h4 class="text-md font-medium mb-1" style="color: #014422;">Key Insight</h4>
+                  <p id="insightText" class="text-lg text-gray-700 font-semibold">
+                    RM513 increase in CPO price leads to RM151 million increase in revenue
+                  </p>
+                </div>
+                <div class="text-4xl">💡</div>
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- Revenue Weightage Cards -->
-        <div id="weightage-cards" class="flex flex-wrap items-center gap-4 mt-6">
-          <span class="text-lg font-medium" style="color: #345f3c;">Forecasted revenue contribution by products:</span>
-          <div class="bg-[#014422] text-white rounded-lg p-3 min-w-[120px] text-center">
-            <h4 class="text-sm font-medium">FFB Weightage</h4>
-            <p id="ffb-weight" class="text-xl font-bold mt-1">70%</p>
-          </div>
-          <div class="bg-[#1a6d3a] text-white rounded-lg p-3 min-w-[120px] text-center">
-            <h4 class="text-sm font-medium">CPO Weightage</h4>
-            <p id="cpo-weight" class="text-xl font-bold mt-1">20%</p>
-          </div>
-          <div class="bg-[#3a8d5a] text-white rounded-lg p-3 min-w-[120px] text-center">
-            <h4 class="text-sm font-medium">PK Weightage</h4>
-            <p id="pk-weight" class="text-xl font-bold mt-1">10%</p>
-          </div>
+        <!-- Disclaimer -->
+        <div class="mt-4 text-sm text-gray-600 text-center">
+          <p>
+            This material is provided solely for informational purposes and does not constitute financial, investment, legal, or professional advice. 
+            No representations or warranties are made, and all liability is expressly disclaimed for any actions taken or losses incurred based on reliance upon this content.
+          </p>
         </div>
       </div>
     </section>
@@ -367,7 +361,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="chart-container h-96 w-full">
             <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Soybean Futures</h3>
-            <p class="text-sm text-gray-600 mb-2">Global soybean prices — a key substitute for palm oil in the vegetable oil market.</p>
+            <p class="text-sm text-gray-600 mb-2">Soybean prices as substitute for palm oil in the vegetable oil market.</p>
             <canvas id="soy-price-chart" class="w-full h-full"></canvas>
           </div>
 
@@ -387,20 +381,8 @@
 
           <div class="chart-container h-96 w-full">
             <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Diesel Prices</h3>
-            <p class="text-sm text-gray-600 mb-2">Diesel is a major cost component for machinery and logistics in plantations.</p>
+            <p class="text-sm text-gray-600 mb-2">Diesel for cost machinery and logistics in plantations.</p>
             <canvas id="diesel-chart" class="w-full h-full"></canvas>
-          </div>
-
-          <div class="chart-container h-96 w-full">
-            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Crude Oil Prices</h3>
-            <p class="text-sm text-gray-600 mb-2">Crude oil influences biodiesel demand and energy-related plantation costs.</p>
-            <canvas id="crude-oil-chart" class="w-full h-full"></canvas>
-          </div>
-
-          <div class="chart-container h-96 w-full">
-            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Brent Oil Prices</h3>
-            <p class="text-sm text-gray-600 mb-2">Global benchmark for oil — used for hedging and price benchmarking.</p>
-            <canvas id="brent-oil-chart" class="w-full h-full"></canvas>
           </div>
         </div>
       </div>

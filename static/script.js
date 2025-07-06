@@ -1,159 +1,162 @@
-//const BACKEND_URL = "http://localhost:8000"; // Uncomment for development
-const BACKEND_URL = "https://bursa-palmai.onrender.com"
+const BACKEND_URL = "/api";
+//const BACKEND_URL = "http://localhost:8000";
+//const BACKEND_URL = "https://bursa-palmai.onrender.com";
+
 // MAINPAGE INITIALIZATION
 function initMainpage() {
-  // Treemap market cap
-  if (!window.anychart) {
-    console.error("AnyChart library not loaded");
-    return;
-  }
+  anychart.onDocumentReady(function () {
+    fetch(BACKEND_URL + "/marketcap-data")
+      .then((response) => response.json())
+      .then((apiData) => {
+        const data = [
+          {
+            id: "root",
+            name: "Market Cap",
+            children: apiData.map((company) => ({
+              id: company.company,
+              name: company.company,
+              value: company.market_cap_billion,
+            })),
+          },
+        ];
 
-  anychart.onDocumentReady(function() {
-    fetch(BACKEND_URL + '/marketcap-data')
-      .then(response => response.json())
-      .then(apiData => {
-        const data = [{
-          id: "root",
-          name: "Market Cap",
-          children: apiData.map(company => ({
-            id: company.company,
-            name: company.company,
-            value: company.market_cap_billion
-          }))
-        }];
-
-        const total = data[0].children.reduce((sum, company) => sum + company.value, 0);
+        const total = data[0].children.reduce(
+          (sum, company) => sum + company.value,
+          0
+        );
 
         const chart = anychart.treeMap(data);
         chart.colorScale().ranges([
-          { less: 1, color: '#bcb98a' },
-          { from: 1, to: 5, color: '#899a5c' },
-          { from: 5, to: 20, color: '#5a7e67' },
-          { greater: 20, color: '#4a6854' }
+          { less: 1, color: "#bcb98a" },
+          { from: 1, to: 5, color: "#899a5c" },
+          { from: 5, to: 20, color: "#5a7e67" },
+          { greater: 20, color: "#4a6854" },
         ]);
 
-        // Configure title using title() object
         const title = chart.title();
         title.enabled(true);
-        title.text(`Plantation Sector Market Cap (RM ${total.toFixed(2)} Billion)`);
+        title.text(
+          `Plantation Sector Market Cap (RM ${total.toFixed(2)} Billion)`
+        );
         title.fontSize(14);
         title.padding(10);
-        title.fontColor('#00321f');
-        title.fontWeight('bold');
-        title.fontFamily('Inter');
-        title.hAlign('left');
+        title.fontColor("#00321f");
+        title.fontWeight("bold");
+        title.fontFamily("Inter");
+        title.hAlign("left");
 
-        chart.tooltip()
+        chart
+          .tooltip()
           .format("{%name}: RM {%value} Billion")
           .fontSize(12)
-          .fontFamily('Inter');
+          .fontFamily("Inter");
 
-        chart.labels()
-          .fontFamily('Inter')
-          .fontSize(12)
-          .fontColor('#00321f');
+        chart.labels().fontFamily("Inter").fontSize(12).fontColor("#00321f");
 
         chart.container("treemap");
         chart.draw();
       })
-      .catch(error => console.error("Error fetching market cap data:", error));
+      .catch((error) =>
+        console.error("Error fetching market cap data:", error)
+      );
   });
 
   // KLCI chart
-fetch(BACKEND_URL + "/klci-data")
-  .then(response => response.json())
-  .then(data => {
-    const ctx = document.getElementById("klciChart")?.getContext("2d");
-    if (!ctx) throw new Error("KLCI chart canvas context not found");
+  fetch(BACKEND_URL + "/klci-data")
+    .then((response) => response.json())
+    .then((data) => {
+      const ctx = document.getElementById("klciChart")?.getContext("2d");
+      if (!ctx) throw new Error("KLCI chart canvas context not found");
 
-    const latestIndex = data.prices.length - 1;
-    const latestLabel = data.dates[latestIndex];
-    const latestValue = data.prices[latestIndex];
+      const latestIndex = data.prices.length - 1;
+      const latestLabel = data.dates[latestIndex];
+      const latestValue = data.prices[latestIndex];
 
-    // Custom plugin to show value above last point
-    const showLatestLabelPlugin = {
-      id: 'showLatestLabel',
-      afterDatasetsDraw(chart) {
-        const { ctx } = chart;
-        const dataset = chart.data.datasets[0];
-        const meta = chart.getDatasetMeta(0);
-        const lastPoint = meta.data[dataset.data.length - 1];
+      const showLatestLabelPlugin = {
+        id: "showLatestLabel",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          const dataset = chart.data.datasets[0];
+          const meta = chart.getDatasetMeta(0);
+          const lastPoint = meta.data[dataset.data.length - 1];
 
-        if (lastPoint) {
-          const value = dataset.data[dataset.data.length - 1];
-          const roundedValue = parseFloat(value).toFixed(2);  // ✅ Round to 2 decimal places
+          if (lastPoint) {
+            const value = dataset.data[dataset.data.length - 1];
+            const roundedValue = parseFloat(value).toFixed(2);
 
-          ctx.save();
-          ctx.font = "bold 12px Inter";
-          ctx.fillStyle = "#014422";
-          ctx.textAlign = "center";
-          ctx.fillText(roundedValue, lastPoint.x, lastPoint.y - 8);
-          ctx.restore();
-        }
-      }
-    };
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: data.dates,
-        datasets: [{
-          label: "KLCI Index",
-          data: data.prices,
-          borderColor: "#014422",
-          borderWidth: 2,
-          fill: false,
-          pointRadius: 0,
-          pointHoverRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false,
-            labels: {
-              font: { family: 'Inter', size: 12 },
-              color: '#00321f'
-            }
-          },
-          title: {
-            display: true,
-            text: 'Kuala Lumpur Composite Index (KLCI), Last 30 days',
-            color: '#00321f',
-            font: { family: 'Inter', size: 16, weight: 'bold' },
-            padding: { top: 10, bottom: 20 }
-          },
-          tooltip: {
-            bodyFont: { family: 'Inter', size: 12 },
-            titleFont: { family: 'Inter', size: 14, weight: 'bold' }
+            ctx.save();
+            ctx.font = "bold 12px Inter";
+            ctx.fillStyle = "#014422";
+            ctx.textAlign = "center";
+            ctx.fillText(roundedValue, lastPoint.x, lastPoint.y - 8);
+            ctx.restore();
           }
         },
-        scales: {
-          x: {
-            ticks: {
-              font: { family: 'Inter', size: 12 },
-              color: '#00321f',
-              autoSkip: true,
-              maxTicksLimit: 15
+      };
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.dates,
+          datasets: [
+            {
+              label: "KLCI Index",
+              data: data.prices,
+              borderColor: "#014422",
+              borderWidth: 2,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 4,
             },
-            grid: { display: false }
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+              labels: {
+                font: { family: "Inter", size: 12 },
+                color: "#00321f",
+              },
+            },
+            title: {
+              display: true,
+              text: "Kuala Lumpur Composite Index (KLCI), Last 30 days",
+              color: "#00321f",
+              font: { family: "Inter", size: 16, weight: "bold" },
+              padding: { top: 10, bottom: 20 },
+            },
+            tooltip: {
+              bodyFont: { family: "Inter", size: 12 },
+              titleFont: { family: "Inter", size: 14, weight: "bold" },
+            },
           },
-          y: {
-            ticks: {
-              font: { family: 'Inter', size: 12 },
-              color: '#00321f'
+          scales: {
+            x: {
+              ticks: {
+                font: { family: "Inter", size: 12 },
+                color: "#00321f",
+                autoSkip: true,
+                maxTicksLimit: 15,
+              },
+              grid: { display: false },
             },
-            beginAtZero: false,
-            grid: { display: false }
-          }
-        }
-      },
-      plugins: [showLatestLabelPlugin]
-    });
-  })
-  .catch(error => console.error("Error fetching KLCI data:", error));
+            y: {
+              ticks: {
+                font: { family: "Inter", size: 12 },
+                color: "#00321f",
+              },
+              beginAtZero: false,
+              grid: { display: false },
+            },
+          },
+        },
+        plugins: [showLatestLabelPlugin],
+      });
+    })
+    .catch((error) => console.error("Error fetching KLCI data:", error));
 
   // Latest share price
   let allData = [];
@@ -161,33 +164,33 @@ fetch(BACKEND_URL + "/klci-data")
   const cardsPerPage = 4;
 
   const logoMap = {
-    "1961": "ioi_logo.png",
-    "2445": "klk_logo.png",
-    "5285": "sdg_logo.png",
-    "5222": "fgv_logo.png",
-    "4383": "jtiasa_logo.png",
-    "5027": "kmloong_logo.png",
-    "9059": "tsh_logo.png",
-    "1996": "kretam_logo.png",
-    "2089": "utdplt_logo.png",
-    "2291": "genp_logo.png",
-    "6262": "inno_logo.png",
-    "5126": "sop_logo.png"
+    1961: "ioi_logo.png",
+    2445: "klk_logo.png",
+    5285: "sdg_logo.png",
+    5222: "fgv_logo.png",
+    4383: "jtiasa_logo.png",
+    5027: "kmloong_logo.png",
+    9059: "tsh_logo.png",
+    1996: "kretam_logo.png",
+    2089: "utdplt_logo.png",
+    2291: "genp_logo.png",
+    6262: "inno_logo.png",
+    5126: "sop_logo.png",
   };
 
   const stockMap = {
-    "1961": "IOI Corporation Berhad",
-    "2445": "Kuala Lumpur Kepong Berhad",
-    "5285": "SD Guthrie Berhad",
-    "5222": "FGV Holdings Berhad",
-    "4383": "Jaya Tiasa Holdings Berhad",
-    "5027": "Kim Loong Resources Berhad",
-    "9059": "TSH Resources Berhad",
-    "1996": "Kretam Holdings Berhad",
-    "2089": "United Plantations Berhad",
-    "2291": "Genting Plantations Berhad",
-    "6262": "Innoprise Plantations Berhad",
-    "5126": "Sarawak Oil Palms Berhad"
+    1961: "IOI Corporation Berhad",
+    2445: "Kuala Lumpur Kepong Berhad",
+    5285: "SD Guthrie Berhad",
+    5222: "FGV Holdings Berhad",
+    4383: "Jaya Tiasa Holdings Berhad",
+    5027: "Kim Loong Resources Berhad",
+    9059: "TSH Resources Berhad",
+    1996: "Kretam Holdings Berhad",
+    2089: "United Plantations Berhad",
+    2291: "Genting Plantations Berhad",
+    6262: "Innoprise Plantations Berhad",
+    5126: "Sarawak Oil Palms Berhad",
   };
 
   function renderCards() {
@@ -198,11 +201,17 @@ fetch(BACKEND_URL + "/klci-data")
     const end = start + cardsPerPage;
     const pageData = allData.slice(start, end);
 
-    pageData.forEach(item => {
+    pageData.forEach((item) => {
       const arrowUp = '<span class="text-green-600">▲</span>';
       const arrowDown = '<span class="text-red-600">▼</span>';
-      const arrow = item.change > 0 ? arrowUp : item.change < 0 ? arrowDown : "";
-      const color = item.change > 0 ? "text-green-600" : item.change < 0 ? "text-red-600" : "text-gray-600";
+      const arrow =
+        item.change > 0 ? arrowUp : item.change < 0 ? arrowDown : "";
+      const color =
+        item.change > 0
+          ? "text-green-600"
+          : item.change < 0
+          ? "text-red-600"
+          : "text-gray-600";
       const logoFilename = logoMap[item.symbol] || "default_logo.png";
       const stockname = stockMap[item.symbol] || item.symbol;
 
@@ -226,12 +235,12 @@ fetch(BACKEND_URL + "/klci-data")
   }
 
   fetch(BACKEND_URL + "/api/share-prices")
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       allData = data;
       renderCards();
     })
-    .catch(error => console.error("Error fetching share prices:", error));
+    .catch((error) => console.error("Error fetching share prices:", error));
 
   document.getElementById("prevBtn").addEventListener("click", () => {
     if (currentPage > 0) {
@@ -265,20 +274,20 @@ fetch(BACKEND_URL + "/klci-data")
   // News cards
   async function loadNews() {
     try {
-      const response = await fetch(BACKEND_URL + '/api/news');
+      const response = await fetch(BACKEND_URL + "/api/news");
       const data = await response.json();
-      const newsCardsContainer = document.getElementById('newsCards');
+      const newsCardsContainer = document.getElementById("newsCards");
       if (!newsCardsContainer) return;
-      newsCardsContainer.innerHTML = '';
+      newsCardsContainer.innerHTML = "";
 
-      data.news.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition';
+      data.news.forEach((item) => {
+        const card = document.createElement("div");
+        card.className =
+          "w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition";
 
-        // Format published date if exists
         const published = item.published
           ? `<p class="text-xs text-gray-500 mb-2">${item.published}</p>`
-          : '';
+          : "";
 
         card.innerHTML = `
           <h3 class="text-lg font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
@@ -295,7 +304,7 @@ fetch(BACKEND_URL + "/klci-data")
         newsCardsContainer.appendChild(card);
       });
     } catch (error) {
-      console.error('Failed to load news:', error);
+      console.error("Failed to load news:", error);
     }
   }
   loadNews();
@@ -309,8 +318,9 @@ const companyDescriptionEl = document.getElementById("company-description");
 const nameMap = {
   KLK: "Kuala Lumpur Kepong Berhad",
   IOI: "IOI Corporation Berhad",
-  SDG: "Sime Darby Guthrie",
-  FGV: "FGV Holdings Berhad"
+  SDG: "Sime Darby Guthrie Berhad",
+  FGV: "FGV Holdings Berhad",
+  KMLOONG: "Kim Loong Resources Berhad",
 };
 
 async function fetchCompanyData(company) {
@@ -326,7 +336,7 @@ function getColor(index) {
     "rgba(52, 95, 60, 1)",
     "rgba(137, 154, 92, 1)",
     "rgba(1, 68, 34, 1)",
-    "rgba(188, 185, 138, 1)"
+    "rgba(188, 185, 138, 1)",
   ];
   return colors[index % colors.length];
 }
@@ -335,36 +345,47 @@ function buildBarChart(data, companyCode) {
   const ctx = document.getElementById("prod-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const months = [...new Set(data.map(item => item.date))];
-  const rawMats = [...new Set(data.map(item => item.raw_material))];
+  const months = [...new Set(data.map((item) => item.date))];
+  const rawMats = [...new Set(data.map((item) => item.raw_material))];
 
   const datasets = rawMats.map((mat, i) => ({
     label: mat,
-    data: months.map(month => {
-      const item = data.find(d => d.date === month && d.raw_material === mat);
+    data: months.map((month) => {
+      const item = data.find((d) => d.date === month && d.raw_material === mat);
       return item ? Number(item.volume) : 0;
     }),
-    backgroundColor: getColor(i)
+    backgroundColor: getColor(i),
   }));
 
   if (window.prodChart) window.prodChart.destroy();
 
   window.prodChart = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: { labels: months, datasets },
     options: {
       maintainAspectRatio: false,
       responsive: true,
-      animation: { onComplete: () => { window.prodChart.resize(); } },
+      animation: {
+        onComplete: () => {
+          window.prodChart.resize();
+        },
+      },
       scales: {
-        x: { title: { display: false, text: 'Month' }, grid: { display: false } },
-        y: { beginAtZero: true, title: { display: true, text: 'Volume' }, grid: { display: false } }
+        x: {
+          title: { display: false, text: "Month" },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Volume" },
+          grid: { display: false },
+        },
       },
       plugins: {
         legend: { labels: { color: "black" } },
-        title: { display: true, color: "black" }
-      }
-    }
+        title: { display: true, color: "black" },
+      },
+    },
   });
 }
 
@@ -384,44 +405,56 @@ function drawPriceChart(data, ticker) {
   if (window.priceChart) window.priceChart.destroy();
 
   window.priceChart = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: {
       labels,
-      datasets: [{
-        label: `Closing Price`,
-        data: prices,
-        borderColor: 'rgba(52, 95, 60, 1)',
-        fill: true,
-        tension: 0.3
-      }]
+      datasets: [
+        {
+          label: `Closing Price`,
+          data: prices,
+          borderColor: "rgba(52, 95, 60, 1)",
+          fill: true,
+          tension: 0.3,
+        },
+      ],
     },
     options: {
       maintainAspectRatio: false,
       responsive: true,
-      animation: { onComplete: () => { window.priceChart.resize(); } },
+      animation: {
+        onComplete: () => {
+          window.priceChart.resize();
+        },
+      },
       scales: {
-        x: { title: { display: false, text: 'Date' }, grid: { display: false } },
-        y: { title: { display: false, text: 'Price (MYR)' }, grid: { display: false } }
+        x: {
+          title: { display: false, text: "Date" },
+          grid: { display: false },
+        },
+        y: {
+          title: { display: false, text: "Price (MYR)" },
+          grid: { display: false },
+        },
       },
       plugins: {
         legend: { labels: { color: "black" } },
-        title: { display: true, color: "black" }
-      }
-    }
+        title: { display: true, color: "black" },
+      },
+    },
   });
 }
 
 async function fetchCompanyDescription(ticker) {
-  const response = await fetch(BACKEND_URL + `/company-summary?ticker=${ticker}`);
+  const response = await fetch(
+    BACKEND_URL + `/company-summary?ticker=${ticker}`
+  );
   if (!response.ok) {
     console.error("Failed to fetch company description");
     return "";
   }
 
   let text = await response.text();
-
-  // Remove leading and trailing quotes (", “, ”, ')
-  text = text.replace(/^["“”']+|["“”']+$/g, '');
+  text = text.replace(/^["“”']+|["“”']+$/g, "");
 
   return text;
 }
@@ -441,10 +474,10 @@ function drawEarningsChart(data) {
   const ctx = document.getElementById("earnings-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const labels = data.data.map(d => d.Quarter);
-  const revenue = data.data.map(d => d["Revenue (Thousand Millions)"]);
-  const netIncome = data.data.map(d => d["Net Profit (Thousand Millions)"]);
-  const margin = data.data.map(d => d["Net Profit Margin (%)"]);
+  const labels = data.data.map((d) => d.Quarter);
+  const revenue = data.data.map((d) => d["Revenue (Thousand Millions)"]);
+  const netIncome = data.data.map((d) => d["Net Profit (Thousand Millions)"]);
+  const margin = data.data.map((d) => d["Net Profit Margin (%)"]);
 
   if (chartInstance) chartInstance.destroy();
 
@@ -457,13 +490,13 @@ function drawEarningsChart(data) {
           label: "Revenue (RM billion)",
           data: revenue,
           backgroundColor: "rgba(1, 68, 34, 0.7)",
-          yAxisID: 'y'
+          yAxisID: "y",
         },
         {
           label: "Net Profit (RM billion)",
           data: netIncome,
           backgroundColor: "rgba(137, 154, 92, 0.7)",
-          yAxisID: 'y'
+          yAxisID: "y",
         },
         {
           label: "Net Profit Margin (%)",
@@ -473,44 +506,44 @@ function drawEarningsChart(data) {
           backgroundColor: "rgba(188, 185, 138, 1)",
           borderWidth: 2,
           fill: false,
-          yAxisID: 'y1'
-        }
-      ]
+          yAxisID: "y1",
+        },
+      ],
     },
     options: {
       responsive: true,
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: "index", intersect: false },
       stacked: false,
       plugins: {
         title: {
           display: true,
-          text: "Quarterly Earnings"
-        }
+          text: "Quarterly Earnings",
+        },
       },
       scales: {
         x: {
-          grid: { display: false }
+          grid: { display: false },
         },
         y: {
-          type: 'linear',
-          position: 'left',
+          type: "linear",
+          position: "left",
           grid: { display: false },
           title: {
             display: true,
-            text: 'RM (Billion)'
-          }
+            text: "RM (Billion)",
+          },
         },
         y1: {
-          type: 'linear',
-          position: 'right',
+          type: "linear",
+          position: "right",
           grid: { drawOnChartArea: false },
           title: {
             display: true,
-            text: 'Net Profit Margin (%)'
-          }
-        }
-      }
-    }
+            text: "Net Profit Margin (%)",
+          },
+        },
+      },
+    },
   });
 }
 
@@ -524,25 +557,39 @@ function buildPlantedAreaPieChart(data, company) {
   const ctx = document.getElementById("plt-area-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const latestYear = Math.max(...data.map(d => d.Year));
-  const filtered = data.filter(d => d.Year === latestYear);
-  const labels = filtered.map(d => d.Category);
-  const values = filtered.map(d => d.Value);
+  const latestYear = Math.max(...data.map((d) => d.Year));
+  const filtered = data.filter((d) => d.Year === latestYear);
+  const labels = filtered.map((d) => d.Category);
+  const values = filtered.map((d) => d.Value);
   const colors = labels.map((_, i) => getColor(i));
 
   if (window.plantedAreaChart) window.plantedAreaChart.destroy();
 
   window.plantedAreaChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderColor: "#fff", borderWidth: 1 }] },
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: colors,
+          borderColor: "#fff",
+          borderWidth: 1,
+        },
+      ],
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { color: "black" } },
-        title: { display: true, text: `Planted Area (${latestYear})`, color: "black" }
-      }
-    }
+        legend: { position: "bottom", labels: { color: "black" } },
+        title: {
+          display: true,
+          text: `Planted Area (${latestYear})`,
+          color: "black",
+        },
+      },
+    },
   });
 }
 
@@ -556,13 +603,13 @@ function buildExtractionRateChart(data, company) {
   const ctx = document.getElementById("ext-rates-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const years = [...new Set(data.map(d => d.date))].sort();
-  const categories = [...new Set(data.map(d => d.category))];
+  const years = [...new Set(data.map((d) => d.date))].sort();
+  const categories = [...new Set(data.map((d) => d.category))];
 
   const datasets = categories.map((category, i) => ({
     label: category,
-    data: years.map(year => {
-      const item = data.find(d => d.date === year && d.category === category);
+    data: years.map((year) => {
+      const item = data.find((d) => d.date === year && d.category === category);
       return item ? Number(item.value) : 0;
     }),
     borderColor: getColor(i),
@@ -570,35 +617,49 @@ function buildExtractionRateChart(data, company) {
     fill: false,
     tension: 0.3,
     pointRadius: 4,
-    pointHoverRadius: 6
+    pointHoverRadius: 6,
   }));
 
   if (window.extractionRateChart) window.extractionRateChart.destroy();
 
   window.extractionRateChart = new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: { labels: years, datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: { title: { display: false, text: 'Year' }, grid: { display: false } },
-        y: { beginAtZero: true, title: { display: true, text: 'Extraction Rate (%)' }, grid: { display: false } }
+        x: {
+          title: { display: false, text: "Year" },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Extraction Rate (%)" },
+          grid: { display: false },
+        },
       },
       plugins: {
-        legend: { position: 'bottom', labels: { color: 'black' } },
-        title: { display: false, text: `${nameMap[company]} Extraction Rates by Year`, color: 'black' }
-      }
-    }
+        legend: { position: "bottom", labels: { color: "black" } },
+        title: {
+          display: false,
+          text: `${nameMap[company]} Extraction Rates by Year`,
+          color: "black",
+        },
+      },
+    },
   });
 }
 
 async function buildRevenueForecastChart(data, company) {
-  const ctx = document.getElementById("revenue-forecast-chart")?.getContext("2d");
+  const ctx = document
+    .getElementById("revenue-forecast-chart")
+    ?.getContext("2d");
   if (!ctx) return;
 
-  // Step 1: Get latest actual revenue from FastAPI response
-  const forecastResponse = await fetch(`${BACKEND_URL}/predict-revenue?company=${company}`);
+  const forecastResponse = await fetch(
+    `${BACKEND_URL}/predict-revenue?company=${company}`
+  );
   if (!forecastResponse.ok) {
     console.error("Failed to fetch forecasted revenue from FastAPI");
     return;
@@ -608,10 +669,13 @@ async function buildRevenueForecastChart(data, company) {
   const latestRevenue = forecastData.latest_actual_revenue_mil;
   const forecastedRevenue = forecastData.predicted_revenue;
 
-  const nextQuarterRange = forecastData.next_quarter; // e.g. ["2025-04-01", "2025-06-30"]
-  const nextQuarterLabel = `${new Date(nextQuarterRange[1]).getFullYear()}Q${Math.ceil((new Date(nextQuarterRange[1]).getMonth() + 1) / 3)}`;
+  const nextQuarterRange = forecastData.next_quarter;
+  const nextQuarterLabel = `${new Date(
+    nextQuarterRange[1]
+  ).getFullYear()}Q${Math.ceil(
+    (new Date(nextQuarterRange[1]).getMonth() + 1) / 3
+  )}`;
 
-  // Step 2: Determine the current quarter label from latest_revenue_date
   const latestQuarterLabel = (() => {
     const date = new Date(forecastData.latest_revenue_date);
     const year = date.getFullYear();
@@ -619,129 +683,227 @@ async function buildRevenueForecastChart(data, company) {
     return `${year}Q${quarter}`;
   })();
 
-  // Step 3: Show contribution weights manually (optional basic logic)
   const features = forecastData.features || {};
   const ffb = features["Fresh Fruit Bunches"] || 0;
   const cpo = features["Crude Palm Oil"] || 0;
   const pk = features["Palm Kernel"] || 0;
   const total = ffb + cpo + pk;
 
-  const percent = v => total > 0 ? `${(v / total * 100).toFixed(1)}%` : "0%";
-  const ffbWeightElement = document.getElementById('ffb-weight');
-  const cpoWeightElement = document.getElementById('cpo-weight');
-  const pkWeightElement = document.getElementById('pk-weight');
+  const percent = (v) =>
+    total > 0 ? `${((v / total) * 100).toFixed(1)}%` : "0%";
+  const ffbWeightElement = document.getElementById("ffb-weight");
+  const cpoWeightElement = document.getElementById("cpo-weight");
+  const pkWeightElement = document.getElementById("pk-weight");
 
   if (ffbWeightElement) ffbWeightElement.innerText = percent(ffb);
   if (cpoWeightElement) cpoWeightElement.innerText = percent(cpo);
   if (pkWeightElement) pkWeightElement.innerText = percent(pk);
 
-  // Step 4: Destroy existing chart
   if (window.revenueForecastChart) window.revenueForecastChart.destroy();
 
-  // Step 5: Build the chart
   window.revenueForecastChart = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       labels: [latestQuarterLabel, nextQuarterLabel],
-      datasets: [{
-        label: 'Revenue (RM mil)',
-        data: [latestRevenue, forecastedRevenue],
-        backgroundColor: ['rgba(1, 68, 34, 0.7)', 'rgba(128, 128, 128, 0.7)'],
-        borderColor: ['rgba(1, 68, 34, 1)', 'rgba(128, 128, 128, 1)'],
-        borderWidth: 1
-      }]
+      datasets: [
+        {
+          label: "Revenue (RM mil)",
+          data: [latestRevenue, forecastedRevenue],
+          backgroundColor: ["rgba(1, 68, 34, 0.7)", "rgba(128, 128, 128, 0.7)"],
+          borderColor: ["rgba(1, 68, 34, 1)", "rgba(128, 128, 128, 1)"],
+          borderWidth: 1,
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          position: 'top',
-          labels: { color: 'black' }
+          position: "top",
+          labels: { color: "black" },
         },
         title: {
           display: true,
           text: `${nameMap[company]} Revenue and Forecast`,
-          color: 'black',
-          font: { family: 'Inter', size: 16, weight: 'bold' }
+          color: "black",
+          font: { family: "Inter", size: 16, weight: "bold" },
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const value = context.raw;
               return `Revenue: RM ${(value / 1000).toFixed(2)}B`;
-            }
-          }
+            },
+          },
         },
         datalabels: {
-          anchor: 'end',
-          align: 'top',
-          color: '#014422',
+          anchor: "end",
+          align: "top",
+          color: "#014422",
           font: {
-            family: 'Inter',
+            family: "Inter",
             size: 12,
-            weight: 'bold'
+            weight: "bold",
           },
-          formatter: function(value) {
+          formatter: function (value) {
             return `${(value / 1000).toFixed(2)}B`;
-          }
-        }
+          },
+        },
       },
       scales: {
         x: {
           title: {
-            display: true,
-            text: 'Quarter'
+            display: false,
+            text: "Quarter",
           },
           grid: { display: false },
           ticks: {
-            font: { family: 'Inter', size: 12 },
-            color: '#00321f'
-          }
+            font: { family: "Inter", size: 12 },
+            color: "#00321f",
+          },
         },
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Revenue (RM Million)'
+            text: "Revenue (RM Million)",
           },
           grid: { display: false },
           ticks: {
-            font: { family: 'Inter', size: 12 },
-            color: '#00321f'
-          }
-        }
-      }
+            font: { family: "Inter", size: 12 },
+            color: "#00321f",
+          },
+        },
+      },
     },
-    plugins: [ChartDataLabels]
+    plugins: [ChartDataLabels],
   });
 }
 
+//Insights
+async function buildCorrelationHeatmap() {
+  const container = document.getElementById("correlationHeatmap");
+  if (container) container.innerHTML = "";
+
+  const labels = ["Revenue", "CPO Price", "PK Price", "FFB Price"];
+  const correlationMatrix = await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve([
+        [1.0, 0.95, 0.05, 0.9], // Revenue
+        [0.95, 1.0, 0.75, -0.12], // CPO Price
+        [0.05, 0.75, 1.0, 0.7], // PK Price
+        [0.9, -0.12, 0.7, 1.0], // FFB Price
+      ]);
+    }, 100);
+  });
+
+  const heatmapData = [];
+  for (let i = 0; i < labels.length; i++) {
+    for (let j = 0; j < labels.length; j++) {
+      if (j <= i) {
+        heatmapData.push({
+          x: labels[j],
+          y: labels[i],
+          heat: +correlationMatrix[i][j].toFixed(2),
+        });
+      }
+    }
+  }
+
+  anychart.onDocumentReady(function () {
+    const chart = anychart.heatMap(heatmapData);
+
+    chart.container("correlationHeatmap");
+    chart.height("100%");
+    chart.background().fill("#ffffff");
+
+    // Set up custom color scale with gradient and range
+    const scale = anychart.scales.linearColor();
+    scale.colors([
+      "#e7f5ef", // low
+      "#a7d7b3",
+      "#66bb88",
+      "#2a8247",
+      "#1b5e20", // high
+    ]);
+    scale.minimum(0).maximum(1); // ✅ set range properly
+
+    chart.colorScale(scale); // ✅ attach the custom scale
+
+    chart.tooltip().titleFormat("{%y} vs {%x}").format("Correlation: {%heat}");
+
+    chart.labels().fontColor("#00321f").fontFamily("Inter").fontSize(12);
+
+    chart.stroke("#ffffff"); 
+    chart.hovered().stroke("white", 2);
+
+    chart.draw();
+  });
+}
+
+async function initInsightToggle() {
+  const insightText = document.getElementById("insightText");
+  const toggleSelect = document.getElementById("toggleSelect");
+
+  if (!insightText || !toggleSelect) return;
+
+  // Placeholder: replace with API call if needed
+  const insightData = {
+    cpo: "RM513 increase in CPO price leads to RM151 million increase in revenue",
+    pk: "RM320 increase in PK price leads to RM88 million increase in revenue",
+    ffb: "RM75 increase in FFB price leads to RM60 million increase in revenue",
+  };
+
+  toggleSelect.addEventListener("change", async function () {
+    const selected = toggleSelect.value;
+
+    // In future you could fetch it like this:
+    // const response = await fetch(`/api/insights/${selected}`);
+    // const data = await response.json();
+    // insightText.textContent = data.message;
+
+    insightText.textContent = insightData[selected];
+  });
+
+  // Initialize default
+  const initial = toggleSelect.value;
+  insightText.textContent = insightData[initial];
+}
+
 async function initCompanyTab() {
-  const selectedOption = companySelect.options[companySelect.selectedIndex];
-  const [companyCode, shareCode] = selectedOption.value.split("|");
+  try {
+    const selectedOption = companySelect.options[companySelect.selectedIndex];
+    const [companyCode, shareCode] = selectedOption.value.split("|");
 
-  companyTitle.textContent = nameMap[companyCode];
+    companyTitle.textContent = nameMap[companyCode];
 
-  const description = await fetchCompanyDescription(shareCode);
-  if (companyDescriptionEl) companyDescriptionEl.textContent = description;
+    const description = await fetchCompanyDescription(shareCode);
+    if (companyDescriptionEl) companyDescriptionEl.textContent = description;
 
-  const prodData = await fetchCompanyData(companyCode);
-  buildBarChart(prodData, companyCode);
+    const prodData = await fetchCompanyData(companyCode);
+    buildBarChart(prodData, companyCode);
 
-  const priceData = await fetchPriceData(shareCode);
-  drawPriceChart(priceData, shareCode);
+    const priceData = await fetchPriceData(shareCode);
+    drawPriceChart(priceData, shareCode);
 
-  const earningsData = await fetchEarnings(companyCode); 
-  drawEarningsChart(earningsData, companyCode);
+    const earningsData = await fetchEarnings(companyCode);
+    drawEarningsChart(earningsData, companyCode);
 
-  const areaData = await fetchPlantedAreaData(companyCode);
-  buildPlantedAreaPieChart(areaData, companyCode);
+    const areaData = await fetchPlantedAreaData(companyCode);
+    buildPlantedAreaPieChart(areaData, companyCode);
 
-  const extData = await fetchExtractionRateData(companyCode);
-  buildExtractionRateChart(extData, companyCode);
+    const extData = await fetchExtractionRateData(companyCode);
+    buildExtractionRateChart(extData, companyCode);
 
-  await buildRevenueForecastChart(earningsData, companyCode);
+    await buildRevenueForecastChart(earningsData, companyCode);
+
+    await initInsightToggle();
+
+    await buildCorrelationHeatmap();
+  } catch (err) {
+    console.error("Error in initCompanyTab:", err);
+  }
 }
 
 companySelect.addEventListener("change", async (e) => {
@@ -767,64 +929,151 @@ companySelect.addEventListener("change", async (e) => {
   buildExtractionRateChart(extData, companyCode);
 
   await buildRevenueForecastChart(earningsData, companyCode);
+
+  await initInsightToggle();
+
+  await buildCorrelationHeatmap();
 });
 
 // COMMODITIES INITIALIZATION
 async function initCommodities() {
   // MPOB stats
   fetch(BACKEND_URL + "/api/mpob")
-  .then(res => res.json())
-  .then(data => {
-    const ctx = document.getElementById("mpobChart")?.getContext("2d");
+    .then((res) => res.json())
+    .then((data) => {
+      const ctx = document.getElementById("mpobChart")?.getContext("2d");
+      if (!ctx) return;
+
+      const months = [...new Set(data.map((d) => d.MONTH_YEAR))];
+      const items = [...new Set(data.map((d) => d.ITEMS))];
+      const greenPalette = [
+        "rgba(0, 50, 31, 0.7)",
+        "rgba(1, 68, 34, 0.7)",
+        "rgba(52, 95, 60, 0.7)",
+        "rgba(127, 154, 131, 0.7)",
+        "rgba(137, 154, 92, 0.7)",
+        "rgba(188, 185, 138, 0.7)",
+      ];
+
+      const datasets = items.map((item, index) => {
+        const values = months.map(
+          (month) =>
+            data.find((d) => d.MONTH_YEAR === month && d.ITEMS === item)
+              ?.VALUE || 0
+        );
+
+        if (item === "FFB price") {
+          return {
+            type: "line",
+            label: item,
+            data: values,
+            borderColor: "rgb(6, 84, 13)",
+            backgroundColor: "rgba(13, 80, 11, 0.98)",
+            borderWidth: 2,
+            yAxisID: "y1",
+            tension: 0.3,
+            fill: false,
+            pointRadius: 3,
+          };
+        } else {
+          return {
+            type: "bar",
+            label: item,
+            data: values,
+            backgroundColor: greenPalette[index % greenPalette.length],
+            yAxisID: "y",
+          };
+        }
+      });
+
+      new Chart(ctx, {
+        data: {
+          labels: months,
+          datasets: datasets,
+        },
+        options: {
+          indexAxis: "x", // <-- Ensures vertical orientation
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 20,
+            },
+          },
+          plugins: {
+            legend: {
+              position: "right",
+              labels: {
+                boxWidth: 12,
+                padding: 10,
+              },
+            },
+          },
+          scales: {
+            x: {
+              title: { display: true, text: "Month Year" },
+              ticks: {
+                autoSkip: true,
+                maxRotation: 45,
+                minRotation: 45,
+                padding: 10,
+              },
+              grid: { display: false },
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Volume / Stocks / Export" },
+              position: "left",
+            },
+            y1: {
+              beginAtZero: true,
+              position: "right",
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: "FFB Price (RM)" },
+            },
+          },
+        },
+      });
+    })
+    .catch((error) => console.error("Error fetching MPOB data:", error));
+
+  //Local Crude Palm Oil
+  async function fetchPalmOilData() {
+    const response = await fetch(BACKEND_URL + "/api/commodities");
+    const result = await response.json();
+
+    // Prepare data: extract dates and prices
+    const dates = result.map((item) => item.date);
+    const prices = result.map((item) => item.local_crude_palm_oil);
+
+    return { dates, prices };
+  }
+
+  function drawPalmOilChart(data) {
+    const ctx = document.getElementById("cpo-price-chart")?.getContext("2d");
     if (!ctx) return;
 
-    const months = [...new Set(data.map(d => d.MONTH_YEAR))];
-    const items = [...new Set(data.map(d => d.ITEMS))];
-    const greenPalette = [
-      "rgba(0, 50, 31, 0.7)",
-      "rgba(1, 68, 34, 0.7)",
-      "rgba(52, 95, 60, 0.7)",
-      "rgba(127, 154, 131, 0.7)",
-      "rgba(137, 154, 92, 0.7)",
-      "rgba(188, 185, 138, 0.7)"
-    ];
+    if (window.palmOilChart) window.palmOilChart.destroy();
 
-    const datasets = items.map((item, index) => {
-    const values = months.map(month =>
-      data.find(d => d.MONTH_YEAR === month && d.ITEMS === item)?.VALUE || 0
-    );
-
-    if (item === "FFB price") {
-      return {
-        type: "line",
-        label: item,
-        data: values,
-        borderColor: "rgb(6, 84, 13)",
-        backgroundColor: "rgba(13, 80, 11, 0.98)",
-        borderWidth: 2,
-        yAxisID: "y1",
-        tension: 0.3,
-        fill: false,
-        pointRadius: 3
-      };
-    } else {
-      return {
-        type: "bar",
-        label: item,
-        data: values,
-        backgroundColor: greenPalette[index % greenPalette.length],
-        yAxisID: "y"
-      };
-    }
-  });
-
-    new Chart(ctx, {
+    window.palmOilChart = new Chart(ctx, {
+      type: "line",
       data: {
-        labels: months,
-        datasets: datasets
+        labels: data.dates,
+        datasets: [
+          {
+            label: "Local Crude Palm Oil",
+            data: data.prices,
+            borderColor: "rgba(52, 95, 60, 0.7)",
+            backgroundColor: "rgba(52, 95, 60, 0.1)",
+            fill: true,
+            tension: 0.3,
+          },
+        ],
       },
       options: {
-        indexAxis: 'x', // <-- Ensures vertical orientation
         responsive: true,
         maintainAspectRatio: false,
         layout: {
@@ -832,45 +1081,38 @@ async function initCommodities() {
             left: 10,
             right: 10,
             top: 10,
-            bottom: 20
-          }
-        },
-        plugins: {
-          legend: {
-            position: "right",
-            labels: {
-              boxWidth: 12,
-              padding: 10
-            }
-          }
+            bottom: 20,
+          },
         },
         scales: {
           x: {
-            title: { display: true, text: "Month Year" },
+            title: { display: true, text: "Date" },
             ticks: {
+              color: "black",
               autoSkip: true,
               maxRotation: 45,
               minRotation: 45,
-              padding: 10
+              padding: 10,
             },
-            grid: { display: false }
+            grid: { display: false },
           },
           y: {
-            beginAtZero: true,
-            title: { display: true, text: "Volume / Stocks / Export" },
-            position: "left"
+            title: { display: true, text: "Price (RM)" },
+            ticks: { color: "black" },
+            grid: { display: false },
           },
-          y1: {
-            beginAtZero: true,
-            position: "right",
-            grid: { drawOnChartArea: false },
-            title: { display: true, text: "FFB Price (RM)" }
-          }
-        }
-      }
+        },
+        plugins: {
+          legend: { labels: { color: "black" } },
+        },
+      },
     });
-  })
-  .catch(error => console.error("Error fetching MPOB data:", error));
+  }
+
+  // Trigger fetch and render
+  fetchPalmOilData()
+    .then((data) => drawPalmOilChart(data))
+    .catch((error) => console.error("Error fetching palm oil data:", error));
 
   // Soybean price
   async function fetchSoyPriceData() {
@@ -889,14 +1131,16 @@ async function initCommodities() {
       type: "line",
       data: {
         labels: data.dates,
-        datasets: [{
-          label: "Soybean Oil Futures",
-          data: data.prices,
-          borderColor: "rgba(52, 95, 60, 0.7)",
-          backgroundColor: "rgba(52, 95, 60, 0.1)",
-          fill: true,
-          tension: 0.3
-        }]
+        datasets: [
+          {
+            label: "Soybean Oil Futures",
+            data: data.prices,
+            borderColor: "rgba(52, 95, 60, 0.7)",
+            backgroundColor: "rgba(52, 95, 60, 0.1)",
+            fill: true,
+            tension: 0.3,
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -907,8 +1151,8 @@ async function initCommodities() {
             left: 10,
             right: 10,
             top: 10,
-            bottom: 20 // Increased bottom padding
-          }
+            bottom: 20, // Increased bottom padding
+          },
         },
         // --- End of changes for Soybean Price Chart ---
         scales: {
@@ -919,26 +1163,28 @@ async function initCommodities() {
               autoSkip: true,
               maxRotation: 45,
               minRotation: 45,
-              padding: 10
+              padding: 10,
             },
-            grid: { display: false }
+            grid: { display: false },
           },
           y: {
             title: { display: true, text: "Price (USD)" },
             ticks: { color: "black" },
-            grid: { display: false }
-          }
+            grid: { display: false },
+          },
         },
         plugins: {
-          legend: { labels: { color: "black" } }
-        }
-      }
+          legend: { labels: { color: "black" } },
+        },
+      },
     });
   }
 
   fetchSoyPriceData()
-    .then(data => drawSoyPriceChart(data))
-    .catch(error => console.error("Error fetching soybean price data:", error));
+    .then((data) => drawSoyPriceChart(data))
+    .catch((error) =>
+      console.error("Error fetching soybean price data:", error)
+    );
 
   // Fertilizer chart
   async function renderFertilizerChart() {
@@ -950,21 +1196,21 @@ async function initCommodities() {
 
     const labels = data["Month"];
     const colors = {
-      "urea": "rgba(0, 50, 31, 0.7)",
+      urea: "rgba(0, 50, 31, 0.7)",
       "triple-superphosphate": "rgba(52, 95, 60, 0.7)",
       "rock-phosphate": "rgba(127, 154, 131, 0.7)",
       "potassium-chloride": "rgba(188, 185, 138, 0.7)",
-      "dap-fertilizer": "rgba(237, 226, 70, 0.87)"
+      "dap-fertilizer": "rgba(237, 226, 70, 0.87)",
     };
 
     const datasets = Object.keys(data)
-      .filter(key => key !== "Month")
-      .map(key => ({
-        label: key.replace(/-/g, ' '),
+      .filter((key) => key !== "Month")
+      .map((key) => ({
+        label: key.replace(/-/g, " "),
         data: data[key],
         fill: false,
         borderColor: colors[key],
-        tension: 0.3
+        tension: 0.3,
       }));
 
     new Chart(ctx, {
@@ -974,26 +1220,26 @@ async function initCommodities() {
         responsive: true,
         maintainAspectRatio: false,
         layout: {
-          padding: { left: 10, right: 10, top: 10, bottom: 20 }
+          padding: { left: 10, right: 10, top: 10, bottom: 20 },
         },
         plugins: {
-          legend: { position: 'bottom' },
+          legend: { position: "top" },
           tooltip: {
-            mode: 'index',
+            mode: "index",
             intersect: false,
             callbacks: {
               title: (tooltipItems) => `Month: ${tooltipItems[0].label}`,
               label: (tooltipItem) => {
-                const label = tooltipItem.dataset.label || '';
+                const label = tooltipItem.dataset.label || "";
                 const value = tooltipItem.formattedValue;
                 return `${label}: MYR ${value}`;
-              }
-            }
-          }
+              },
+            },
+          },
         },
         interaction: {
-          mode: 'index',
-          intersect: false
+          mode: "index",
+          intersect: false,
         },
         scales: {
           x: {
@@ -1002,16 +1248,16 @@ async function initCommodities() {
               autoSkip: true,
               maxRotation: 45,
               minRotation: 45,
-              padding: 10
+              padding: 10,
             },
-            grid: { display: false }
+            grid: { display: false },
           },
           y: {
             title: { display: true, text: "Price (MYR)" },
-            grid: { display: false }
-          }
-        }
-      }
+            grid: { display: false },
+          },
+        },
+      },
     });
   }
 
@@ -1019,23 +1265,39 @@ async function initCommodities() {
 
   // Diesel chart
   fetch(BACKEND_URL + "/fuelprices")
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       const ctx = document.getElementById("diesel-chart")?.getContext("2d");
       if (!ctx) return;
 
-      const labels = data.map(item => item.date);
-      const diesel = data.map(item => parseFloat(item.diesel));
-      const dieselEastMsia = data.map(item => parseFloat(item.diesel_eastmsia));
+      const labels = data.map((item) => item.date);
+      const diesel = data.map((item) => parseFloat(item.diesel));
+      const dieselEastMsia = data.map((item) =>
+        parseFloat(item.diesel_eastmsia)
+      );
 
       new Chart(ctx, {
         type: "line",
         data: {
           labels,
           datasets: [
-            { label: "Diesel (West Malaysia)", data: diesel, borderColor: "green", backgroundColor: "rgba(1,68,34,0.8)", fill: false, tension: 0.3 },
-            { label: "Diesel (East Malaysia)", data: dieselEastMsia, borderColor: "darkgreen", backgroundColor: "rgba(137,154,92,0.8)", fill: false, tension: 0.3 }
-          ]
+            {
+              label: "Diesel (West Malaysia)",
+              data: diesel,
+              borderColor: "green",
+              backgroundColor: "rgba(1,68,34,0.8)",
+              fill: false,
+              tension: 0.3,
+            },
+            {
+              label: "Diesel (East Malaysia)",
+              data: dieselEastMsia,
+              borderColor: "darkgreen",
+              backgroundColor: "rgba(137,154,92,0.8)",
+              fill: false,
+              tension: 0.3,
+            },
+          ],
         },
         options: {
           responsive: true,
@@ -1046,8 +1308,8 @@ async function initCommodities() {
               left: 10,
               right: 10,
               top: 10,
-              bottom: 20 // Increased bottom padding
-            }
+              bottom: 20, // Increased bottom padding
+            },
           },
           // --- End of changes for Diesel Chart ---
           scales: {
@@ -1057,135 +1319,24 @@ async function initCommodities() {
                 maxRotation: 45,
                 minRotation: 45,
                 autoSkip: true, // Added autoSkip here
-                padding: 10
+                padding: 10,
               },
-              grid: { display: false }
+              grid: { display: false },
             },
-            y: { title: { display: true, text: "Price (RM)" }, beginAtZero: false, grid: { display: false } }
+            y: {
+              title: { display: true, text: "Price (RM)" },
+              beginAtZero: false,
+              grid: { display: false },
+            },
           },
-          plugins: { legend: { position: "top" }, tooltip: { mode: "index", intersect: false } }
-        }
-      });
-    })
-    .catch(error => console.error("Error loading fuel price data:", error));
-
-  // Crude oil
-  fetch(BACKEND_URL + "/crude-oil-data")
-    .then(response => response.json())
-    .then(data => {
-      const ctx = document.getElementById("crude-oil-chart")?.getContext("2d");
-      if (!ctx) return;
-
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: data.dates,
-          datasets: [{
-            label: "Crude Oil",
-            data: data.prices,
-            borderColor: "#014422",
-            borderWidth: 2,
-            fill: false,
-            pointRadius: 0,
-            pointHoverRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          // --- Start of changes for Crude Oil Chart ---
-          layout: {
-            padding: {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 20 // Increased bottom padding
-            }
-          },
-          // --- End of changes for Crude Oil Chart ---
           plugins: {
-            legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
-            tooltip: {
-              bodyFont: { family: 'Inter', size: 12 },
-              titleFont: { family: 'Inter', size: 14, weight: 'bold' }
-            }
+            legend: { position: "top" },
+            tooltip: { mode: "index", intersect: false },
           },
-          scales: {
-            x: {
-              ticks: {
-                font: { family: 'Inter', size: 12 },
-                color: '#00321f',
-                autoSkip: true,
-                maxTicksLimit: 15,
-                padding: 10
-              },
-              grid: { display: false }
-            },
-            y: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }, beginAtZero: false, grid: { display: false } }
-          }
-        }
-      });
-    })
-    .catch(error => console.error("Error fetching Crude Oil data:", error));
-
-  // Brent oil
-  fetch(BACKEND_URL + "/brent-oil-data")
-    .then(response => response.json())
-    .then(data => {
-      const ctx = document.getElementById("brent-oil-chart")?.getContext("2d");
-      if (!ctx) return;
-
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: data.dates,
-          datasets: [{
-            label: "Brent Oil",
-            data: data.prices,
-            borderColor: "#014422",
-            borderWidth: 2,
-            fill: false,
-            pointRadius: 0,
-            pointHoverRadius: 4
-          }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          // --- Start of changes for Brent Oil Chart ---
-          layout: {
-            padding: {
-              left: 10,
-              right: 10,
-              top: 10,
-              bottom: 20 // Increased bottom padding
-            }
-          },
-          // --- End of changes for Brent Oil Chart ---
-          plugins: {
-            legend: { display: false, labels: { font: { family: 'Inter', size: 12 }, color: '#00321f' } },
-            tooltip: {
-              bodyFont: { family: 'Inter', size: 12 },
-              titleFont: { family: 'Inter', size: 14, weight: 'bold' }
-            }
-          },
-          scales: {
-            x: {
-              ticks: {
-                font: { family: 'Inter', size: 12 },
-                color: '#00321f',
-                autoSkip: true,
-                maxTicksLimit: 15,
-                padding: 10
-              },
-              grid: { display: false }
-            },
-            y: { ticks: { font: { family: 'Inter', size: 12 }, color: '#00321f' }, beginAtZero: false, grid: { display: false } }
-          }
-        }
       });
     })
-    .catch(error => console.error("Error fetching Brent Oil data:", error));
+    .catch((error) => console.error("Error loading fuel price data:", error));
 }
 
 // EXPORT IMPORT INITIALIZATION
@@ -1193,592 +1344,674 @@ let eximChart1 = null;
 let eximChart2 = null;
 
 async function initExportImport() {
-    try {
-      // Fetch trade data
-      const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
-      if (!tradeResponse.ok) throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
-      const tradeData = await tradeResponse.json();
+  try {
+    const tradeResponse = await fetch(BACKEND_URL + "/trade-data");
+    if (!tradeResponse.ok)
+      throw new Error(`Failed to fetch trade data: ${tradeResponse.status}`);
+    const tradeData = await tradeResponse.json();
 
-      // Check if vis.js is loaded
-      if (typeof vis === 'undefined') {
-        console.error('vis.js library is not loaded. Please ensure the vis-network script is included.');
-        const container = document.getElementById("graphtheory");
-        if (container) {
-          container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: Unable to load trade network visualization. Please try again later.</p>';
+    if (typeof vis === "undefined") {
+      console.error(
+        "vis.js library is not loaded. Please ensure the vis-network script is included."
+      );
+      const container = document.getElementById("graphtheory");
+      if (container) {
+        container.innerHTML =
+          '<p style="color: red; font-family: Inter, sans-serif;">Error: Unable to load trade network visualization. Please try again later.</p>';
+      }
+      return;
+    }
+
+    const validData = tradeData.filter(
+      (row) =>
+        row.reporterISO &&
+        row.partnerISO &&
+        row.reporterISO !== "World" &&
+        row.partnerISO !== "World" &&
+        ["X", "M"].includes(row.reporterDesc) &&
+        !isNaN(Number(row.fobvalue)) &&
+        !isNaN(Number(row.refMonth))
+    );
+
+    const years = [
+      ...new Set(validData.map((row) => Number(row.refMonth))),
+    ].sort((a, b) => a - b);
+    const yearSlider = document.getElementById("yearSlider");
+    const selectedYearEl = document.getElementById("selectedYear");
+    const physicsToggle = document.getElementById("physicsToggle");
+    const playButton = document.getElementById("playButton");
+
+    if (!yearSlider || !selectedYearEl || years.length === 0) {
+      console.error("Year slider or data missing");
+      const container = document.getElementById("graphtheory");
+      if (container) {
+        container.innerHTML =
+          '<p style="color: red; font-family: Inter, sans-serif;">Error: No valid years available for filtering.</p>';
+      }
+      return;
+    }
+
+    if (!playButton) {
+      console.warn(
+        "Play button not found; animation control will be unavailable."
+      );
+    }
+
+    // Set up slider
+    yearSlider.min = 0;
+    yearSlider.max = years.length - 1;
+    yearSlider.value = years.length - 1;
+    selectedYearEl.textContent = years[years.length - 1];
+
+    // Store node positions
+    let nodePositions = {};
+
+    // Helper function to format fobvalue compactly
+    const formatFobValue = (value) => {
+      if (value >= 1_000_000_000) {
+        return `USD ${(value / 1_000_000_000).toFixed(2)}B`;
+      } else if (value >= 1_000_000) {
+        return `USD ${(value / 1_000_000).toFixed(2)}M`;
+      } else if (value >= 1_000) {
+        return `USD ${(value / 1_000).toFixed(2)}K`;
+      }
+      return `USD ${value.toFixed(2)}`;
+    };
+
+    // Initialize network and datasets
+    const container = document.getElementById("graphtheory");
+    if (!container) throw new Error("Graph theory container not found");
+
+    // Global node ID mapping
+    const isoToNodeId = {};
+    let nextNodeId = 1;
+    validData.forEach((row) => {
+      if (!isoToNodeId[row.reporterISO])
+        isoToNodeId[row.reporterISO] = nextNodeId++;
+      if (!isoToNodeId[row.partnerISO])
+        isoToNodeId[row.partnerISO] = nextNodeId++;
+    });
+
+    // Initialize DataSets
+    const nodesDataSet = new vis.DataSet([]);
+    const edgesDataSet = new vis.DataSet([]);
+    const graphData = { nodes: nodesDataSet, edges: edgesDataSet };
+
+    // Network options
+    const options = {
+      nodes: {
+        shape: "dot",
+        font: { size: 12, face: "Inter, sans-serif", color: "#00321f" },
+      },
+      edges: {
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+        color: { color: "#3b3c36" },
+        smooth: { type: "continuous" },
+        font: { size: 10, face: "Inter, sans-serif", align: "middle" },
+      },
+      height: "100%",
+      width: "100%",
+      physics: {
+        enabled: physicsToggle ? physicsToggle.checked : true,
+        solver: "barnesHut",
+        barnesHut: {
+          gravitationalConstant: -1200,
+          centralGravity: 0.1,
+          springLength: 150,
+          springConstant: 0.03,
+          damping: 0.2,
+          avoidOverlap: 0.3,
+        },
+        maxVelocity: 50,
+        minVelocity: 0.1,
+        stabilization: {
+          enabled: true,
+          iterations: 200,
+          updateInterval: 25,
+        },
+      },
+      interaction: {
+        dragNodes: true,
+        hover: true,
+      },
+    };
+
+    // Initialize network
+    let network = new vis.Network(container, graphData, options);
+
+    // Debounce function
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Animation state
+    let isPlaying = false;
+    let animationInterval = null;
+
+    // Function to render graph and table for a given year
+    const renderGraphAndTable = (selectedYear) => {
+      // Filter data by selected year and limit to top 100 edges by fobvalue
+      let filteredData = validData.filter(
+        (row) => Number(row.refMonth) === Number(selectedYear)
+      );
+      filteredData = filteredData
+        .sort((a, b) => b.fobvalue - a.fobvalue)
+        .slice(0, 280);
+
+      // Determine trade types for each country
+      const tradeTypes = {};
+      filteredData.forEach((row) => {
+        const reporter = row.reporterISO;
+        const partner = row.partnerISO;
+        if (!tradeTypes[reporter])
+          tradeTypes[reporter] = { hasExport: false, hasImport: false };
+        if (!tradeTypes[partner])
+          tradeTypes[partner] = { hasExport: false, hasImport: false };
+        if (row.reporterDesc === "X") {
+          tradeTypes[reporter].hasExport = true;
+          tradeTypes[partner].hasImport = true;
+        } else if (row.reporterDesc === "M") {
+          tradeTypes[reporter].hasImport = true;
+          tradeTypes[partner].hasExport = true;
         }
-        return; // Skip graph rendering but continue with other charts
+      });
+
+      // Create unique nodes
+      const nodeSet = new Set();
+      filteredData.forEach((row) => {
+        nodeSet.add(row.reporterISO);
+        nodeSet.add(row.partnerISO);
+      });
+
+      // Calculate node degrees
+      const nodeDegrees = {};
+      filteredData.forEach((row) => {
+        const reporter = row.reporterISO;
+        const partner = row.partnerISO;
+        if (!nodeDegrees[reporter]) nodeDegrees[reporter] = new Set();
+        if (!nodeDegrees[partner]) nodeDegrees[partner] = new Set();
+        nodeDegrees[reporter].add(partner);
+        nodeDegrees[partner].add(reporter);
+      });
+      for (const iso in nodeDegrees) {
+        nodeDegrees[iso] = nodeDegrees[iso].size;
       }
 
-      // Filter out invalid data and exclude 'World' to reduce graph size
-      const validData = tradeData.filter(row => 
-        row.reporterISO && row.partnerISO && 
-        row.reporterISO !== 'World' && row.partnerISO !== 'World' && 
-        ['X', 'M'].includes(row.reporterDesc) && 
-        !isNaN(Number(row.fobvalue)) && 
-        !isNaN(Number(row.refMonth))
+      // Determine min and max degrees for scaling
+      const degrees = Object.values(nodeDegrees);
+      const minDegree = Math.min(...degrees, 1);
+      const maxDegree = Math.max(...degrees, 1);
+      const minSize = 15;
+      const maxSize = 45;
+
+      // Prepare new nodes
+      const newNodes = Array.from(nodeSet).map((id) => {
+        let backgroundColor = "#345f3c";
+        if (tradeTypes[id]) {
+          const { hasExport, hasImport } = tradeTypes[id];
+          if (hasExport && !hasImport) backgroundColor = "#BCB98A";
+          else if (!hasExport && hasImport) backgroundColor = "#345f3c";
+          else if (hasExport && hasImport) backgroundColor = "#fff8dc";
+        }
+        const degree = nodeDegrees[id] || 0;
+        let size = minSize;
+        if (maxDegree > minDegree) {
+          size =
+            minSize +
+            ((degree - minDegree) / (maxDegree - minDegree)) *
+              (maxSize - minSize);
+        } else if (degree > 0) {
+          size = maxSize;
+        }
+        return {
+          id: isoToNodeId[id],
+          label: id,
+          title: id,
+          ...(nodePositions[id]
+            ? { x: nodePositions[id].x, y: nodePositions[id].y }
+            : {}),
+          color: { background: backgroundColor, border: "#2e4f36" },
+          size: size,
+        };
+      });
+
+      // Calculate total nodes and FOB value
+      const totalNodes = nodeSet.size;
+      const totalFobValue = filteredData.reduce(
+        (sum, row) => sum + Number(row.fobvalue),
+        0
       );
 
-      // Extract unique years from refMonth (as numbers)
-      const years = [...new Set(validData.map(row => Number(row.refMonth)))].sort((a, b) => a - b);
-      const yearSlider = document.getElementById("yearSlider");
-      const selectedYearEl = document.getElementById("selectedYear");
-      const physicsToggle = document.getElementById("physicsToggle");
-      const playButton = document.getElementById("playButton");
-      
-      if (!yearSlider || !selectedYearEl || years.length === 0) {
-        console.error('Year slider or data missing');
-        const container = document.getElementById("graphtheory");
-        if (container) {
-          container.innerHTML = '<p style="color: red; font-family: Inter, sans-serif;">Error: No valid years available for filtering.</p>';
+      // Update table with stats
+      const totalNodesEl = document.getElementById("totalNodes");
+      const totalFobValueEl = document.getElementById("totalFobValue");
+      if (totalNodesEl) totalNodesEl.textContent = totalNodes;
+      if (totalFobValueEl)
+        totalFobValueEl.textContent = formatFobValue(totalFobValue);
+
+      // Calculate FOB value for the previous year
+      const previousYear = years[years.indexOf(Number(selectedYear)) - 1];
+      let fobValueChange = "-";
+      if (previousYear !== undefined) {
+        const previousData = validData.filter(
+          (row) => Number(row.refMonth) === Number(previousYear)
+        );
+        const previousFobValue = previousData.reduce(
+          (sum, row) => sum + Number(row.fobvalue),
+          0
+        );
+        if (previousFobValue > 0) {
+          const percentageChange =
+            ((totalFobValue - previousFobValue) / previousFobValue) * 100;
+          fobValueChange = percentageChange.toFixed(2) + "%";
+          if (percentageChange > 0) fobValueChange = "+" + fobValueChange;
         }
-        return;
       }
+      const fobValueChangeEl = document.getElementById("fobValueChange");
+      if (fobValueChangeEl) fobValueChangeEl.textContent = fobValueChange;
 
-      if (!playButton) {
-        console.warn('Play button not found; animation control will be unavailable.');
+      // Calculate change in number of nodes
+      let nodesChange = "-";
+      if (previousYear !== undefined) {
+        const previousData = validData.filter(
+          (row) => Number(row.refMonth) === Number(previousYear)
+        );
+        const previousNodeSet = new Set();
+        previousData.forEach((row) => {
+          previousNodeSet.add(row.reporterISO);
+          previousNodeSet.add(row.partnerISO);
+        });
+        const previousNodes = previousNodeSet.size;
+        const nodeDifference = totalNodes - previousNodes;
+        nodesChange =
+          nodeDifference >= 0 ? `+${nodeDifference}` : `${nodeDifference}`;
       }
+      const nodesChangeEl = document.getElementById("nodesChange");
+      if (nodesChangeEl) nodesChangeEl.textContent = nodesChange;
 
-      // Set up slider
-      yearSlider.min = 0;
-      yearSlider.max = years.length - 1;
-      yearSlider.value = years.length - 1; // Default to latest year
-      selectedYearEl.textContent = years[years.length - 1];
-
-      // Store node positions
-      let nodePositions = {};
-
-      // Helper function to format fobvalue compactly
-      const formatFobValue = (value) => {
-        if (value >= 1_000_000_000) {
-          return `USD ${(value / 1_000_000_000).toFixed(2)}B`;
-        } else if (value >= 1_000_000) {
-          return `USD ${(value / 1_000_000).toFixed(2)}M`;
-        } else if (value >= 1_000) {
-          return `USD ${(value / 1_000).toFixed(2)}K`;
-        }
-        return `USD ${value.toFixed(2)}`;
-      };
-
-      // Initialize network and datasets
-      const container = document.getElementById("graphtheory");
-      if (!container) throw new Error("Graph theory container not found");
-
-      // Global node ID mapping
-      const isoToNodeId = {};
-      let nextNodeId = 1;
-      validData.forEach(row => {
-        if (!isoToNodeId[row.reporterISO]) isoToNodeId[row.reporterISO] = nextNodeId++;
-        if (!isoToNodeId[row.partnerISO]) isoToNodeId[row.partnerISO] = nextNodeId++;
-      });
-
-      // Initialize DataSets
-      const nodesDataSet = new vis.DataSet([]);
-      const edgesDataSet = new vis.DataSet([]);
-      const graphData = { nodes: nodesDataSet, edges: edgesDataSet };
-
-      // Network options
-      const options = {
-        nodes: {
-          shape: 'dot',
-          font: { size: 12, face: 'Inter, sans-serif', color: '#00321f' }
-        },
-        edges: {
-          arrows: { to: { enabled: true, scaleFactor: 0.5 } },
-          color: { color: '#3b3c36' },
-          smooth: { type: 'continuous' },
-          font: { size: 10, face: 'Inter, sans-serif', align: 'middle' }
-        },
-        height: '100%',
-        width: '100%',
-        physics: {
-          enabled: physicsToggle ? physicsToggle.checked : true,
-          solver: 'barnesHut',
-          barnesHut: {
-            gravitationalConstant: -1200,
-            centralGravity: 0.1,
-            springLength: 150,
-            springConstant: 0.03,
-            damping: 0.2,
-            avoidOverlap: 0.3
-          },
-          maxVelocity: 50,
-          minVelocity: 0.1,
-          stabilization: {
-            enabled: true,
-            iterations: 200,
-            updateInterval: 25
-          }
-        },
-        interaction: {
-          dragNodes: true,
-          hover: true
-        }
-      };
-
-      // Initialize network
-      let network = new vis.Network(container, graphData, options);
-
-      // Debounce function
-      function debounce(func, wait) {
-        let timeout;
-        return function (...args) {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-      }
-
-      // Animation state
-      let isPlaying = false;
-      let animationInterval = null;
-
-      // Function to render graph and table for a given year
-      const renderGraphAndTable = (selectedYear) => {
-        // Filter data by selected year and limit to top 100 edges by fobvalue
-        let filteredData = validData.filter(row => Number(row.refMonth) === Number(selectedYear));
-        filteredData = filteredData.sort((a, b) => b.fobvalue - a.fobvalue).slice(0, 280);
-
-        // Determine trade types for each country
-        const tradeTypes = {};
-        filteredData.forEach(row => {
-          const reporter = row.reporterISO;
-          const partner = row.partnerISO;
-          if (!tradeTypes[reporter]) tradeTypes[reporter] = { hasExport: false, hasImport: false };
-          if (!tradeTypes[partner]) tradeTypes[partner] = { hasExport: false, hasImport: false };
-          if (row.reporterDesc === 'X') {
-            tradeTypes[reporter].hasExport = true;
-            tradeTypes[partner].hasImport = true;
-          } else if (row.reporterDesc === 'M') {
-            tradeTypes[reporter].hasImport = true;
-            tradeTypes[partner].hasExport = true;
-          }
-        });
-
-        // Create unique nodes
-        const nodeSet = new Set();
-        filteredData.forEach(row => {
-          nodeSet.add(row.reporterISO);
-          nodeSet.add(row.partnerISO);
-        });
-
-        // Calculate node degrees
-        const nodeDegrees = {};
-        filteredData.forEach(row => {
-          const reporter = row.reporterISO;
-          const partner = row.partnerISO;
-          if (!nodeDegrees[reporter]) nodeDegrees[reporter] = new Set();
-          if (!nodeDegrees[partner]) nodeDegrees[partner] = new Set();
-          nodeDegrees[reporter].add(partner);
-          nodeDegrees[partner].add(reporter);
-        });
-        for (const iso in nodeDegrees) {
-          nodeDegrees[iso] = nodeDegrees[iso].size;
-        }
-
-        // Determine min and max degrees for scaling
-        const degrees = Object.values(nodeDegrees);
-        const minDegree = Math.min(...degrees, 1);
-        const maxDegree = Math.max(...degrees, 1);
-        const minSize = 15;
-        const maxSize = 45;
-
-        // Prepare new nodes
-        const newNodes = Array.from(nodeSet).map(id => {
-          let backgroundColor = '#345f3c';
-          if (tradeTypes[id]) {
-            const { hasExport, hasImport } = tradeTypes[id];
-            if (hasExport && !hasImport) backgroundColor = '#BCB98A';
-            else if (!hasExport && hasImport) backgroundColor = '#345f3c';
-            else if (hasExport && hasImport) backgroundColor = '#fff8dc';
-          }
-          const degree = nodeDegrees[id] || 0;
-          let size = minSize;
-          if (maxDegree > minDegree) {
-            size = minSize + ((degree - minDegree) / (maxDegree - minDegree)) * (maxSize - minSize);
-          } else if (degree > 0) {
-            size = maxSize;
-          }
-          return {
-            id: isoToNodeId[id],
-            label: id,
-            title: id,
-            ...(nodePositions[id] ? { x: nodePositions[id].x, y: nodePositions[id].y } : {}),
-            color: { background: backgroundColor, border: '#2e4f36' },
-            size: size
-          };
-        });
-
-        // Calculate total nodes and FOB value
-        const totalNodes = nodeSet.size;
-        const totalFobValue = filteredData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
-
-        // Update table with stats
-        const totalNodesEl = document.getElementById("totalNodes");
-        const totalFobValueEl = document.getElementById("totalFobValue");
-        if (totalNodesEl) totalNodesEl.textContent = totalNodes;
-        if (totalFobValueEl) totalFobValueEl.textContent = formatFobValue(totalFobValue);
-
-        // Calculate FOB value for the previous year
-        const previousYear = years[years.indexOf(Number(selectedYear)) - 1];
-        let fobValueChange = '-';
-        if (previousYear !== undefined) {
-          const previousData = validData.filter(row => Number(row.refMonth) === Number(previousYear));
-          const previousFobValue = previousData.reduce((sum, row) => sum + Number(row.fobvalue), 0);
-          if (previousFobValue > 0) {
-            const percentageChange = ((totalFobValue - previousFobValue) / previousFobValue) * 100;
-            fobValueChange = percentageChange.toFixed(2) + '%';
-            if (percentageChange > 0) fobValueChange = '+' + fobValueChange;
-          }
-        }
-        const fobValueChangeEl = document.getElementById("fobValueChange");
-        if (fobValueChangeEl) fobValueChangeEl.textContent = fobValueChange;
-
-        // Calculate change in number of nodes
-        let nodesChange = '-';
-        if (previousYear !== undefined) {
-          const previousData = validData.filter(row => Number(row.refMonth) === Number(previousYear));
-          const previousNodeSet = new Set();
-          previousData.forEach(row => {
-            previousNodeSet.add(row.reporterISO);
-            previousNodeSet.add(row.partnerISO);
-          });
-          const previousNodes = previousNodeSet.size;
-          const nodeDifference = totalNodes - previousNodes;
-          nodesChange = nodeDifference >= 0 ? `+${nodeDifference}` : `${nodeDifference}`;
-        }
-        const nodesChangeEl = document.getElementById("nodesChange");
-        if (nodesChangeEl) nodesChangeEl.textContent = nodesChange;
-
-        // Prepare new edges
-        const maxFobValue = Math.max(...filteredData.map(row => row.fobvalue), 1);
-        const newEdges = filteredData.map((row, index) => {
-          const isExport = row.reporterDesc === 'X';
-          const isImport = row.reporterDesc === 'M';
+      // Prepare new edges
+      const maxFobValue = Math.max(
+        ...filteredData.map((row) => row.fobvalue),
+        1
+      );
+      const newEdges = filteredData
+        .map((row, index) => {
+          const isExport = row.reporterDesc === "X";
+          const isImport = row.reporterDesc === "M";
           return {
             id: `edge-${selectedYear}-${index}`,
-            from: isExport ? isoToNodeId[row.reporterISO] : isImport ? isoToNodeId[row.partnerISO] : undefined,
-            to: isExport ? isoToNodeId[row.partnerISO] : isImport ? isoToNodeId[row.reporterISO] : undefined,
-            arrows: 'to',
+            from: isExport
+              ? isoToNodeId[row.reporterISO]
+              : isImport
+              ? isoToNodeId[row.partnerISO]
+              : undefined,
+            to: isExport
+              ? isoToNodeId[row.partnerISO]
+              : isImport
+              ? isoToNodeId[row.reporterISO]
+              : undefined,
+            arrows: "to",
             width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
-            title: `FOB Value: ${row.fobvalue.toLocaleString('en-MY', { style: 'currency', currency: 'MYR' })}`,
-            label: '',
-            fobvalue: row.fobvalue
+            title: `FOB Value: ${row.fobvalue.toLocaleString("en-MY", {
+              style: "currency",
+              currency: "MYR",
+            })}`,
+            label: "",
+            fobvalue: row.fobvalue,
           };
-        }).filter(edge => edge.from && edge.to);
+        })
+        .filter((edge) => edge.from && edge.to);
 
-        // Update nodes
-        const currentNodeIds = nodesDataSet.getIds();
-        const newNodeIds = newNodes.map(n => n.id);
-        const nodesToRemove = currentNodeIds.filter(id => !newNodeIds.includes(id));
-        nodesDataSet.remove(nodesToRemove);
-        nodesDataSet.update(newNodes);
+      // Update nodes
+      const currentNodeIds = nodesDataSet.getIds();
+      const newNodeIds = newNodes.map((n) => n.id);
+      const nodesToRemove = currentNodeIds.filter(
+        (id) => !newNodeIds.includes(id)
+      );
+      nodesDataSet.remove(nodesToRemove);
+      nodesDataSet.update(newNodes);
 
-        // Update edges
-        const currentEdgeIds = edgesDataSet.getIds();
-        const newEdgeIds = newEdges.map(e => e.id);
-        const edgesToRemove = currentEdgeIds.filter(id => !newEdgeIds.includes(id));
-        edgesDataSet.remove(edgesToRemove);
-        edgesDataSet.add(newEdges);
+      // Update edges
+      const currentEdgeIds = edgesDataSet.getIds();
+      const newEdgeIds = newEdges.map((e) => e.id);
+      const edgesToRemove = currentEdgeIds.filter(
+        (id) => !newEdgeIds.includes(id)
+      );
+      edgesDataSet.remove(edgesToRemove);
+      edgesDataSet.add(newEdges);
 
-        // Update node positions after stabilization
-        network.on('stabilized', () => {
-          newNodes.forEach(node => {
-            const pos = network.getPositions([node.id])[node.id];
-            if (pos) {
-              nodePositions[node.label] = { x: pos.x, y: pos.y };
-            }
-          });
-          //console.log(`Graph stabilized for year ${selectedYear}`);
+      // Update node positions after stabilization
+      network.on("stabilized", () => {
+        newNodes.forEach((node) => {
+          const pos = network.getPositions([node.id])[node.id];
+          if (pos) {
+            nodePositions[node.label] = { x: pos.x, y: pos.y };
+          }
+        });
+        //console.log(`Graph stabilized for year ${selectedYear}`);
+        network.stopSimulation();
+      });
+
+      // Force stop physics after 1 second
+      setTimeout(() => {
+        if (network) {
           network.stopSimulation();
-        });
-
-        // Force stop physics after 1 second
-        setTimeout(() => {
-          if (network) {
-            network.stopSimulation();
-            //console.log(`Physics stopped for year ${selectedYear} after timeout`);
-          }
-        }, 1200);
-      };
-
-      // Initial render
-      renderGraphAndTable(years[years.length - 1]);
-
-      // Animation control
-      const toggleAnimation = () => {
-        if (isPlaying) {
-          clearInterval(animationInterval);
-          animationInterval = null;
-          isPlaying = false;
-          if (playButton) playButton.textContent = '▶️ Play';
-          console.log('Animation stopped');
-        } else {
-          isPlaying = true;
-          if (playButton) playButton.textContent = '⏸️ Pause';
-          let currentIndex = parseInt(yearSlider.value);
-          animationInterval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % years.length; // Loop back to start
-            yearSlider.value = currentIndex;
-            selectedYearEl.textContent = years[currentIndex];
-            renderGraphAndTable(years[currentIndex]);
-          }, 1500); // 1 second per year
-          console.log('Animation started');
+          //console.log(`Physics stopped for year ${selectedYear} after timeout`);
         }
-      };
+      }, 1200);
+    };
 
-      // Play button event listener
-      if (playButton) {
-        playButton.addEventListener('click', toggleAnimation);
-      }
+    // Initial render
+    renderGraphAndTable(years[years.length - 1]);
 
-      // Debounced slider event listener
-      const debouncedRender = debounce((selectedIndex) => {
-        if (isPlaying) {
-          toggleAnimation(); // Stop animation on manual slider interaction
-        }
-        selectedYearEl.textContent = years[selectedIndex];
-        renderGraphAndTable(years[selectedIndex]);
-      }, 100);
-
-      yearSlider.addEventListener('input', () => {
-        const selectedIndex = parseInt(yearSlider.value);
-        debouncedRender(selectedIndex);
-      });
-
-      // Physics toggle event listener
-      if (physicsToggle) {
-        physicsToggle.addEventListener('change', () => {
-          if (network) {
-            network.setOptions({ physics: { enabled: physicsToggle.checked } });
-            if (!physicsToggle.checked) {
-              network.stopSimulation();
-              console.log('Physics disabled via toggle');
-            } else {
-              console.log('Physics enabled via toggle');
-            }
-          }
-        });
+    // Animation control
+    const toggleAnimation = () => {
+      if (isPlaying) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+        isPlaying = false;
+        if (playButton) playButton.textContent = "▶️ Play";
+        console.log("Animation stopped");
       } else {
-        console.warn('Physics toggle not found; defaulting to static graph');
+        isPlaying = true;
+        if (playButton) playButton.textContent = "⏸️ Pause";
+        let currentIndex = parseInt(yearSlider.value);
+        animationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % years.length; // Loop back to start
+          yearSlider.value = currentIndex;
+          selectedYearEl.textContent = years[currentIndex];
+          renderGraphAndTable(years[currentIndex]);
+        }, 1500); // 1 second per year
+        console.log("Animation started");
       }
+    };
 
-      // Hover edge events
-      network.on('hoverEdge', (event) => {
-        const edgeId = event.edge;
-        const edge = edgesDataSet.get(edgeId);
-        if (edge && edge.fobvalue !== undefined) {
-          edgesDataSet.update({
-            id: edgeId,
-            label: formatFobValue(edge.fobvalue),
-            font: { color: '#000', strokeWidth: 0, align: 'top' }
-          });
+    // Play button event listener
+    if (playButton) {
+      playButton.addEventListener("click", toggleAnimation);
+    }
+
+    // Debounced slider event listener
+    const debouncedRender = debounce((selectedIndex) => {
+      if (isPlaying) {
+        toggleAnimation(); // Stop animation on manual slider interaction
+      }
+      selectedYearEl.textContent = years[selectedIndex];
+      renderGraphAndTable(years[selectedIndex]);
+    }, 100);
+
+    yearSlider.addEventListener("input", () => {
+      const selectedIndex = parseInt(yearSlider.value);
+      debouncedRender(selectedIndex);
+    });
+
+    // Physics toggle event listener
+    if (physicsToggle) {
+      physicsToggle.addEventListener("change", () => {
+        if (network) {
+          network.setOptions({ physics: { enabled: physicsToggle.checked } });
+          if (!physicsToggle.checked) {
+            network.stopSimulation();
+            console.log("Physics disabled via toggle");
+          } else {
+            console.log("Physics enabled via toggle");
+          }
         }
       });
+    } else {
+      console.warn("Physics toggle not found; defaulting to static graph");
+    }
 
-      network.on('blurEdge', (event) => {
-        const edgeId = event.edge;
+    // Hover edge events
+    network.on("hoverEdge", (event) => {
+      const edgeId = event.edge;
+      const edge = edgesDataSet.get(edgeId);
+      if (edge && edge.fobvalue !== undefined) {
         edgesDataSet.update({
           id: edgeId,
-          label: '',
-          font: { color: 'rgba(0,0,0,0)', strokeWidth: 0 }
+          label: formatFobValue(edge.fobvalue),
+          font: { color: "#000", strokeWidth: 0, align: "top" },
         });
+      }
+    });
+
+    network.on("blurEdge", (event) => {
+      const edgeId = event.edge;
+      edgesDataSet.update({
+        id: edgeId,
+        label: "",
+        font: { color: "rgba(0,0,0,0)", strokeWidth: 0 },
       });
+    });
 
-      // Debug: Log drag events
-      network.on('dragEnd', () => {
-        console.log('Node dragged, physics should respond with bounce');
-      });
+    // Debug: Log drag events
+    network.on("dragEnd", () => {
+      console.log("Node dragged, physics should respond with bounce");
+    });
 
-      // Existing export/import charts
-      const res = await fetch(BACKEND_URL + "/exim-data");
-      if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
-      const chartData = await res.json();
+    // Existing export/import charts
+    const res = await fetch(BACKEND_URL + "/exim-data");
+    if (!res.ok) throw new Error(`Failed to fetch exim data: ${res.status}`);
+    const chartData = await res.json();
 
-      const labels = chartData.date;
-      const animal_exports = chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
-      const animal_imports = chartData.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
-      const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
-      const chemical_exports = chartData.exports_Chemical_and_Related_Products_NEC;
-      const chemical_imports = chartData.imports_Chemical_and_Related_Products_NEC;
-      const chemical_net = chemical_exports.map((val, i) => val - chemical_imports[i]);
+    const labels = chartData.date;
+    const animal_exports =
+      chartData.exports_Animal_Vegetable_Oils_Fats_and_Waxes;
+    const animal_imports =
+      chartData.imports_Animal_Vegetable_Oils_Fats_and_Waxes;
+    const animal_net = animal_exports.map((val, i) => val - animal_imports[i]);
+    const chemical_exports =
+      chartData.exports_Chemical_and_Related_Products_NEC;
+    const chemical_imports =
+      chartData.imports_Chemical_and_Related_Products_NEC;
+    const chemical_net = chemical_exports.map(
+      (val, i) => val - chemical_imports[i]
+    );
 
-      const ctx1 = document.getElementById("4th-chart")?.getContext("2d");
-      if (!ctx1) throw new Error("4th-chart canvas context not found");
+    const ctx1 = document.getElementById("4th-chart")?.getContext("2d");
+    if (!ctx1) throw new Error("4th-chart canvas context not found");
 
-      if (eximChart1) eximChart1.destroy();
+    if (eximChart1) eximChart1.destroy();
 
-      eximChart1 = new Chart(ctx1, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "Net Trade",
-              data: animal_net,
-              backgroundColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"),
-              borderColor: animal_net.map(v => v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"),
-              borderWidth: 1,
-              type: 'bar',
-              yAxisID: 'y'
-            },
-            {
-              label: "Exports",
-              data: animal_exports,
-              borderColor: "rgba(1,68,34,0.8)",
-              backgroundColor: "rgba(1,68,34,0.1)",
-              type: "line",
-              yAxisID: 'y'
-            },
-            {
-              label: "Imports",
-              data: animal_imports,
-              borderColor: "rgba(137,154,92,0.8)",
-              backgroundColor: "rgba(137,154,92,0.1)",
-              type: "line",
-              yAxisID: 'y'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "top",
-              labels: {
-                generateLabels: function(chart) {
-                  const datasets = chart.data.datasets;
-                  return datasets.map((dataset, i) => {
-                    if (dataset.label === "Net Trade") {
-                      const netValue = dataset.data.find(v => v !== 0) || 0;
-                      return {
-                        text: netValue >= 0 ? "Net Export" : "Net Import",
-                        fillStyle: dataset.backgroundColor[0],
-                        strokeStyle: dataset.borderColor[0],
-                        lineWidth: dataset.borderWidth,
-                        hidden: !chart.isDatasetVisible(i),
-                        datasetIndex: i
-                      };
-                    }
+    eximChart1 = new Chart(ctx1, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Net Trade",
+            data: animal_net,
+            backgroundColor: animal_net.map((v) =>
+              v >= 0 ? "rgba(75, 192, 192, 0.5)" : "rgba(255, 99, 132, 0.5)"
+            ),
+            borderColor: animal_net.map((v) =>
+              v >= 0 ? "rgba(75, 192, 192, 1)" : "rgba(255, 99, 132, 1)"
+            ),
+            borderWidth: 1,
+            type: "bar",
+            yAxisID: "y",
+          },
+          {
+            label: "Exports",
+            data: animal_exports,
+            borderColor: "rgba(1,68,34,0.8)",
+            backgroundColor: "rgba(1,68,34,0.1)",
+            type: "line",
+            yAxisID: "y",
+          },
+          {
+            label: "Imports",
+            data: animal_imports,
+            borderColor: "rgba(137,154,92,0.8)",
+            backgroundColor: "rgba(137,154,92,0.1)",
+            type: "line",
+            yAxisID: "y",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              generateLabels: function (chart) {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset, i) => {
+                  if (dataset.label === "Net Trade") {
+                    const netValue = dataset.data.find((v) => v !== 0) || 0;
                     return {
-                      text: dataset.label,
-                      fillStyle: dataset.backgroundColor,
-                      strokeStyle: dataset.borderColor,
+                      text: netValue >= 0 ? "Net Export" : "Net Import",
+                      fillStyle: dataset.backgroundColor[0],
+                      strokeStyle: dataset.borderColor[0],
                       lineWidth: dataset.borderWidth,
                       hidden: !chart.isDatasetVisible(i),
-                      datasetIndex: i
+                      datasetIndex: i,
                     };
-                  });
-                }
-              }
-            }
+                  }
+                  return {
+                    text: dataset.label,
+                    fillStyle: dataset.backgroundColor,
+                    strokeStyle: dataset.borderColor,
+                    lineWidth: dataset.borderWidth,
+                    hidden: !chart.isDatasetVisible(i),
+                    datasetIndex: i,
+                  };
+                });
+              },
+            },
           },
-          scales: {
-            x: { title: { display: true, text: "Date" }, grid: { display: false } },
-            y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
-          }
-        }
-      });
-
-      const ctx2 = document.getElementById("5th-chart")?.getContext("2d");
-      if (!ctx2) throw new Error("5th-chart canvas context not found");
-
-      if (eximChart2) eximChart2.destroy();
-
-      eximChart2 = new Chart(ctx2, {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "Net Trade",
-              data: chemical_net,
-              backgroundColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"),
-              borderColor: chemical_net.map(v => v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"),
-              borderWidth: 1,
-              type: 'bar',
-              yAxisID: 'y'
-            },
-            {
-              label: "Exports",
-              data: chemical_exports,
-              borderColor: "rgba(1,68,34,0.8)",
-              backgroundColor: "rgba(1,68,34,0.1)",
-              type: "line",
-              yAxisID: 'y'
-            },
-            {
-              label: "Imports",
-              data: chemical_imports,
-              borderColor: "rgba(137,154,92,0.8)",
-              backgroundColor: "rgba(137,154,92,0.1)",
-              type: "line",
-              yAxisID: 'y'
-            }
-          ]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: "top",
-              labels: {
-                generateLabels: function(chart) {
-                  const datasets = chart.data.datasets;
-                  return datasets.map((dataset, i) => {
-                    if (dataset.label === "Net Trade") {
-                      const netValue = dataset.data.find(v => v !== 0) || 0;
-                      return {
-                        text: netValue >= 0 ? "Net Export" : "Net Import",
-                        fillStyle: dataset.backgroundColor[0],
-                        strokeStyle: dataset.borderColor[0],
-                        lineWidth: dataset.borderWidth,
-                        hidden: !chart.isDatasetVisible(i),
-                        datasetIndex: i
-                      };
-                    }
+        scales: {
+          x: {
+            title: { display: true, text: "Date" },
+            grid: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Value (RM)" },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+
+    const ctx2 = document.getElementById("5th-chart")?.getContext("2d");
+    if (!ctx2) throw new Error("5th-chart canvas context not found");
+
+    if (eximChart2) eximChart2.destroy();
+
+    eximChart2 = new Chart(ctx2, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Net Trade",
+            data: chemical_net,
+            backgroundColor: chemical_net.map((v) =>
+              v >= 0 ? "rgba(153, 102, 255, 0.5)" : "rgba(255, 159, 64, 0.5)"
+            ),
+            borderColor: chemical_net.map((v) =>
+              v >= 0 ? "rgba(153, 102, 255, 1)" : "rgba(255, 159, 64, 1)"
+            ),
+            borderWidth: 1,
+            type: "bar",
+            yAxisID: "y",
+          },
+          {
+            label: "Exports",
+            data: chemical_exports,
+            borderColor: "rgba(1,68,34,0.8)",
+            backgroundColor: "rgba(1,68,34,0.1)",
+            type: "line",
+            yAxisID: "y",
+          },
+          {
+            label: "Imports",
+            data: chemical_imports,
+            borderColor: "rgba(137,154,92,0.8)",
+            backgroundColor: "rgba(137,154,92,0.1)",
+            type: "line",
+            yAxisID: "y",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              generateLabels: function (chart) {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset, i) => {
+                  if (dataset.label === "Net Trade") {
+                    const netValue = dataset.data.find((v) => v !== 0) || 0;
                     return {
-                      text: dataset.label,
-                      fillStyle: dataset.backgroundColor,
-                      strokeStyle: dataset.borderColor,
+                      text: netValue >= 0 ? "Net Export" : "Net Import",
+                      fillStyle: dataset.backgroundColor[0],
+                      strokeStyle: dataset.borderColor[0],
                       lineWidth: dataset.borderWidth,
                       hidden: !chart.isDatasetVisible(i),
-                      datasetIndex: i
+                      datasetIndex: i,
                     };
-                  });
-                }
-              }
-            }
+                  }
+                  return {
+                    text: dataset.label,
+                    fillStyle: dataset.backgroundColor,
+                    strokeStyle: dataset.borderColor,
+                    lineWidth: dataset.borderWidth,
+                    hidden: !chart.isDatasetVisible(i),
+                    datasetIndex: i,
+                  };
+                });
+              },
+            },
           },
-          scales: {
-            x: { title: { display: true, text: "Date" }, grid: { display: false } },
-            y: { beginAtZero: true, title: { display: true, text: "Value (RM)" }, grid: { display: false } }
-          }
-        }
-      });
-    } catch (error) {
-      console.error("Error initializing Export Import charts:", error);
-    }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Date" },
+            grid: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: "Value (RM)" },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error initializing Export Import charts:", error);
   }
+}
 
-  // Function to toggle chart visibility
-  function toggleChart() {
-    const select = document.getElementById("chart-select");
-    const selectedChart = select.value;
-    const chart4 = document.getElementById("4th-chart");
-    const chart5 = document.getElementById("5th-chart");
+// Function to toggle chart visibility
+function toggleChart() {
+  const select = document.getElementById("chart-select");
+  const selectedChart = select.value;
+  const chart4 = document.getElementById("4th-chart");
+  const chart5 = document.getElementById("5th-chart");
 
-    if (selectedChart === "4th-chart") {
-      chart4.style.display = "block";
-      chart5.style.display = "none";
-    } else {
-      chart4.style.display = "none";
-      chart5.style.display = "block";
-    }
+  if (selectedChart === "4th-chart") {
+    chart4.style.display = "block";
+    chart5.style.display = "none";
+  } else {
+    chart4.style.display = "none";
+    chart5.style.display = "block";
   }
+}
 
-  // Initialize everything
-  initExportImport();
+// Initialize everything
+initExportImport();
 
 let map;
 let forecastLayer = null;
@@ -1786,41 +2019,49 @@ let millCluster = null;
 
 async function initMpobStats() {
   const mapContainer = document.getElementById("map");
-if (!mapContainer) return;
+  if (!mapContainer) return;
 
-// Define base layers
-const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: 'Map data © OpenStreetMap contributors'
-});
+  // Define base layers
+  const osm = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution: "Map data © OpenStreetMap contributors",
+    }
+  );
 
-const esriSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-  attribution: 'Tiles © Esri'
-});
+  const esriSat = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution: "Tiles © Esri",
+    }
+  );
 
-const esriTopo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
-  attribution: 'Tiles © Esri'
-});
+  const esriTopo = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution: "Tiles © Esri",
+    }
+  );
 
-// Initialize map with default base layer
-let map = L.map("map", {
-  center: [4.310756684156521, 108.3481479634814],
-  zoom: 6,
-  layers: [osm]  // default base layer
-});
+  // Initialize map with default base layer
+  let map = L.map("map", {
+    center: [4.310756684156521, 108.3481479634814],
+    zoom: 6,
+    layers: [osm], // default base layer
+  });
 
-let forecastLayer = null;
-let millCluster = null;
-let layerControl = null;
+  let forecastLayer = null;
+  let millCluster = null;
+  let layerControl = null;
 
-// Add base layer switcher
-const baseLayers = {
-  "🗺️ Streets (OSM)": osm,
-  "🛰️ Satellite (Esri)": esriSat,
-  "🏞️ Terrain (Esri Topo)": esriTopo
-};
+  // Add base layer switcher
+  const baseLayers = {
+    "🗺️ Streets (OSM)": osm,
+    "🛰️ Satellite (Esri)": esriSat,
+    "🏞️ Terrain (Esri Topo)": esriTopo,
+  };
 
-// Add legend control, overlays, etc. (your original code continues below)
-
+  // Add legend control, overlays, etc. (your original code continues below)
 
   // Legend for Palm Oil Estates
   const legend = L.control({ position: "bottomright" });
@@ -1878,19 +2119,24 @@ const baseLayers = {
   // Color mapping by forecast type
   function getColor(forecast) {
     switch ((forecast || "").toLowerCase()) {
-      case "tiada hujan": return "green";
-      case "berangin": return "yellow";
-      case "hujan": return "orange";
-      case "ribut petir": return "red";
-      default: return "gray";
+      case "tiada hujan":
+        return "green";
+      case "berangin":
+        return "yellow";
+      case "hujan":
+        return "orange";
+      case "ribut petir":
+        return "red";
+      default:
+        return "gray";
     }
   }
 
   // Load forecast GeoJSON
   let allForecastData = [];
   fetch(BACKEND_URL + "/rsposhapefile")
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       allForecastData = data.features || [];
       if (!allForecastData.length) {
         console.warn("No forecast data found");
@@ -1900,10 +2146,12 @@ const baseLayers = {
       updateForecastLayer(getUniqueDates()[0]);
       loadMillData(); // Load mill data after forecast data
     })
-    .catch(error => console.error("Error fetching RSPO shapefile with forecast:", error));
+    .catch((error) =>
+      console.error("Error fetching RSPO shapefile with forecast:", error)
+    );
 
   function getUniqueDates() {
-    const dates = [...new Set(allForecastData.map(f => f.properties.date))];
+    const dates = [...new Set(allForecastData.map((f) => f.properties.date))];
     return dates.sort();
   }
 
@@ -1931,10 +2179,12 @@ const baseLayers = {
       forecastLayer = L.layerGroup().addTo(map);
     }
 
-    const filtered = allForecastData.filter(f => f.properties.date === selectedDate);
+    const filtered = allForecastData.filter(
+      (f) => f.properties.date === selectedDate
+    );
 
     // Create all markers
-    const markers = filtered.map(feature => {
+    const markers = filtered.map((feature) => {
       const props = feature.properties;
       const lat = props.Latitude;
       const lng = props.Longitude;
@@ -1946,7 +2196,7 @@ const baseLayers = {
         color: "#333",
         weight: 0.7,
         opacity: 1,
-        fillOpacity: 0.8
+        fillOpacity: 0.8,
       });
 
       const tooltipContent = `
@@ -1959,17 +2209,17 @@ const baseLayers = {
       `;
 
       marker.bindTooltip(tooltipContent, {
-        direction: 'top',
+        direction: "top",
         sticky: true,
         opacity: 0.9,
-        className: 'leaflet-tooltip'
+        className: "leaflet-tooltip",
       });
 
       return marker;
     });
 
     // Add markers to the forecast layer
-    markers.forEach(marker => forecastLayer.addLayer(marker));
+    markers.forEach((marker) => forecastLayer.addLayer(marker));
 
     // Add layer control if not already added
     addLayerControl();
@@ -1977,8 +2227,8 @@ const baseLayers = {
 
   function loadMillData() {
     fetch(BACKEND_URL + "/mills")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         millCluster = L.markerClusterGroup();
 
         const millLayer = L.geoJSON(data, {
@@ -1986,10 +2236,10 @@ const baseLayers = {
             return L.marker(latlng, {
               icon: L.divIcon({
                 html: '<i class="fas fa-industry" style="color: brown; font-size: 18px;"></i>',
-                className: '',
+                className: "",
                 iconSize: [20, 20],
-                iconAnchor: [10, 10]
-              })
+                iconAnchor: [10, 10],
+              }),
             });
           },
           onEachFeature: function (feature, layer) {
@@ -2001,11 +2251,11 @@ const baseLayers = {
               <b>RSPO:</b> ${props.RSPO_Statu}
             `;
             layer.bindTooltip(tooltip, {
-              direction: 'top',
+              direction: "top",
               sticky: true,
-              className: 'leaflet-tooltip'
+              className: "leaflet-tooltip",
             });
-          }
+          },
         });
 
         millCluster.addLayer(millLayer);
@@ -2014,20 +2264,20 @@ const baseLayers = {
         // Add layer control after mill data is loaded
         addLayerControl();
       })
-      .catch(err => console.error("Error fetching mill data:", err));
+      .catch((err) => console.error("Error fetching mill data:", err));
   }
 
   function addLayerControl() {
     if (forecastLayer && millCluster && !layerControl) {
       const overlayMaps = {
         "🌿 Palm Oil Estates (RSPO)": forecastLayer,
-        "🏭 Palm Oil Mills": millCluster
+        "🏭 Palm Oil Mills": millCluster,
       };
 
       // Create the layer control
       layerControl = L.control.layers(baseLayers, overlayMaps, {
-        position: 'topright',
-        collapsed: true // Start collapsed
+        position: "topright",
+        collapsed: true, // Start collapsed
       });
 
       // Add the control to the map
@@ -2035,35 +2285,35 @@ const baseLayers = {
 
       // Customize the layer control container
       const controlContainer = layerControl.getContainer();
-      controlContainer.classList.add('custom-layer-control');
+      controlContainer.classList.add("custom-layer-control");
 
       // Create a toggle button/ribbon
-      const toggleButton = document.createElement('div');
-      toggleButton.className = 'layer-control-toggle';
+      const toggleButton = document.createElement("div");
+      toggleButton.className = "layer-control-toggle";
       toggleButton.innerHTML = '<i class="fas fa-layer-group"></i>'; // Font Awesome icon
-      toggleButton.title = 'Toggle Layer Control';
+      toggleButton.title = "Toggle Layer Control";
 
       // Append toggle button to the map container
       const mapContainer = map.getContainer();
       mapContainer.appendChild(toggleButton);
 
       // Toggle visibility on click
-      toggleButton.addEventListener('click', () => {
-        controlContainer.classList.toggle('collapsed');
-        toggleButton.classList.toggle('active');
+      toggleButton.addEventListener("click", () => {
+        controlContainer.classList.toggle("collapsed");
+        toggleButton.classList.toggle("active");
       });
 
       // Show on hover
-      toggleButton.addEventListener('mouseenter', () => {
-        if (controlContainer.classList.contains('collapsed')) {
-          controlContainer.classList.remove('collapsed');
+      toggleButton.addEventListener("mouseenter", () => {
+        if (controlContainer.classList.contains("collapsed")) {
+          controlContainer.classList.remove("collapsed");
         }
       });
 
       // Hide on mouse leave (unless clicked to stay open)
-      controlContainer.addEventListener('mouseleave', () => {
-        if (!toggleButton.classList.contains('active')) {
-          controlContainer.classList.add('collapsed');
+      controlContainer.addEventListener("mouseleave", () => {
+        if (!toggleButton.classList.contains("active")) {
+          controlContainer.classList.add("collapsed");
         }
       });
     }
@@ -2072,58 +2322,63 @@ const baseLayers = {
   // Weather slider
   async function fetchWeatherData() {
     try {
-      const response = await fetch(BACKEND_URL + '/weather_forecast_summary');
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch(BACKEND_URL + "/weather_forecast_summary");
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      return data.map(item => ({
+      return data.map((item) => ({
         date: item.date,
-        TiadaHujan: item['Tiada Hujan'] || 0,
+        TiadaHujan: item["Tiada Hujan"] || 0,
         Berangin: item.Berangin || 0,
         Hujan: item.Hujan || 0,
-        RibutPetir: item['Ribut Petir'] || 0
+        RibutPetir: item["Ribut Petir"] || 0,
       }));
     } catch (error) {
-      console.error('Error fetching weather data:', error);
+      console.error("Error fetching weather data:", error);
       return [];
     }
   }
 
   async function initializeWeatherDropdown() {
     const weatherData = await fetchWeatherData();
-    const dropdown = document.getElementById('date-select');
-    const dateDisplay = document.getElementById('selected-date'); // Optional
+    const dropdown = document.getElementById("date-select");
+    const dateDisplay = document.getElementById("selected-date"); // Optional
 
     if (!dropdown || weatherData.length === 0) {
-      console.error('Weather dropdown element or data missing');
+      console.error("Weather dropdown element or data missing");
       return;
     }
 
     // Populate dropdown options
-    dropdown.innerHTML = ''; // Clear existing options
+    dropdown.innerHTML = ""; // Clear existing options
     weatherData.forEach((item, index) => {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = index;
-      option.textContent = item.date.split('T')[0];
+      option.textContent = item.date.split("T")[0];
       dropdown.appendChild(option);
     });
 
     // Update UI values
     function updateDisplay(selectedIndex) {
       const selectedData = weatherData[selectedIndex];
-      const date = selectedData.date.split('T')[0];
+      const date = selectedData.date.split("T")[0];
 
       if (dateDisplay) dateDisplay.textContent = date;
-      document.getElementById('tiada-hujan-value').textContent = selectedData.TiadaHujan || 0;
-      document.getElementById('berangin-value').textContent = selectedData.Berangin || 0;
-      document.getElementById('hujan-value').textContent = selectedData.Hujan || 0;
-      document.getElementById('ribut-petir-value').textContent = selectedData.RibutPetir || 0;
+      document.getElementById("tiada-hujan-value").textContent =
+        selectedData.TiadaHujan || 0;
+      document.getElementById("berangin-value").textContent =
+        selectedData.Berangin || 0;
+      document.getElementById("hujan-value").textContent =
+        selectedData.Hujan || 0;
+      document.getElementById("ribut-petir-value").textContent =
+        selectedData.RibutPetir || 0;
     }
 
     // Initial display
     updateDisplay(0);
 
     // On change event
-    dropdown.addEventListener('change', function () {
+    dropdown.addEventListener("change", function () {
       updateDisplay(parseInt(this.value));
     });
   }
@@ -2132,19 +2387,25 @@ const baseLayers = {
 
   // Normalize data to percentages for 100% stacked bar chart
   function normalizeData(data) {
-    const normalizedDatasets = data.datasets.map(dataset => ({ ...dataset, data: [...dataset.data] }));
+    const normalizedDatasets = data.datasets.map((dataset) => ({
+      ...dataset,
+      data: [...dataset.data],
+    }));
     const labels = data.labels;
 
     // Calculate total for each label (company)
     const totals = labels.map((_, index) => {
-      return data.datasets.reduce((sum, dataset) => sum + (dataset.data[index] || 0), 0);
+      return data.datasets.reduce(
+        (sum, dataset) => sum + (dataset.data[index] || 0),
+        0
+      );
     });
 
     // Normalize each dataset to percentages
-    normalizedDatasets.forEach(dataset => {
+    normalizedDatasets.forEach((dataset) => {
       dataset.data = dataset.data.map((value, index) => {
         const total = totals[index];
-        return total > 0 ? (value / total * 100).toFixed(2) : 0;
+        return total > 0 ? ((value / total) * 100).toFixed(2) : 0;
       });
     });
 
@@ -2158,9 +2419,9 @@ const baseLayers = {
   async function initRiskChart() {
     try {
       const [cfrData, rfrData, drrData] = await Promise.all([
-        fetch(BACKEND_URL + "/cfr-bar-top6").then(res => res.json()),
-        fetch(BACKEND_URL + "/rfr-bar-top6").then(res => res.json()),
-        fetch(BACKEND_URL + "/drr-bar-top6").then(res => res.json())
+        fetch(BACKEND_URL + "/cfr-bar-top6").then((res) => res.json()),
+        fetch(BACKEND_URL + "/rfr-bar-top6").then((res) => res.json()),
+        fetch(BACKEND_URL + "/drr-bar-top6").then((res) => res.json()),
       ]);
 
       // Normalize data to percentages
@@ -2176,23 +2437,26 @@ const baseLayers = {
 
       // Initialize Chart.js instance as 100% stacked bar chart
       riskChart = new Chart(ctx, {
-        type: 'bar',
+        type: "bar",
         data: riskData.cfr,
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { position: 'right' },
-            title: { display: true, text: 'Major Plantation Companies with Coastal Flood Risks Composition' },
+            legend: { position: "right" },
+            title: {
+              display: true,
+              text: "Major Plantation Companies with Coastal Flood Risks Composition",
+            },
             tooltip: {
               callbacks: {
-                label: function(context) {
-                  const label = context.dataset.label || '';
+                label: function (context) {
+                  const label = context.dataset.label || "";
                   const value = context.parsed.y;
                   return `${label}: ${value}%`;
-                }
-              }
-            }
+                },
+              },
+            },
           },
           scales: {
             x: {
@@ -2203,37 +2467,37 @@ const baseLayers = {
                 maxTicksLimit: 10,
                 maxRotation: 45,
                 minRotation: 0,
-                font: { size: 12 }
-              }
+                font: { size: 12 },
+              },
             },
             y: {
               stacked: true,
               beginAtZero: true,
               max: 100,
-              title: { display: true, text: 'Percentage (%)' },
+              title: { display: true, text: "Percentage (%)" },
               grid: { display: false },
               ticks: {
-                callback: function(value) {
-                  return value + '%';
-                }
-              }
-            }
+                callback: function (value) {
+                  return value + "%";
+                },
+              },
+            },
           },
           layout: {
             padding: {
               top: 10,
               bottom: 50,
               left: 10,
-              right: 10
-            }
-          }
-        }
+              right: 10,
+            },
+          },
+        },
       });
 
       // Set up dropdown event listener
       const select = document.getElementById("risk-select");
       if (select) {
-        select.addEventListener('change', updateRiskChart);
+        select.addEventListener("change", updateRiskChart);
       } else {
         console.error("Dropdown element risk-select not found");
       }
@@ -2242,34 +2506,34 @@ const baseLayers = {
     }
   }
 
-      function updateRiskChart() {
-      const select = document.getElementById("risk-select");
-      const title = document.getElementById("risk-chart-title");
-      const description = document.getElementById("risk-description"); // new paragraph element
-      const selectedRisk = select.value;
+  function updateRiskChart() {
+    const select = document.getElementById("risk-select");
+    const title = document.getElementById("risk-chart-title");
+    const description = document.getElementById("risk-description"); // new paragraph element
+    const selectedRisk = select.value;
 
-      const titles = {
-        cfr: "Coastal Flood Risk Composition",
-        rfr: "Riverine Flood Risk Composition",
-        drr: "Drought Risk Composition"
-      };
+    const titles = {
+      cfr: "Coastal Flood Risk Composition",
+      rfr: "Riverine Flood Risk Composition",
+      drr: "Drought Risk Composition",
+    };
 
-      const descriptions = {
-        cfr: "Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.",
-        rfr: "Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.",
-        drr: "Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity."
-      };
+    const descriptions = {
+      cfr: "Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.",
+      rfr: "Riverine floods occur when rivers overflow due to prolonged rainfall. High risk is concentrated around major river basins and low-lying inland areas.",
+      drr: "Drought risk refers to potential water shortages due to low rainfall. This affects crop health, irrigation, and productivity.",
+    };
 
-      if (riskChart && riskData[selectedRisk]) {
-        riskChart.data = riskData[selectedRisk];
-        riskChart.options.plugins.title.text = `Major Plantation Companies with ${titles[selectedRisk]}`;
-        title.textContent = titles[selectedRisk];              // just text, no span/svg
-        if (description) description.textContent = descriptions[selectedRisk];
-        riskChart.update();
-      } else {
-        console.error("Chart or data not available for", selectedRisk);
-      }
+    if (riskChart && riskData[selectedRisk]) {
+      riskChart.data = riskData[selectedRisk];
+      riskChart.options.plugins.title.text = `Major Plantation Companies with ${titles[selectedRisk]}`;
+      title.textContent = titles[selectedRisk]; // just text, no span/svg
+      if (description) description.textContent = descriptions[selectedRisk];
+      riskChart.update();
+    } else {
+      console.error("Chart or data not available for", selectedRisk);
     }
+  }
 
   // Call the initialization function
   initRiskChart();
@@ -2285,11 +2549,11 @@ let exportimportInitialized = false;
 let mpobstatsInitialized = false;
 
 function showTab(tabId) {
-  tabContents.forEach(section => {
+  tabContents.forEach((section) => {
     section.classList.toggle("hidden", section.id !== tabId);
   });
 
-  tabs.forEach(tab => {
+  tabs.forEach((tab) => {
     tab.classList.toggle("font-semibold", tab.dataset.tab === tabId);
     tab.classList.toggle("text-green-600", tab.dataset.tab === tabId);
     tab.classList.toggle("dark:text-green-400", tab.dataset.tab === tabId);
@@ -2310,13 +2574,17 @@ function showTab(tabId) {
   } else if (tabId === "mpobstats" && !mpobstatsInitialized) {
     initMpobStats();
     mpobstatsInitialized = true;
-    setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+    setTimeout(() => {
+      if (map) map.invalidateSize();
+    }, 100);
   } else if (tabId === "mpobstats" && map) {
-    setTimeout(() => { map.invalidateSize(); }, 100);
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
   }
 }
 
-tabs.forEach(tab => {
+tabs.forEach((tab) => {
   tab.addEventListener("click", (e) => {
     e.preventDefault();
     showTab(tab.dataset.tab);
