@@ -1,6 +1,6 @@
-const BACKEND_URL = window.location.hostname === "localhost"
-  ? "http://localhost:8000"
-  : "https://bursa-palmai.onrender.com";
+//const BACKEND_URL = "/api";
+//const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = "https://bursa-palmai.onrender.com";
 
 // MAINPAGE INITIALIZATION
 function initMainpage() {
@@ -84,11 +84,24 @@ function initMainpage() {
             const value = dataset.data[dataset.data.length - 1];
             const roundedValue = parseFloat(value).toFixed(2);
 
+            // 1️⃣ Draw KLCI latest value label above line
             ctx.save();
             ctx.font = "bold 12px Inter";
             ctx.fillStyle = "#014422";
+            ctx.textAlign = "right";
+            ctx.fillText(roundedValue, lastPoint.x - 8, lastPoint.y - 8);
+            ctx.restore();
+
+            // 2️⃣ Draw percentage change inside area under the line
+            const firstValue = dataset.data[0];
+            const percentChange = ((value - firstValue) / firstValue) * 100;
+            const percentText = `${percentChange >= 0 ? "+" : ""}${percentChange.toFixed(2)}% since start`;
+
+            ctx.save();
+            ctx.font = "bold 16px Inter";
+            ctx.fillStyle = percentChange >= 0 ? "#065f46" : "#b91c1c"; // green or red
             ctx.textAlign = "center";
-            ctx.fillText(roundedValue, lastPoint.x, lastPoint.y - 8);
+            ctx.fillText(percentText, lastPoint.x - 120, chart.chartArea.bottom - 30);
             ctx.restore();
           }
         },
@@ -107,6 +120,9 @@ function initMainpage() {
               fill: false,
               pointRadius: 0,
               pointHoverRadius: 4,
+              tension: 0.3,
+              fill: true, // Enable area fill
+              backgroundColor: "rgba(1, 68, 34, 0.08)", // Area under line
             },
           ],
         },
@@ -328,11 +344,13 @@ const logoMap = {
   IOI: "ioi_logo.png",
   SDG: "sdg_logo.png",
   FGV: "fgv_logo.png",
-  KMLOONG: "kmloong_logo.png"
+  KMLOONG: "kmloong_logo.png",
 };
 
 async function fetchCompanyData(company) {
-  const response = await fetch(BACKEND_URL + `/sqlite/prod-data?company=${company}`);
+  const response = await fetch(
+    BACKEND_URL + `/sqlite/prod-data?company=${company}`
+  );
   const result = await response.json();
   return result.data;
 }
@@ -353,7 +371,7 @@ function buildBarChart(data, companyCode) {
   const ctx = document.getElementById("prod-chart")?.getContext("2d");
   if (!ctx) return;
 
-  const months = [...new Set(data.map((item) => item.date))];
+  const months = [...new Set(data.map(item => item.date))].sort((a, b) => new Date(a) - new Date(b));
   const rawMats = [...new Set(data.map((item) => item.raw_material))];
 
   const datasets = rawMats.map((mat, i) => ({
@@ -468,7 +486,9 @@ async function fetchCompanyDescription(ticker) {
 }
 
 async function fetchEarnings(ticker) {
-  const res = await fetch(BACKEND_URL + `/sqlite/company-earnings?ticker=${ticker}`);
+  const res = await fetch(
+    BACKEND_URL + `/sqlite/company-earnings?ticker=${ticker}`
+  );
   if (!res.ok) {
     throw new Error(`Failed to fetch earnings for ${ticker}`);
   }
@@ -556,7 +576,9 @@ function drawEarningsChart(data) {
 }
 
 async function fetchPlantedAreaData(company) {
-  const response = await fetch(BACKEND_URL + `/sqlite/plt-area?company=${company}`);
+  const response = await fetch(
+    BACKEND_URL + `/sqlite/plt-area?company=${company}`
+  );
   const result = await response.json();
   return result.data;
 }
@@ -602,7 +624,9 @@ function buildPlantedAreaPieChart(data, company) {
 }
 
 async function fetchExtractionRateData(company) {
-  const response = await fetch(BACKEND_URL + `/sqlite/ext-rates?company=${company}`);
+  const response = await fetch(
+    BACKEND_URL + `/sqlite/ext-rates?company=${company}`
+  );
   const result = await response.json();
   return result.data;
 }
@@ -676,13 +700,10 @@ async function buildRevenueForecastChart(data, company) {
   const forecastData = await forecastResponse.json();
   const latestRevenue = forecastData.latest_actual_revenue_mil;
   const forecastedRevenue = forecastData.predicted_revenue;
-
+  const hasMissing = forecastData.missing_months_imputed?.length > 0;
+  const imputedMonths = forecastData.missing_months_imputed?.join(", ") || "";
   const nextQuarterRange = forecastData.next_quarter;
-  const nextQuarterLabel = `${new Date(
-    nextQuarterRange[1]
-  ).getFullYear()}Q${Math.ceil(
-    (new Date(nextQuarterRange[1]).getMonth() + 1) / 3
-  )}`;
+  const nextQuarterLabel = `Next Forecasted Quarter`;
 
   const latestQuarterLabel = (() => {
     const date = new Date(forecastData.latest_revenue_date);
@@ -690,6 +711,13 @@ async function buildRevenueForecastChart(data, company) {
     const quarter = Math.floor(date.getMonth() / 3) + 1;
     return `${year}Q${quarter}`;
   })();
+
+  const warningContainer = document.getElementById("revenue-warning");
+  if (warningContainer) {
+    warningContainer.innerText = hasMissing
+      ? `⚠ Inaccurate forecasts due to missing data: ${imputedMonths}`
+      : "";
+  }
 
   const features = forecastData.features || {};
   const ffb = features["Fresh Fruit Bunches"] || 0;
@@ -843,7 +871,7 @@ async function buildCorrelationHeatmap() {
 
     chart.labels().fontColor("#00321f").fontFamily("Inter").fontSize(12);
 
-    chart.stroke("#ffffff"); 
+    chart.stroke("#ffffff");
     chart.hovered().stroke("white", 2);
 
     chart.draw();
@@ -1136,7 +1164,9 @@ async function initCommodities() {
 
   // Soybean price
   async function fetchSoyPriceData() {
-    const response = await fetch(BACKEND_URL + "/yf/soy-price-data?ticker=ZL=F");
+    const response = await fetch(
+      BACKEND_URL + "/yf/soy-price-data?ticker=ZL=F"
+    );
     const result = await response.json();
     return result;
   }
@@ -2342,7 +2372,9 @@ async function initMpobStats() {
   // Weather slider
   async function fetchWeatherData() {
     try {
-      const response = await fetch(BACKEND_URL + "/opendosm/weather-forecast-summary");
+      const response = await fetch(
+        BACKEND_URL + "/opendosm/weather-forecast-summary"
+      );
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();

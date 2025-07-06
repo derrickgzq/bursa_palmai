@@ -244,7 +244,7 @@ def get_market_cap_data():
 @app.get("/yf/klci-data")
 def get_klci_data():    
     end = datetime.today()
-    start = end - timedelta(days=30)  # last 30 days
+    start = end - timedelta(days=7)  # last 7 days
     data = yf.download('^KLSE', start=start, end=end)
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
