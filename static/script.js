@@ -68,10 +68,7 @@ function initMainpage() {
       const ctx = document.getElementById("klciChart")?.getContext("2d");
       if (!ctx) throw new Error("KLCI chart canvas context not found");
 
-      const latestIndex = data.prices.length - 1;
-      const latestLabel = data.dates[latestIndex];
-      const latestValue = data.prices[latestIndex];
-
+      // Plugin to show latest value label above last point
       const showLatestLabelPlugin = {
         id: "showLatestLabel",
         afterDatasetsDraw(chart) {
@@ -84,7 +81,7 @@ function initMainpage() {
             const value = dataset.data[dataset.data.length - 1];
             const roundedValue = parseFloat(value).toFixed(2);
 
-            // 1️⃣ Draw KLCI latest value label above line
+            // Draw KLCI latest value label above line
             ctx.save();
             ctx.font = "bold 12px Inter";
             ctx.fillStyle = "#014422";
@@ -92,14 +89,14 @@ function initMainpage() {
             ctx.fillText(roundedValue, lastPoint.x - 8, lastPoint.y - 8);
             ctx.restore();
 
-            // 2️⃣ Draw percentage change inside area under the line
+            // Draw percentage change inside area under the line
             const firstValue = dataset.data[0];
             const percentChange = ((value - firstValue) / firstValue) * 100;
             const percentText = `${percentChange >= 0 ? "+" : ""}${percentChange.toFixed(2)}% since start`;
 
             ctx.save();
             ctx.font = "bold 16px Inter";
-            ctx.fillStyle = percentChange >= 0 ? "#065f46" : "#b91c1c"; // green or red
+            ctx.fillStyle = percentChange >= 0 ? "#065f46" : "#b91c1c";
             ctx.textAlign = "center";
             ctx.fillText(percentText, lastPoint.x - 120, chart.chartArea.bottom - 30);
             ctx.restore();
@@ -117,18 +114,22 @@ function initMainpage() {
               data: data.prices,
               borderColor: "#014422",
               borderWidth: 2,
-              fill: false,
-              pointRadius: 0,
-              pointHoverRadius: 4,
+              pointRadius: 3,
+              pointHoverRadius: 6,
               tension: 0.3,
-              fill: true, // Enable area fill
-              backgroundColor: "rgba(1, 68, 34, 0.08)", // Area under line
+              fill: true,
+              backgroundColor: "rgba(1, 68, 34, 0.08)",
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: "nearest",
+            intersect: false,
+            axis: "x",
+          },
           plugins: {
             legend: {
               display: false,
@@ -139,14 +140,33 @@ function initMainpage() {
             },
             title: {
               display: true,
-              text: "Kuala Lumpur Composite Index (KLCI), Last 30 days",
+              text: "Kuala Lumpur Composite Index (KLCI), Last 7 days",
               color: "#00321f",
               font: { family: "Inter", size: 16, weight: "bold" },
               padding: { top: 10, bottom: 20 },
             },
             tooltip: {
-              bodyFont: { family: "Inter", size: 12 },
+              enabled: true,
+              mode: "index",
+              intersect: false,
+              bodyFont: { family: "Inter", size: 13 },
               titleFont: { family: "Inter", size: 14, weight: "bold" },
+              callbacks: {
+                label: function(context) {
+                  return `KLCI: ${context.parsed.y}`;
+                },
+              },
+              displayColors: false,
+              backgroundColor: "#fff",
+              borderColor: "#014422",
+              borderWidth: 1,
+              titleColor: "#014422",
+              bodyColor: "#00321f",
+            },
+            hover: {
+              mode: "nearest",
+              intersect: false,
+              animationDuration: 400,
             },
           },
           scales: {
@@ -167,6 +187,10 @@ function initMainpage() {
               beginAtZero: false,
               grid: { display: false },
             },
+          },
+          animation: {
+            duration: 800,
+            easing: "easeOutQuart",
           },
         },
         plugins: [showLatestLabelPlugin],
@@ -1088,19 +1112,37 @@ async function initCommodities() {
     })
     .catch((error) => console.error("Error fetching MPOB data:", error));
 
-  //Local Crude Palm Oil
-  async function fetchPalmOilData() {
-    const response = await fetch(BACKEND_URL + "/sqlite/commodities");
-    const result = await response.json();
+    // Multi-line chart for CPO, FFB, and Palm Kernel
+    async function fetchMainCommoditiesData() {
+      const response = await fetch(BACKEND_URL + "/sqlite/commodities");
+      const result = await response.json();
 
-    // Prepare data: extract dates and prices
-    const dates = result.map((item) => item.date);
-    const prices = result.map((item) => item.local_crude_palm_oil);
+      // Step 1: Get all unique dates sorted
+      const uniqueDates = Array.from(new Set(result.map(item => item.date))).sort();
 
-    return { dates, prices };
-  }
+      // Step 2: Group values by item type and date
+      const grouped = {
+        "local crude palm oil": {},
+        "fresh fruit bunches": {},
+        "palm kernel": {},
+      };
 
-  function drawPalmOilChart(data) {
+      result.forEach(item => {
+        grouped[item.item][item.date] = item.value;
+      });
+
+      // Step 3: For each item, create an array of values aligned by date
+      const data = {
+        dates: uniqueDates,
+        cpo: uniqueDates.map(date => grouped["local crude palm oil"][date] ?? null),
+        ffb: uniqueDates.map(date => grouped["fresh fruit bunches"][date] ?? null),
+        kernel: uniqueDates.map(date => grouped["palm kernel"][date] ?? null),
+      };
+
+      return data;
+    }
+
+    function drawMainCommoditiesChart(data) {
     const ctx = document.getElementById("cpo-price-chart")?.getContext("2d");
     if (!ctx) return;
 
@@ -1113,9 +1155,28 @@ async function initCommodities() {
         datasets: [
           {
             label: "Local Crude Palm Oil",
-            data: data.prices,
-            borderColor: "rgba(52, 95, 60, 0.7)",
+            data: data.cpo,
+            yAxisID: "y",
+            borderColor: "rgba(52, 95, 60, 0.8)",
             backgroundColor: "rgba(52, 95, 60, 0.1)",
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: "Palm Kernel",
+            data: data.kernel,
+            yAxisID: "y",
+            borderColor: "rgba(93, 64, 55, 0.8)",
+            backgroundColor: "rgba(93, 64, 55, 0.1)",
+            fill: true,
+            tension: 0.3,
+          },
+          {
+            label: "Fresh Fruit Bunches",
+            data: data.ffb,
+            yAxisID: "y1",  // RIGHT axis
+            borderColor: "rgba(243, 156, 18, 0.9)",
+            backgroundColor: "rgba(243, 156, 18, 0.1)",
             fill: true,
             tension: 0.3,
           },
@@ -1145,9 +1206,18 @@ async function initCommodities() {
             grid: { display: false },
           },
           y: {
-            title: { display: true, text: "Price (RM)" },
+            type: "linear",
+            position: "left",
+            title: { display: true, text: "Price (RM - Thousands)" },
             ticks: { color: "black" },
             grid: { display: false },
+          },
+          y1: {
+            type: "linear",
+            position: "right",
+            title: { display: true, text: "FFB Price (RM - Tens)" },
+            ticks: { color: "black" },
+            grid: { drawOnChartArea: false }, // prevents overlap with left axis
           },
         },
         plugins: {
@@ -1157,10 +1227,10 @@ async function initCommodities() {
     });
   }
 
-  // Trigger fetch and render
-  fetchPalmOilData()
-    .then((data) => drawPalmOilChart(data))
-    .catch((error) => console.error("Error fetching palm oil data:", error));
+  // Fetch and draw
+  fetchMainCommoditiesData()
+    .then(drawMainCommoditiesChart)
+    .catch(error => console.error("Error fetching commodities data:", error));
 
   // Soybean price
   async function fetchSoyPriceData() {

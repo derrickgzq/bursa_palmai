@@ -244,7 +244,7 @@ def get_market_cap_data():
 @app.get("/yf/klci-data")
 def get_klci_data():    
     end = datetime.today()
-    start = end - timedelta(days=7)  # last 7 days
+    start = end - timedelta(days=30)  # last 30 days
     data = yf.download('^KLSE', start=start, end=end)
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
@@ -685,8 +685,10 @@ def get_mpob_data():
 def get_commodities_data():
     try:
         conn = sqlite3.connect(SQLITE_DB)
-        df = pd.read_sql("SELECT * FROM commodities_data", conn)
-        
+        df = pd.read_sql(
+            "SELECT date, item, value FROM commodities_data WHERE date >= '2025-01-01'", 
+            conn
+        )        
         if df.empty:
             raise HTTPException(
                 status_code=404,

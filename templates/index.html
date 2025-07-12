@@ -87,6 +87,44 @@
         </p>
       </header>
 
+      <!-- Sector Indices -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+  <!-- MMI -->
+  <div class="p-3 rounded-xl bg-[#e6f4ea] shadow flex flex-col justify-center">
+    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Market Momentum Index</h3>
+    <p class="text-2xl font-bold text-[#34a853] leading-tight text-center">72</p>
+    <span class="text-xs font-medium text-[#34a853] text-center">Bullish</span>
+  </div>
+
+  <!-- FI -->
+  <div class="p-3 rounded-xl bg-[#fef7e0] shadow flex flex-col justify-center">
+    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Fundamentals Index</h3>
+    <p class="text-2xl font-bold text-[#f9ab00] leading-tight text-center">58</p>
+    <span class="text-xs font-medium text-[#f9ab00] text-center">Kangaroo</span>
+  </div>
+
+  <!-- MPI -->
+  <div class="p-3 rounded-xl bg-[#fdecea] shadow flex flex-col justify-center">
+    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Macro & Policy Index</h3>
+    <p class="text-2xl font-bold text-[#d93025] leading-tight text-center">35</p>
+    <span class="text-xs font-medium text-[#d93025] text-center">Bearish</span>
+  </div>
+
+  <!-- SRI -->
+  <div class="p-3 rounded-xl bg-[#e6f4ea] shadow flex flex-col justify-center">
+    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Sustainability Risk Index</h3>
+    <p class="text-2xl font-bold text-[#34a853] leading-tight text-center">66</p>
+    <span class="text-xs font-medium text-[#34a853] text-center">Bullish</span>
+  </div>
+
+  <!-- Composite POSI -->
+  <div class="p-3 rounded-xl bg-[#fef7e0] shadow col-span-full lg:col-span-1 flex flex-col justify-center text-center">
+    <h3 class="text-xs font-semibold text-gray-600 mb-1">Palm Oil Sector Sentiment Index (POSI)</h3>
+    <p class="text-2xl font-bold text-[#f9ab00] leading-tight">58</p>
+    <span class="text-xs font-medium text-[#f9ab00]">Kangaroo</span>
+  </div>
+</div>
+
       <!-- Chart Row -->
       <div class="flex flex-wrap justify-center gap-6 mb-8">
         <!-- Treemap container -->
@@ -281,8 +319,8 @@
           </div>
 
           <div class="chart-container h-96 w-full">
-            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Crude Palm Oil Prices</h3>
-            <p class="text-sm text-gray-600 mb-2">Benchmark CPO prices impacting revenue and market direction.</p>
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">CPO, Fresh Fruit Bunches and Palm Kernel Prices</h3>
+            <p class="text-sm text-gray-600 mb-2">Benchmark prices impacting revenue and market direction.</p>
             <canvas id="cpo-price-chart" class="w-full h-full"></canvas>
           </div>
         </div>
