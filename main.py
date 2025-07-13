@@ -34,12 +34,13 @@ import re
 #database
 SQLITE_DB = "bursa_palmai_database.db"
 
-#enviorment variables
-load_dotenv()
+# Load environment variables from .env file
+load_dotenv(override=True)
+
 api_key = os.getenv("OPENROUTER_API_KEY")
 client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key=api_key,
+    base_url="https://openrouter.ai/api/v1",
+    api_key=api_key,
 )
 
 #FinBERT
