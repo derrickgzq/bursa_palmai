@@ -3,6 +3,138 @@
 const BACKEND_URL = "https://bursa-palmai.onrender.com";
 
 // MAINPAGE INITIALIZATION
+async function loadNewsSentiment() {
+  try {
+    const response = await fetch(BACKEND_URL + "/the-edge/news-sentiment-summary");
+    const sentimentData = await response.json();
+
+    const card = document.getElementById("newsSentimentCard");
+    const valueEl = document.getElementById("newsSentimentValue");
+    const labelEl = document.getElementById("newsSentimentLabel");
+
+    const { positive = 0, neutral = 0, negative = 0, total_news = 0 } = sentimentData;
+
+    // Compute net sentiment score
+    const netScore = (positive * 1 + neutral * 0 + negative * -1);
+    const normalizedScore = total_news ? netScore / total_news : 0;
+
+    // Determine sentiment based on weighted score
+    let dominant = "neutral";
+    let color = "#f9ab00";
+
+    if (normalizedScore >= 0.2) {
+      dominant = "positive";
+      color = "#34a853"; // green
+    } else if (normalizedScore <= -0.2) {
+      dominant = "negative";
+      color = "#ea4335"; // red
+    }
+
+    // Update UI
+    valueEl.textContent = dominant.charAt(0).toUpperCase() + dominant.slice(1);
+    valueEl.style.color = color;
+    labelEl.textContent = `Based on latest ${total_news} headlines`;
+    labelEl.style.color = color;
+    card.style.backgroundColor = color === "#34a853" ? "#e6f4ea" : color === "#ea4335" ? "#fbeaea" : "#fef7e0";
+
+  } catch (error) {
+    console.error("Failed to load sentiment:", error);
+    document.getElementById("newsSentimentValue").textContent = "N/A";
+    document.getElementById("newsSentimentLabel").textContent = "Unable to fetch data";
+  }
+}
+
+loadNewsSentiment();
+
+async function loadPriceMomentum() {
+  try {
+    const response = await fetch("http://127.0.0.1:8000/yf/share-prices");
+    const prices = await response.json();
+
+    let bullish = 0;
+    let bearish = 0;
+    let neutral = 0;
+
+    prices.forEach(stock => {
+      if (stock.percent >= 5) bullish++;
+      else if (stock.percent <= -5) bearish++;
+      else neutral++;
+    });
+
+    const card = document.getElementById("priceMomentumCard");
+    const label = document.getElementById("priceMomentumLabel");
+
+    let sentiment = "Neutral";
+    let color = "#e6f4ea"; // greenish
+
+    if (bullish > bearish && bullish > neutral) {
+      sentiment = "Bullish";
+      color = "#e6f4ea"; // greenish
+      label.style.color = "#34a853";
+    } else if (bearish > bullish && bearish > neutral) {
+      sentiment = "Bearish";
+      color = "#fce8e6"; // reddish
+      label.style.color = "#d93025";
+    } else {
+      sentiment = "Neutral";
+      color = "#fef7e0"; // yellowish
+      label.style.color = "#f9ab00";
+    }
+
+    card.style.backgroundColor = color;
+    label.textContent = sentiment;
+
+  } catch (err) {
+    console.error("Failed to load price momentum:", err);
+  }
+}
+
+loadPriceMomentum();
+
+async function loadWeatherSummary() {
+  try {
+    const res = await fetch(BACKEND_URL + "/opendosm/weather-forecast-summary");
+    const data = await res.json();
+
+    // Initialize counts
+    const totals = {
+      "Tiada Hujan": 0,
+      "Hujan": 0,
+      "Ribut Petir": 0
+    };
+
+    data.forEach(day => {
+      totals["Tiada Hujan"] += day["Tiada Hujan"] || 0;
+      totals["Hujan"] += day["Hujan"] || 0;
+      totals["Ribut Petir"] += day["Ribut Petir"] || 0;
+    });
+
+    // Determine dominant weather
+    const dominantWeather = Object.entries(totals).sort((a, b) => b[1] - a[1])[0][0];
+
+    // Set colors
+    const colors = {
+      "Tiada Hujan": { bg: "#e6f4ea", text: "#34a853" },
+      "Hujan": { bg: "#fef7e0", text: "#f9ab00" },
+      "Ribut Petir": { bg: "#fce8e6", text: "#d93025" }
+    };
+
+    const card = document.getElementById("weatherRiskCard");
+    const typeEl = document.getElementById("weatherRiskType");
+    const labelEl = document.getElementById("weatherRiskLabel");
+
+    card.style.backgroundColor = colors[dominantWeather].bg;
+    typeEl.textContent = dominantWeather;
+    typeEl.style.color = colors[dominantWeather].text;
+    labelEl.style.color = colors[dominantWeather].text;
+
+  } catch (err) {
+    console.error("Failed to fetch weather summary:", err);
+  }
+}
+
+loadWeatherSummary();
+
 function initMainpage() {
   anychart.onDocumentReady(function () {
     fetch(BACKEND_URL + "/yf/marketcap-data")
@@ -320,7 +452,7 @@ function initMainpage() {
       if (!newsCardsContainer) return;
       newsCardsContainer.innerHTML = "";
 
-      data.news.forEach((item) => {
+      data.news.slice(0,6).forEach((item) => {
         const card = document.createElement("div");
         card.className =
           "w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition";
@@ -733,7 +865,7 @@ async function buildRevenueForecastChart(data, company) {
     const date = new Date(forecastData.latest_revenue_date);
     const year = date.getFullYear();
     const quarter = Math.floor(date.getMonth() / 3) + 1;
-    return `${year}Q${quarter}`;
+    return `Latest Quarter - ${year}Q${quarter}`;
   })();
 
   const warningContainer = document.getElementById("revenue-warning");

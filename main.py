@@ -16,6 +16,11 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 from pandas.tseries.offsets import DateOffset
 from mangum import Mangum
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from collections import Counter
+from transformers import pipeline
+import torch
+import torch.nn.functional as F
 import pandas as pd
 import yfinance as yf
 import os
@@ -26,14 +31,31 @@ import sqlite3
 import geopandas as gpd
 import re
 
+#database
 SQLITE_DB = "bursa_palmai_database.db"
 
+#enviorment variables
 load_dotenv()
 api_key = os.getenv("OPENROUTER_API_KEY")
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key=api_key,
 )
+
+#FinBERT
+# Load FinBERT model and tokenizer once
+finbert_model = AutoModelForSequenceClassification.from_pretrained("yiyanghkust/finbert-tone")
+finbert_tokenizer = AutoTokenizer.from_pretrained("yiyanghkust/finbert-tone")
+labels = ["negative", "neutral", "positive"]
+
+def analyze_sentiment(text):
+    inputs = finbert_tokenizer(text, return_tensors="pt", truncation=True)
+    with torch.no_grad():
+        outputs = finbert_model(**inputs)
+    probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0]
+    score, pred_idx = torch.max(probs, dim=0)
+    sentiment = labels[pred_idx]
+    return sentiment, float(score)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -298,7 +320,8 @@ def get_share_prices():
 def get_ai_summary():
     # Get the news data
     news_data = get_news()
-    headlines = [item["headline"] for item in news_data["news"]]
+    top_10_news = news_data["news"][:10]  # limit to top 10
+    headlines = [item["headline"] for item in top_10_news]
 
     # Join headlines into one prompt
     news_prompt = "Without saying Here is a 20-word summary, summarize the palm oil related news headlines in 20 words, and conclude either is bullish, neutral or bearish:\n\n"
@@ -306,7 +329,7 @@ def get_ai_summary():
 
     # Get AI summary from OpenRouter
     response = client.chat.completions.create(
-        model="meta-llama/llama-4-maverick:free",
+        model="meta-llama/llama-3.1-8b-instruct",
         messages=[
             {
                 "role": "user",
@@ -322,60 +345,69 @@ def get_ai_summary():
 @app.get("/the-edge/news")
 def get_news():
     def format_description(text):
-        # Fix common mashed variants like 'palmoil'
         text = re.sub(r'(?i)palmoil', 'palm oil', text)
-
-        # Add space before 'palm' if mashed, e.g., 'basedpalm' -> 'based palm'
         text = re.sub(r'(?i)(\w)(palm)', r'\1 palm', text)
-
-        # Add space after 'palm' if mashed, e.g., 'palmcompany' -> 'palm company'
         text = re.sub(r'(?i)(palm)([A-Z]?\w)', r'palm \2', text)
-
-        # Add space after 'oil' if mashed, e.g., 'oilcompany' -> 'oil company'
         text = re.sub(r'(?i)(oil)([A-Z]?\w)', r'oil \2', text)
-
         return text
 
-    today = date.today()  
-    today_str = today.strftime("%Y-%m-%d")  
-    url = f"https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to={today_str}&from=1999-01-01&language=english&offset=0"
-
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')
-
+    today_str = date.today().strftime("%Y-%m-%d")
+    offsets = [0, 10, 20, 30]  # You can extend this
     data = []
-    for item in news_items:
-        a_tag = item.find('a', href=True)
-        headline_tag = item.find('span', class_='NewsList_newsListItemHead__dg7eK')
-        description_tag = item.find('span', class_='NewsList_newsList__2fXyv')
 
-        # Traverse parent to get date
-        parent = item.parent
-        date_tag = parent.find('div', class_='NewsList_infoNewsListSubMobile__SPmAG')
-        publish_date = date_tag.find('span').get_text(strip=True) if date_tag else None
+    for offset in offsets:
+        url = f"https://theedgemalaysia.com/news-search-results?keywords=palm%20oil&to={today_str}&from=1999-01-01&language=english&offset={offset}"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        news_items = soup.find_all('div', class_='NewsList_newsListText__hstO7')
 
-        img_tag = item.find_previous_sibling('div')
-        if img_tag:
-            img_tag = img_tag.find('img', class_='NewsList_newsImage__j_h0a')
+        for item in news_items:
+            a_tag = item.find('a', href=True)
+            headline_tag = item.find('span', class_='NewsList_newsListItemHead__dg7eK')
+            description_tag = item.find('span', class_='NewsList_newsList__2fXyv')
 
-        if a_tag and headline_tag and description_tag:
-            link = a_tag['href']
-            if link.startswith('/'):
-                link = f"https://theedgemalaysia.com{link}"
-            headline = headline_tag.get_text(strip=True)
-            description = format_description(description_tag.get_text(strip=True))
-            image_url = img_tag['src'] if img_tag else None
+            parent = item.parent
+            date_tag = parent.find('div', class_='NewsList_infoNewsListSubMobile__SPmAG')
+            publish_date = date_tag.find('span').get_text(strip=True) if date_tag else None
 
-            data.append({
-                'headline': headline,
-                'link': link,
-                'description': description,
-                'image_url': image_url,
-                'published': publish_date
-            })
+            img_tag = item.find_previous_sibling('div')
+            img_tag = img_tag.find('img', class_='NewsList_newsImage__j_h0a') if img_tag else None
 
+            if a_tag and headline_tag and description_tag:
+                link = a_tag['href']
+                if link.startswith('/'):
+                    link = f"https://theedgemalaysia.com{link}"
+
+                headline = headline_tag.get_text(strip=True)
+                description = format_description(description_tag.get_text(strip=True))
+                image_url = img_tag['src'] if img_tag else None
+
+                sentiment, score = analyze_sentiment(headline)
+
+                data.append({
+                    'headline': headline,
+                    'link': link,
+                    'description': description,
+                    'image_url': image_url,
+                    'published': publish_date,
+                    'sentiment': sentiment,
+                    'score': round(score, 4)
+                })
     return {"news": data}
+
+@app.get("/the-edge/news-sentiment-summary")
+def summarize_sentiments():
+    news_response = get_news()
+    sentiment_list = [item["sentiment"] for item in news_response["news"] if "sentiment" in item]
+    
+    counts = Counter(sentiment_list)
+
+    return {
+        "positive": counts.get("positive", 0),
+        "neutral": counts.get("neutral", 0),
+        "negative": counts.get("negative", 0),
+        "total_news": len(sentiment_list)
+    }
 # mainpage
 
 # company
@@ -552,39 +584,42 @@ def forecast(company: str):
     if company not in coefficients_map:
         raise HTTPException(status_code=404, detail="No coefficients for company")
 
-    # Load DB
+    # Load all necessary data
     conn = sqlite3.connect(SQLITE_DB)
     revenue_df = pd.read_sql("SELECT * FROM company_earnings_data", conn)
     prod_df = pd.read_sql("SELECT * FROM company_monthly_production", conn)
+    commodities_df = pd.read_sql("SELECT * FROM commodities_data", conn)
     conn.close()
 
-    # Prepare
+    # Parse dates
     revenue_df['date'] = pd.to_datetime(revenue_df['date'])
     prod_df['date'] = pd.to_datetime(prod_df['date'])
+    commodities_df['date'] = pd.to_datetime(commodities_df['date'])
 
+    # Get latest revenue entry
     latest_row = revenue_df[revenue_df['company_short_name'] == company].sort_values("date", ascending=False).head(1)
     if latest_row.empty:
         raise HTTPException(status_code=404, detail="No revenue found")
 
     latest_revenue_date = latest_row.iloc[0]['date']
     latest_revenue_value = latest_row.iloc[0]['revenue']
+
+    # Define the quarter to forecast
     start_next_q = (latest_revenue_date + DateOffset(days=1)).replace(day=1)
     end_next_q = (start_next_q + DateOffset(months=3)) - DateOffset(days=1)
-
     month_ends = pd.date_range(start=start_next_q, end=end_next_q, freq='ME')
 
-    # Filter and normalize prod data
-    filtered = prod_df[(prod_df['company_short_name'] == company) & (prod_df['date'].isin(month_ends))]
-
+    # === Get production data ===
     def normalize_material(name):
         for base in raw_material_base_names:
             if name.startswith(base):
                 return base
         return name
 
-    filtered = filtered.copy()
+    filtered = prod_df[(prod_df['company_short_name'] == company) & (prod_df['date'].isin(month_ends))].copy()
     filtered['raw_material'] = filtered['raw_material'].apply(normalize_material)
 
+    # Impute missing months
     available_months = set(filtered['date'].dt.to_period('M'))
     expected_months = set(month_ends.to_period('M'))
     missing_months = expected_months - available_months
@@ -602,6 +637,7 @@ def forecast(company: str):
         dummy_df = pd.DataFrame(dummy_rows)
         filtered = pd.concat([filtered, dummy_df], ignore_index=True)
 
+    # Summarize production features
     features_df = (
         filtered.groupby('raw_material')['volume']
         .sum()
@@ -610,48 +646,77 @@ def forecast(company: str):
         .fillna(0)
     )
 
+    # === Add FCPO and PK Price from commodities_data ===
+    # Mapping
+    type_map = {
+        "local crude palm oil": "FCPO",
+        "palm kernel": "PK Price"
+    }
+
+    # Define relevant months: average of 3 months before quarter end
+    end_month = end_next_q.replace(day=1)
+    start_month = end_month - DateOffset(months=3)
+    three_months = pd.date_range(start=start_month, end=end_month, freq='MS').to_period('M')
+
+    # Extract and average FCPO and PK Price
+    commodities_df['month'] = commodities_df['date'].dt.to_period('M')
+    avg_prices = (
+        commodities_df[
+            commodities_df['month'].isin(three_months) &
+            commodities_df['item'].isin(type_map.keys())
+        ]
+        .groupby('item')['value']
+        .mean()
+        .rename(index=type_map)  # Rename to match coefficient feature names
+        .to_dict()
+    )
+
+    # Inject into features_df
+    for feature in ['FCPO', 'PK Price']:
+        features_df[feature] = avg_prices.get(feature, 0)
+
+    # Get model config
     config = coefficients_map[company]
     intercept = config['intercept']
     scale = config['scale']
     coefficients = config['coefficients']
 
+    # Ensure all coefficient columns exist in the features
     features_df = features_df.reindex(columns=coefficients.keys(), fill_value=0)
-    # ... (previous unchanged code)
-
     raw_values = features_df.to_dict(orient='records')[0]
 
-    # Compute predicted revenue
+    # === Compute prediction ===
     predicted_revenue = intercept + sum(
         raw_values.get(feature, 0) * coef for feature, coef in coefficients.items()
     )
     predicted_revenue *= scale
 
-    # ✅ Compute revenue contribution per feature
+    # === Contribution per feature ===
     contributions = {
         feature: round(raw_values.get(feature, 0) * coef * scale, 2)
         for feature, coef in coefficients.items()
     }
 
-    # Filter only positive contributions for weightage (optional)
+    # === Optional: weights ===
     positive_contributions = {k: abs(v) for k, v in contributions.items()}
     total_contribution = sum(positive_contributions.values())
-
-    # ✅ Add weightage if needed
     contribution_weights = {
         k: round((abs(v) / total_contribution) * 100, 1) if total_contribution else 0
         for k, v in contributions.items()
     }
 
+    # === Return with audit (raw feature values too) ===
     return JSONResponse(content={
         "company": company,
         "latest_revenue_date": latest_revenue_date.strftime("%Y-%m-%d"),
         "latest_actual_revenue_mil": round(latest_revenue_value / 1e6, 2),
         "next_quarter": [start_next_q.strftime("%Y-%m-%d"), end_next_q.strftime("%Y-%m-%d")],
         "missing_months_imputed": sorted([str(m) for m in missing_months]),
-        "features": raw_values,
+        "features": raw_values,  # For model input
         "predicted_revenue": round(predicted_revenue, 2),
         "contribution_by_feature": contributions,
-        "contribution_weights": contribution_weights
+        "contribution_weights": contribution_weights,
+        "audit_feature_values": features_df.to_dict(orient='records')[0]  # Full features for traceability
     })
 # company
 

@@ -60,9 +60,9 @@
         <a href="#" data-tab="exportimport" class="tab-link block text-white">
           <i class="fas fa-shipping-fast mr-2"></i> Global Trade Chain
         </a>
-        <a href="#" data-tab="aichatbot" class="tab-link block text-white">
+        <!--a href="#" data-tab="aichatbot" class="tab-link block text-white">
           <i class="fas fa-robot mr-2"></i> PalmAI Chatbot
-        </a>
+        </a!-->
         <a href="#" data-tab="aboutus" class="tab-link block text-white">
           <i class="fas fa-info-circle mr-2"></i> About us
         </a>
@@ -88,42 +88,28 @@
       </header>
 
       <!-- Sector Indices -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-  <!-- MMI -->
-  <div class="p-3 rounded-xl bg-[#e6f4ea] shadow flex flex-col justify-center">
-    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Market Momentum Index</h3>
-    <p class="text-2xl font-bold text-[#34a853] leading-tight text-center">72</p>
-    <span class="text-xs font-medium text-[#34a853] text-center">Bullish</span>
-  </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <!-- News Sentiment -->
+        <div id="newsSentimentCard" class="p-3 rounded-xl shadow flex flex-col justify-center transition-all duration-300">
+          <h3 class="text-lg font-semibold text-gray-600 mb-1 text-center">News Sentiment</h3>
+          <p id="newsSentimentValue" class="text-2xl font-bold leading-tight text-center">--</p>
+          <span id="newsSentimentLabel" class="text-xs font-medium text-center">Loading...</span>
+        </div>
 
-  <!-- FI -->
-  <div class="p-3 rounded-xl bg-[#fef7e0] shadow flex flex-col justify-center">
-    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Fundamentals Index</h3>
-    <p class="text-2xl font-bold text-[#f9ab00] leading-tight text-center">58</p>
-    <span class="text-xs font-medium text-[#f9ab00] text-center">Kangaroo</span>
-  </div>
+        <!-- Price Momentum -->
+        <div id="priceMomentumCard" class="p-3 rounded-xl shadow flex flex-col justify-center transition-all">
+          <h3 class="text-lg font-semibold text-gray-600 mb-1 text-center">Price Momentum</h3>
+          <p id="priceMomentumLabel" class="text-2xl font-bold leading-tight text-center">Loading...</p>
+          <span class="text-xs font-medium text-center">Based on latest share price change</span>
+        </div>
 
-  <!-- MPI -->
-  <div class="p-3 rounded-xl bg-[#fdecea] shadow flex flex-col justify-center">
-    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Macro & Policy Index</h3>
-    <p class="text-2xl font-bold text-[#d93025] leading-tight text-center">35</p>
-    <span class="text-xs font-medium text-[#d93025] text-center">Bearish</span>
-  </div>
-
-  <!-- SRI -->
-  <div class="p-3 rounded-xl bg-[#e6f4ea] shadow flex flex-col justify-center">
-    <h3 class="text-xs font-semibold text-gray-600 mb-1 text-center">Sustainability Risk Index</h3>
-    <p class="text-2xl font-bold text-[#34a853] leading-tight text-center">66</p>
-    <span class="text-xs font-medium text-[#34a853] text-center">Bullish</span>
-  </div>
-
-  <!-- Composite POSI -->
-  <div class="p-3 rounded-xl bg-[#fef7e0] shadow col-span-full lg:col-span-1 flex flex-col justify-center text-center">
-    <h3 class="text-xs font-semibold text-gray-600 mb-1">Palm Oil Sector Sentiment Index (POSI)</h3>
-    <p class="text-2xl font-bold text-[#f9ab00] leading-tight">58</p>
-    <span class="text-xs font-medium text-[#f9ab00]">Kangaroo</span>
-  </div>
-</div>
+        <!-- Weather Risk Card -->
+        <div id="weatherRiskCard" class="p-3 rounded-xl shadow flex flex-col justify-center bg-[#e6f4ea]">
+          <h3 class="text-lg font-semibold text-gray-600 mb-1 text-center">Weather Forecast</h3>
+          <p id="weatherRiskType" class="text-2xl font-bold text-[#34a853] leading-tight text-center">...</p>
+          <span id="weatherRiskLabel" class="text-xs font-medium text-[#34a853] text-center">Based on upcoming 7-day weather forecasts</span>
+        </div>
+      </div>
 
       <!-- Chart Row -->
       <div class="flex flex-wrap justify-center gap-6 mb-8">
@@ -231,6 +217,13 @@
 
       <div class="mt-8">
         <h3 class="text-lg font-semibold mb-4" style="color: #345f3c;">Forecasting and in-depth analysis</h3>
+        <!-- Disclaimer -->
+        <div class="mt-4 text-sm text-gray-600 text-left-justify">
+          <p>
+            This material is provided solely for informational purposes and does not constitute financial, investment, legal, or professional advice. 
+            No representations or warranties are made, and all liability is expressly disclaimed for any actions taken or losses incurred based on reliance upon this content.
+          </p>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <!-- Revenue Forecast with Weightage Cards -->
           <div class="h-[560px] bg-gray-50 rounded-lg p-4 shadow flex flex-col">
@@ -285,13 +278,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <!-- Disclaimer -->
-        <div class="mt-4 text-sm text-gray-600 text-center">
-          <p>
-            This material is provided solely for informational purposes and does not constitute financial, investment, legal, or professional advice. 
-            No representations or warranties are made, and all liability is expressly disclaimed for any actions taken or losses incurred based on reliance upon this content.
-          </p>
         </div>
       </div>
     </section>
