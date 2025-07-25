@@ -550,7 +550,7 @@
       <p class="text-center py-10">Bursa PalmAI chatbot content goes here... (Currently unavailable)</p>
     </section>
 
-    <section id="aboutus" class="tab-content hidden px-4 py-8 space-y-12">
+    <section id="aboutus" class="tab-content hidden bg-gray-50 px-6 py-12 font-['Inter',sans-serif]">
       <style>
         .avatar {
           border-radius: 50%;
@@ -559,15 +559,56 @@
           object-fit: cover;
           margin-bottom: 1rem;
           border: 2px solid #e5e7eb;
+          transition: transform 0.3s ease;
+        }
+        .avatar:hover {
+          transform: scale(1.05);
+        }
+        .card {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+          color: #345f3c;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          transition: background-color 0.3s ease;
+        }
+        .nav-link:hover {
+          background-color: #e6f4ea;
+        }
+        .sticky-nav {
+          position: sticky;
+          top: 1rem;
+          z-index: 10;
         }
       </style>
 
+      <!-- Sticky Navigation -->
+      <nav class="sticky-nav bg-white rounded-lg p-4 mb-8 shadow-sm border border-gray-200">
+        <ul class="flex flex-wrap gap-4 justify-center text-sm font-medium">
+          <li><a href="#team" class="nav-link">Team</a></li>
+          <li><a href="#documentation" class="nav-link">Documentation</a></li>
+          <li><a href="#api" class="nav-link">API Services</a></li>
+          <li><a href="#disclaimer" class="nav-link">Disclaimer</a></li>
+          <li><a href="#credits" class="nav-link">Credits</a></li>
+        </ul>
+      </nav>
+
       <!-- 👥 Team Section -->
-      <div class="bg-white shadow-md border rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-center text-[#014422] mb-6">👥 Our Team</h2>
-        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+      <div id="team" class="mb-12">
+        <h2 class="text-3xl font-bold text-center text-[#014422] mb-8">👥 Our Team</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <!-- Derrick Gan -->
-          <div class="bg-gray-50 shadow-sm rounded-xl p-6 w-full md:w-1/2 text-center">
+          <div class="card text-center">
             <img src="https://avatars.githubusercontent.com/u/103888751?v=4" alt="Derrick Gan Avatar" class="avatar mx-auto">
             <h3 class="text-2xl font-bold text-gray-800 mb-1">Derrick Gan</h3>
             <p class="text-blue-600 text-lg font-medium">Data Engineer</p>
@@ -579,7 +620,7 @@
           </div>
 
           <!-- Azrul Hakimi -->
-          <div class="bg-gray-50 shadow-sm rounded-xl p-6 w-full md:w-1/2 text-center">
+          <div class="card text-center">
             <img src="https://avatars.githubusercontent.com/u/116322521?v=4" alt="Azrul Hakimi Avatar" class="avatar mx-auto">
             <h3 class="text-2xl font-bold text-gray-800 mb-1">Azrul Hakimi</h3>
             <p class="text-green-600 text-lg font-medium">Front-End Developer</p>
@@ -592,36 +633,85 @@
         </div>
       </div>
 
-      <!-- 📄 Documentation Section -->
-      <div class="bg-white shadow-md border rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-[#014422] mb-4">📄 Documentation</h2>
-        <p class="text-gray-700 text-sm">
-          Browse technical documentation for datasets, indicators, and visualization methodologies used in Bursa PalmAI. (Coming Soon)
-        </p>
-      </div>
+      <!-- Other Sections Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <!-- 📄 Documentation Section -->
+        <div id="documentation" class="card">
+          <h2 class="text-2xl font-bold text-[#014422] mb-4">📄 Documentation</h2>
+          <p class="text-gray-700 text-sm mb-3">
+            Browse technical documentation for datasets, indicators, and visualization methodologies used in Bursa PalmAI.
+          </p>
+          <a href="/static/user_guide.pdf" download class="inline-block text-sm text-blue-600 hover:underline">
+            📥 Download User Guide (PDF)
+          </a>
+        </div>
 
-      <!-- ⚙️ API Services Section -->
-      <div class="bg-white shadow-md border rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-[#014422] mb-4">⚙️ API Services</h2>
-        <p class="text-gray-700 text-sm">Coming Soon</p>
-      </div>
+        <!-- ⚠️ Disclaimer Section -->
+        <div id="disclaimer" class="card">
+          <h2 class="text-2xl font-bold text-[#014422] mb-4">⚠️ Disclaimer</h2>
+          <p class="text-gray-700 text-sm">
+            The forecasts and data provided are for informational and educational purposes only. They do not constitute financial or investment advice.
+          </p>
+        </div>
 
-      <!-- ⚠️ Disclaimer Section -->
-      <div class="bg-white shadow-md border rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-[#014422] mb-4">⚠️ Disclaimer</h2>
-        <p class="text-gray-700 text-sm">
-          The forecasts and data provided are for informational and educational purposes only. They do not constitute financial or investment advice.
-        </p>
-      </div>
+        <!-- ⚙️ API Services Section -->
+        <div id="api" class="card">
+          <h2 class="text-2xl font-bold text-[#014422] mb-4">⚙️ API Services</h2>
+          <p class="text-gray-700 text-sm mb-2">
+            Explore our API endpoints to access palm oil data programmatically. Use the links below to interact with our services.
+          </p>
 
-      <!-- 💡 Credits Section -->
-      <div class="bg-white shadow-md border rounded-xl p-6">
-        <h2 class="text-2xl font-bold text-[#014422] mb-4">💡 Credits</h2>
-        <ul class="list-disc list-inside text-gray-700 text-sm">
-          <li>Developed by Derrick Gan and Azrul Hakimi</li>
-          <li>Data sources: Bursa Malaysia, MPOB, Yahoo Finance, and others</li>
-          <li>Built with Tailwind CSS, Chart.js, and custom APIs</li>
-        </ul>
+          <!-- API 1: 7-Day Weather Forecast -->
+          <h3 class="font-semibold text-sm text-[#014422] mb-1 mt-4">7-Day Weather Forecast for Palm Oil Estates</h3>
+          <div class="bg-gray-100 text-sm text-gray-800 px-4 py-2 rounded-md flex items-center justify-between">
+            <code>https://bursa-palmai.onrender.com/weatherforecast</code>
+            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/weatherforecast')" class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">
+            Method: <span class="font-medium">GET</span> <br>
+            Response: <span class="font-medium">JSON weather data</span>
+          </p>
+
+          <!-- Gap -->
+          <div class="my-4"></div>
+
+          <!-- API 2: 100-Day Trades -->
+          <h3 class="font-semibold text-sm text-[#014422] mb-1">100-Day Trades of Public-Listed Palm Oil Companies</h3>
+          <div class="bg-gray-100 text-sm text-gray-800 px-4 py-2 rounded-md flex items-center justify-between">
+            <code>https://bursa-palmai.onrender.com/tradedata</code>
+            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/tradedata')" class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">
+            Method: <span class="font-medium">GET</span> <br>
+            Response: <span class="font-medium">JSON daily trades</span>
+          </p>
+        </div>
+
+        <!-- 💡 Credits Section -->
+        <div id="credits" class="card">
+          <h2 class="text-2xl font-bold text-[#014422] mb-4">💡 Credits</h2>
+          <ul class="list-disc list-inside text-gray-700 text-sm space-y-2">
+            <li>
+              <strong>Data Sources:</strong><br>
+              • Yahoo Finance<br>
+              • The Edge<br>
+              • Malaysian Palm Oil Board (MPOB)<br>
+              • World Resources Institute (WRI)<br>
+              • Global Forest Watch (GFW)<br>
+              • UN Comtrade<br>
+              • Department of Statistics Malaysia (DOSM)<br>
+              • KLSE Screener
+            </li>
+            <li>
+              <strong>Tech Stack:</strong><br>
+              <u>Backend:</u> Python (FastAPI)<br>
+              <u>Frontend:</u> HTML, CSS, JavaScript<br>
+              <u>Styling:</u> Tailwind CSS<br>
+              <u>Charts & Visualization:</u> Chart.js, AnyChart, Vis.js<br>
+              <u>Geospatial Mapping:</u> Leaflet, Leaflet.MarkerCluster
+            </li>
+          </ul>
+        </div>
       </div>
     </section>
 
