@@ -24,12 +24,14 @@ import torch.nn.functional as F
 import pandas as pd
 import yfinance as yf
 import os
+import psutil
 import requests
 import geopandas as gpd
 import json
 import sqlite3
 import geopandas as gpd
 import re
+from io import StringIO
 
 #database
 SQLITE_DB = "bursa_palmai_database.db"
@@ -85,6 +87,10 @@ wfcast_df = pd.json_normalize(wfcast_json)
 wfcast_df = wfcast_df[['date', 'summary_forecast', 'min_temp', 'max_temp', 'location.location_name']]
 wfcast_df.rename(columns={'location.location_name': 'location_name'}, inplace=True)
 wfcast_df['date'] = pd.to_datetime(wfcast_df['date'])
+
+# ➤ ADD this line to filter to only 3 days from today
+today = pd.Timestamp.today().normalize()
+wfcast_df = wfcast_df[wfcast_df['date'] < today + pd.Timedelta(days=3)]
 
 # 3. Load weather station coordinates
 points_df = pd.read_csv('weather_station_base.csv')  # Has base_latitude, base_longitude
@@ -205,6 +211,15 @@ raw_material_base_names = [
     "Rubber",
     "Coconut"
 ]
+
+@app.get("/memory")
+def get_memory_usage():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    return {
+        "rss_MB": round(mem_info.rss / 1024 / 1024, 2),  # Resident memory
+        "vms_MB": round(mem_info.vms / 1024 / 1024, 2),  # Virtual memory
+    }
 
 # mainpage
 # market cap aka treemap
@@ -776,7 +791,7 @@ def get_commodities_data():
 @app.get("/yf/soy-price-data")
 def get_soy_price_data(ticker: str):
     end = datetime.today()
-    start = end - timedelta(days=180)  # last 6 months
+    start = end - timedelta(days=30)
     data = yf.download("ZL=F", start=start, end=end, progress=False, proxy="")
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
@@ -847,8 +862,11 @@ def get_fuel_prices():
 @app.get("/sqlite/trade-data")
 async def get_trade_data():
     conn = sqlite3.connect(SQLITE_DB)
-    query_result = pd.read_sql("SELECT * FROM test_gt", conn)
-    dff = query_result[['reporterISO', 'partnerISO', 'reporterDesc', 'refMonth', 'cmdCode', 'fobvalue']]
+    query = """
+            SELECT reporterISO, partnerISO, reporterDesc, refMonth, cmdCode, fobvalue
+            FROM trade_data
+            """
+    dff = pd.read_sql(query, conn)
     data = dff.to_dict(orient="records")
     conn.close()
     
@@ -858,26 +876,40 @@ async def get_trade_data():
 @app.get("/opendosm/exim-data")
 def get_exim_data():
     url = "https://storage.dosm.gov.my/trade/trade_sitc_1d.csv"
-    exim_data = pd.read_csv(url, sep=",")
 
+    # Stream and parse only needed columns
+    r = requests.get(url, stream=True)
+    r.raise_for_status()
+    content = StringIO(r.content.decode('utf-8'))
+
+    usecols = ["date", "section", "exports", "imports"]
+    df = pd.read_csv(content, usecols=usecols)
+
+    # Filter section early
+    df = df[df['section'].isin(['4', '5'])]
+
+    # Map sections
     section_map = {
         '4': "Animal Vegetable Oils Fats and Waxes",
         '5': "Chemical and Related Products NEC"
     }
-    exim_filtered_data = exim_data[exim_data['section'].isin(['4', '5'])].copy()
-    exim_filtered_data['section'] = exim_filtered_data['section'].map(section_map)
+    df['section'] = df['section'].map(section_map)
 
-    exim_filtered_data['date'] = pd.to_datetime(exim_filtered_data['date'])
-    exim_filtered_data = exim_filtered_data[exim_filtered_data['date'].dt.year > 2018]
-    exim_filtered_data['date'] = pd.to_datetime(exim_filtered_data['date']).dt.strftime('%Y-%m')
+    # Convert date and filter year
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    df = df[df['date'].dt.year > 2018]
 
-    grouped = exim_filtered_data.groupby(['date', 'section'])[['exports', 'imports']].sum().reset_index()
+    # Format date
+    df['date'] = df['date'].dt.strftime('%Y-%m')
 
-    eximpivoted = grouped.pivot(index="date", columns="section", values=["exports", "imports"])
-    eximpivoted.columns = ['_'.join(col).strip().replace(" ", "_") for col in eximpivoted.columns.values]
-    eximpivoted = eximpivoted.reset_index()
+    # Group and pivot
+    grouped = df.groupby(['date', 'section'], as_index=False)[['exports', 'imports']].sum()
 
-    return eximpivoted.to_dict(orient="list")
+    pivoted = grouped.pivot(index="date", columns="section", values=["exports", "imports"])
+    pivoted.columns = ['_'.join(col).replace(" ", "_") for col in pivoted.columns]
+    pivoted = pivoted.reset_index()
+
+    return pivoted.to_dict(orient="list")
 
 @app.get("/", response_class=HTMLResponse)
 def serve_index():
@@ -923,14 +955,6 @@ async def weather_stations():
 # rspolayer
 @app.get("/rsposhapefile")
 def get_shapefile():
-    #rspo_gdf = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
-    #rspo_gdf = rspo_gdf[rspo_gdf['country'].isin(['Malaysia'])]
-
-    #for col in rspo_gdf.columns:
-    #    if rspo_gdf[col].dtype.name.startswith("datetime"):
-    #        rspo_gdf[col] = rspo_gdf[col].astype(str)
-
-    #rspo_geojson = rspo_gdf.to_crs(epsg=4326).to_json()
     gdf = df_lab.copy()
     gdf['geometry'] = gpd.points_from_xy(gdf['Longitude'], gdf['Latitude'])
     gdf = gpd.GeoDataFrame(gdf, geometry='geometry', crs="EPSG:4326")
@@ -960,22 +984,27 @@ def get_shapefile():
 def get_mills():
     try:
         conn = sqlite3.connect(SQLITE_DB)
-        mill_df = pd.read_sql("SELECT * FROM universal_mill_list where ISO = 'MYS'", conn)
-        
+        query = """
+        SELECT Mill_Name, Parent_Com, Group_Name, RSPO_Statu, Latitude, Longitude
+        FROM universal_mill_list
+        WHERE ISO = 'MYS'
+        """
+        mill_df = pd.read_sql(query, conn)
+
         if mill_df.empty:
             raise HTTPException(
-                status_code=404, 
+                status_code=404,
                 detail="No mill data found in database"
             )
-            
+
         geometry = [Point(xy) for xy in zip(mill_df["Longitude"], mill_df["Latitude"])]
         mill_gdf = gpd.GeoDataFrame(mill_df, geometry=geometry, crs="EPSG:4326")
         mill_geojson = mill_gdf.to_json()
         return JSONResponse(content=json.loads(mill_geojson))
-        
+
     except sqlite3.Error as e:
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail=f"Database error: {str(e)}"
         )
     except KeyError as e:
