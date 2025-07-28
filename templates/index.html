@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="Bursa PalmAI">
-  <meta property="og:description" content="An AI, data-powered Bursa Malaysia Palm Oil Dashboard App">
+  <meta property="og:description" content="An AI, data-powered Bursa Malaysia Palm Oil Intelligence Hub">
   <meta property="og:image" content="/static/banner.jpg">
   <meta property="og:url" content="https://bursa-palmai.onrender.com/">
   <meta property="og:type" content="website">
@@ -14,14 +15,16 @@
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Bursa PalmAI">
-  <meta name="twitter:description" content="An AI, data-powered Bursa Malaysia Palm Oil Dashboard App">
+  <meta name="twitter:description" content="An AI, data-powered Bursa Malaysia Palm Oil Intelligence Hub">
   <meta name="twitter:image" content="/static/banner.jpg">
 
   <title>Bursa PalmAI</title>
   <link rel="icon" href="/static/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/static/style.css">
@@ -33,7 +36,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-  <link rel="stylesheet" href=/static/L.Icon.Pulse.css/>
+  <link rel="stylesheet" href=/static/L.Icon.Pulse.css />
   <script src=/static/L.Icon.Pulse.js></script>
   <script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,6 +44,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
+
 <body class="font-sans bg-gray-50 text-black min-h-screen flex">
   <!-- Sidebar -->
   <aside class="sidebar p-6 flex flex-col justify-between">
@@ -83,16 +87,18 @@
     <!-- Tab Contents -->
     <section id="mainpage" class="tab-content px-4">
       <header class="text-center mb-8">
-        <h1 class="text-5xl font-extrabold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI</h1>
+        <h1 class="text-5xl font-extrabold mb-2" style="color: #014422; font-family: 'Inter', sans-serif;">Bursa PalmAI
+        </h1>
         <p class="text-lg mb-6" style="color: #91b7a2; font-family: 'Inter', sans-serif;">
-          An AI, data-powered Bursa Malaysia Palm Oil Dashboard App
+          An AI, data-powered Bursa Malaysia Palm Oil Intelligence Hub
         </p>
       </header>
 
       <!-- Sector Indices -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <!-- News Sentiment -->
-        <div id="newsSentimentCard" class="p-3 rounded-xl shadow flex flex-col justify-center transition-all duration-300">
+        <div id="newsSentimentCard"
+          class="p-3 rounded-xl shadow flex flex-col justify-center transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-600 mb-1 text-center">News Sentiment</h3>
           <p id="newsSentimentValue" class="text-2xl font-bold leading-tight text-center">--</p>
           <span id="newsSentimentLabel" class="text-xs font-medium text-center">Loading...</span>
@@ -109,7 +115,8 @@
         <div id="weatherRiskCard" class="p-3 rounded-xl shadow flex flex-col justify-center bg-[#e6f4ea]">
           <h3 class="text-lg font-semibold text-gray-600 mb-1 text-center">Weather Forecast</h3>
           <p id="weatherRiskType" class="text-2xl font-bold text-[#34a853] leading-tight text-center">...</p>
-          <span id="weatherRiskLabel" class="text-xs font-medium text-[#34a853] text-center">Based on upcoming 7-day weather forecasts</span>
+          <span id="weatherRiskLabel" class="text-xs font-medium text-[#34a853] text-center">Based on upcoming 7-day
+            weather forecasts</span>
         </div>
       </div>
 
@@ -135,7 +142,8 @@
       <!-- Navigation Buttons -->
       <div class="flex justify-center space-x-4 mb-12">
         <button id="prevBtn" class="px-4 py-2 bg-gray-300 rounded disabled:opacity-50">← Prev</button>
-        <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50" style="background-color: #345f3c;">Next →</button>
+        <button id="nextBtn" class="px-4 py-2 text-white rounded disabled:opacity-50"
+          style="background-color: #345f3c;">Next →</button>
       </div>
 
       <!-- News Heading -->
@@ -144,8 +152,10 @@
       </h2>
 
       <!-- AI Summary Output -->
-      <div id="aiSummary" class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto mt-6" style="font-family: 'Inter', sans-serif;">
-        <p><em>Loading AI summary...</em></p>
+      <div id="aiSummary"
+        class="bg-white border border-[#c4e3d2] rounded-xl p-4 text-sm text-gray-800 shadow-md max-w-3xl mx-auto mt-6"
+        style="font-family: 'Inter', sans-serif;">
+        <p><em>Loading AI generated summary...</em></p>
       </div>
 
       <!-- News Cards -->
@@ -160,8 +170,8 @@
         <!-- Title and Dropdown -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
           <div class="flex items-center gap-3">
-            <img id="companyLogo" src="/static/company_logo/klk_logo.png" alt="..." 
-                style="width:48px;height:48px;border-radius:50%;border:2px solid #e5e7eb;object-fit:cover;">
+            <img id="companyLogo" src="/static/company_logo/klk_logo.png" alt="..."
+              style="width:48px;height:48px;border-radius:50%;border:2px solid #e5e7eb;object-fit:cover;">
             <h2 id="company-title" class="text-2xl font-bold" style="color: #014422;">Kuala Lumpur Kepong Berhad</h2>
           </div>
           <select id="company-select" class="border p-2 rounded bg-gray-50 w-full md:w-auto">
@@ -222,8 +232,10 @@
         <!-- Disclaimer -->
         <div class="mt-4 text-sm text-gray-600 text-left-justify">
           <p>
-            This material is provided solely for informational purposes and does not constitute financial, investment, legal, or professional advice. 
-            No representations or warranties are made, and all liability is expressly disclaimed for any actions taken or losses incurred based on reliance upon this content.
+            This material is provided solely for informational purposes and does not constitute financial, investment,
+            legal, or professional advice.
+            No representations or warranties are made, and all liability is expressly disclaimed for any actions taken
+            or losses incurred based on reliance upon this content.
           </p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -257,12 +269,14 @@
               <h3 class="text-lg font-semibold mb-2 text-[#345f3c]">Correlation Heatmap</h3>
               <div id="correlationHeatmap" class="flex-1 w-full"></div>
             </div>
-            <div class="bg-[#f0fdf4] border border-green-200 rounded-lg p-6 shadow h-[38%] flex flex-col justify-between">
+            <div
+              class="bg-[#f0fdf4] border border-green-200 rounded-lg p-6 shadow h-[38%] flex flex-col justify-between">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold" style="color: #345f3c;">Impact Analysis</h3>
                 <div class="flex items-center space-x-2">
                   <label for="toggleSelect" class="text-sm font-medium text-gray-700">Choose Metric:</label>
-                  <select id="toggleSelect" class="border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-400">
+                  <select id="toggleSelect"
+                    class="border rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:border-green-400">
                     <option value="cpo">CPO</option>
                     <option value="pk">PK</option>
                     <option value="ffb">FFB</option>
@@ -286,28 +300,29 @@
 
     <section id="commodities" class="tab-content hidden">
       <div class="mb-6">
-        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">🌾 Commodity Market Insights</h2>
-        <p class="text-gray-700 mt-2 max-w-4xl" style="font-family: 'Inter', sans-serif;">
-          This section presents key commodities that influence palm oil markets — including crop prices, fuel costs, and agricultural inputs. Use the insights below to monitor external factors affecting plantation economics.
-        </p>
+        <h2 class="text-2xl font-bold" style="color: #345f3c; font-family: 'Inter', sans-serif;">🌾 Commodity Market
+          Insights</h2>
       </div>
 
       <div class="space-y-6">
         <div class="chart-container h-96 w-full">
           <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">MPOB Key Indicators</h3>
-          <p class="text-sm text-gray-600 mb-2">Latest official data from MPOB including production, stocks, and exports.</p>
+          <p class="text-sm text-gray-600 mb-2">Latest official data from MPOB including production, stocks, and
+            exports.</p>
           <canvas id="mpobChart" class="w-full h-full"></canvas>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="chart-container h-96 w-full">
             <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">Soybean Futures</h3>
-            <p class="text-sm text-gray-600 mb-2">Soybean prices as substitute for palm oil in the vegetable oil market.</p>
+            <p class="text-sm text-gray-600 mb-2">Soybean prices as substitute for palm oil in the vegetable oil market.
+            </p>
             <canvas id="soy-price-chart" class="w-full h-full"></canvas>
           </div>
 
           <div class="chart-container h-96 w-full">
-            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">CPO, Fresh Fruit Bunches and Palm Kernel Prices</h3>
+            <h3 class="text-lg font-semibold mb-2 text-[#345f3c] font-inter">CPO, Fresh Fruit Bunches and Palm Kernel
+              Prices</h3>
             <p class="text-sm text-gray-600 mb-2">Benchmark prices impacting revenue and market direction.</p>
             <canvas id="cpo-price-chart" class="w-full h-full"></canvas>
           </div>
@@ -336,14 +351,16 @@
       </div>
 
       <!-- Map Section -->
-      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Palm Oil Map & Weather Forecast Slider</h3>
+      <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌍 Palm Oil Map with Geospatial Risk & Weather
+        Forecast Slider</h3>
       <p class="text-gray-600 mb-4">
-        View and interact with the palm oil map. Use the date slider below to view weather overlays over time. Colored regions represent varying rainfall conditions across plantation areas.
+        View and interact with the palm oil map. Use the date slider below to view weather overlays over time. Colored
+        regions represent varying rainfall conditions across plantation areas. Yellow pulses represent nearby recent
+        earthquake occurrences.
       </p>
       <div id="map" style="height: 80vh; width: 100%; border-radius: 12px; position: relative;">
         <!-- Slider inside map -->
-        <div id="sliderContainer"
-          style="
+        <div id="sliderContainer" style="
             position: absolute;
             bottom: 15px;
             left: 50%;
@@ -357,7 +374,8 @@
           <label id="sliderLabel" class="block mb-2 text-sm font-medium text-gray-700">
             Date:
           </label>
-          <input type="range" id="dateSlider" class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" />
+          <input type="range" id="dateSlider"
+            class="w-full h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" />
         </div>
       </div>
 
@@ -366,19 +384,14 @@
         <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">
           🌦️ Palm Oil Estates 7-Day Weather Forecast Summary
         </h3>
-        <p class="text-gray-600 mb-4">
-          This section shows the number of palm oil plantation areas under different forecasted weather conditions (clear, windy, rainy, storm) over the next 7 days.
-        </p>
 
         <div class="flex flex-col items-center justify-center md:max-w-md w-full mx-auto mb-6">
           <label for="date-select" class="mb-2 text-sm font-medium text-gray-700 text-center">
             Select Date:
           </label>
-          <select
-            id="date-select"
+          <select id="date-select"
             class="block w-full max-w-xs p-2 border border-gray-300 rounded-md text-sm text-center"
-            style="font-family: 'Inter', sans-serif; color: #345f3c;"
-          ></select>
+            style="font-family: 'Inter', sans-serif; color: #345f3c;"></select>
         </div>
 
         <!-- Scorecards -->
@@ -390,8 +403,10 @@
                 <h4 class="font-medium text-gray-600">Cerah</h4>
                 <p id="tiada-hujan-value" class="text-2xl font-bold mt-1" style="color: #2ecc71;">114</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #2ecc71;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #2ecc71;" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </div>
           </div>
@@ -403,8 +418,10 @@
                 <h4 class="font-medium text-gray-600">Berangin</h4>
                 <p id="berangin-value" class="text-2xl font-bold mt-1" style="color: #dad01a;">0</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #dad01a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #dad01a;" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
               </svg>
             </div>
           </div>
@@ -416,8 +433,10 @@
                 <h4 class="font-medium text-gray-600">Hujan</h4>
                 <p id="hujan-value" class="text-2xl font-bold mt-1" style="color: #cc6e0a;">226</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #cc6e0a;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #cc6e0a;" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
               </svg>
             </div>
           </div>
@@ -429,7 +448,8 @@
                 <h4 class="font-medium text-gray-600">Ribut Petir</h4>
                 <p id="ribut-petir-value" class="text-2xl font-bold mt-1" style="color: #e74c3c;">452</p>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #e74c3c;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" style="color: #e74c3c;" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -440,9 +460,6 @@
       <!-- Aqueduct Risks -->
       <div id="risks" class="my-10">
         <h3 class="text-lg font-semibold mb-2" style="color: #345f3c;">🌊 Palm Oil Related Environmental Risks</h3>
-        <p class="text-gray-600 mb-4">
-          The following risk breakdowns are derived from the Aqueduct Global Water Risk Atlas and assess the vulnerability of plantation areas to flooding and drought conditions.
-        </p>
         <div class="chart-container">
           <div class="dropdown-container">
             <select id="risk-select" onchange="updateRiskChart()">
@@ -457,7 +474,8 @@
           </h4>
 
           <p id="risk-description" class="text-sm text-gray-600 mb-2">
-            Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in low-lying regions near the sea.
+            Coastal floods occur when storm surges or high tides inundate coastal areas. This risk is higher in
+            low-lying regions near the sea.
           </p>
 
           <canvas id="risk-bar-chart"></canvas>
@@ -470,40 +488,49 @@
         <!-- Graph theory visualization and stats table -->
         <div class="h-[600px] flex flex-row space-x-4 bg-white rounded-lg shadow-md m-2 p-4">
           <div class="flex-1">
-            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global Palm Oil Trade Network</h3>
+            <h3 class="text-2xl font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Global
+              Palm Oil Trade Network</h3>
             <div class="flex items-center mb-2">
               <label for="yearSlider" class="mr-2 text-gray-800" style="font-family: 'Inter', sans-serif;">Year:</label>
-              <input type="range" id="yearSlider" class="w-1/2 h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" min="0" max="0" value="0">
+              <input type="range" id="yearSlider"
+                class="w-1/2 h-2 bg-green-200 rounded-lg appearance-none cursor-pointer" min="0" max="0" value="0">
               <span id="selectedYear" class="ml-2 text-gray-800" style="font-family: 'Inter', sans-serif;">-</span>
-              <button id="playButton" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded" style="font-family: 'Inter', sans-serif;">▶️ Play</button>
+              <button id="playButton" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
+                style="font-family: 'Inter', sans-serif;">▶️ Play</button>
             </div>
             <div id="graphtheory" class="w-full h-[500px]"></div>
           </div>
           <div class="w-1/4">
             <div class="mb-4">
-              <h4 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Legend</h4>
+              <h4 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Legend
+              </h4>
               <ul style="font-family: 'Inter', sans-serif; list-style: none; padding: 0;">
                 <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #BCB98A; margin-right: 8px;"></span>
+                  <span
+                    style="width: 22px; height: 22px; border-radius: 50%; background-color: #BCB98A; margin-right: 8px;"></span>
                   <span class="text-gray-800">Export Only</span>
                 </li>
                 <li style="display: inline-flex; align-items: center; margin-bottom: 8px;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #345f3c; margin-right: 8px;"></span>
+                  <span
+                    style="width: 22px; height: 22px; border-radius: 50%; background-color: #345f3c; margin-right: 8px;"></span>
                   <span class="text-gray-800">Import Only</span>
                 </li>
                 <li style="display: inline-flex; align-items: center;">
-                  <span style="width: 22px; height: 22px; border-radius: 50%; background-color: #fff8dc; margin-right: 8px;"></span>
+                  <span
+                    style="width: 22px; height: 22px; border-radius: 50%; background-color: #fff8dc; margin-right: 8px;"></span>
                   <span class="text-gray-800">Both Import and Export</span>
                 </li>
               </ul>
             </div>
             <div class="mb-4">
-              <label for="countryDropdown" class="text-gray-800" style="font-family: 'Inter', sans-serif;">Select Country: </label>
+              <label for="countryDropdown" class="text-gray-800" style="font-family: 'Inter', sans-serif;">Select
+                Country: </label>
               <select id="countryDropdown" class="w-full p-2 border rounded" style="font-family: 'Inter', sans-serif;">
                 <option value="">Select a country</option>
               </select>
             </div>
-            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Overall Statistics</h3>
+            <h3 class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Overall
+              Statistics</h3>
             <table id="graphStats" class="w-full border-collapse" style="font-family: 'Inter', sans-serif;">
               <thead>
                 <tr style="background-color: #345f3c; color: white;">
@@ -541,7 +568,9 @@
               <option value="5th-chart">Chemical and Related Products</option>
             </select>
           </div>
-          <h3 id="chart-title" class="text-lg font-semibold mb-2" style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Palm Oil End Products Export & Import</h3>
+          <h3 id="chart-title" class="text-lg font-semibold mb-2"
+            style="color: #345f3c; font-family: 'Inter', sans-serif;">Malaysia's Palm Oil End Products Export & Import
+          </h3>
           <canvas id="4th-chart" class="w-full h-full" style="display: block;"></canvas>
           <canvas id="5th-chart" class="w-full h-full" style="display: none;"></canvas>
         </div>
@@ -563,9 +592,11 @@
           border: 2px solid #e5e7eb;
           transition: transform 0.3s ease;
         }
+
         .avatar:hover {
           transform: scale(1.05);
         }
+
         .card {
           background: white;
           border: 1px solid #e5e7eb;
@@ -574,19 +605,23 @@
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .card:hover {
           transform: translateY(-4px);
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
+
         .nav-link {
           color: #345f3c;
           padding: 0.5rem 1rem;
           border-radius: 8px;
           transition: background-color 0.3s ease;
         }
+
         .nav-link:hover {
           background-color: #e6f4ea;
         }
+
         .sticky-nav {
           position: sticky;
           top: 1rem;
@@ -611,7 +646,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           <!-- Derrick Gan -->
           <div class="card text-center">
-            <img src="https://avatars.githubusercontent.com/u/103888751?v=4" alt="Derrick Gan Avatar" class="avatar mx-auto">
+            <img src="https://avatars.githubusercontent.com/u/103888751?v=4" alt="Derrick Gan Avatar"
+              class="avatar mx-auto">
             <h3 class="text-2xl font-bold text-gray-800 mb-1">Derrick Gan</h3>
             <p class="text-blue-600 text-lg font-medium">Data Engineer</p>
             <p class="text-gray-600 mb-2">Developer and Data Scientist of Bursa PalmAI</p>
@@ -623,7 +659,8 @@
 
           <!-- Azrul Hakimi -->
           <div class="card text-center">
-            <img src="https://avatars.githubusercontent.com/u/116322521?v=4" alt="Azrul Hakimi Avatar" class="avatar mx-auto">
+            <img src="https://avatars.githubusercontent.com/u/116322521?v=4" alt="Azrul Hakimi Avatar"
+              class="avatar mx-auto">
             <h3 class="text-2xl font-bold text-gray-800 mb-1">Azrul Hakimi</h3>
             <p class="text-green-600 text-lg font-medium">Front-End Developer</p>
             <p class="text-gray-600 mb-2">Advisor of Bursa PalmAI</p>
@@ -641,7 +678,8 @@
         <div id="documentation" class="card">
           <h2 class="text-2xl font-bold text-[#014422] mb-4">📄 Documentation</h2>
           <p class="text-gray-700 text-sm mb-3">
-            Browse technical documentation for datasets, indicators, and visualization methodologies used in Bursa PalmAI.
+            Browse technical documentation for datasets, indicators, and visualization methodologies used in Bursa
+            PalmAI.
           </p>
           <a href="/static/user_guide.pdf" download class="inline-block text-sm text-blue-600 hover:underline">
             📥 Download User Guide (PDF)
@@ -652,7 +690,8 @@
         <div id="disclaimer" class="card">
           <h2 class="text-2xl font-bold text-[#014422] mb-4">⚠️ Disclaimer</h2>
           <p class="text-gray-700 text-sm">
-            The forecasts and data provided are for informational and educational purposes only. They do not constitute financial or investment advice.
+            The forecasts and data provided are for informational and educational purposes only. They do not constitute
+            financial or investment advice.
           </p>
         </div>
 
@@ -660,14 +699,16 @@
         <div id="api" class="card">
           <h2 class="text-2xl font-bold text-[#014422] mb-4">⚙️ API Services</h2>
           <p class="text-gray-700 text-sm mb-2">
-            Explore our API endpoints to access palm oil data programmatically. Use the links below to interact with our services.
+            Explore our API endpoints to access palm oil data programmatically. Use the links below to interact with our
+            services.
           </p>
 
           <!-- API 1: 7-Day Weather Forecast -->
           <h3 class="font-semibold text-sm text-[#014422] mb-1 mt-4">7-Day Weather Forecast for Palm Oil Estates</h3>
           <div class="bg-gray-100 text-sm text-gray-800 px-4 py-2 rounded-md flex items-center justify-between">
             <code>https://bursa-palmai.onrender.com/weatherforecast</code>
-            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/weatherforecast')" class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
+            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/weatherforecast')"
+              class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
           </div>
           <p class="text-xs text-gray-500 mt-2">
             Method: <span class="font-medium">GET</span> <br>
@@ -681,7 +722,8 @@
           <h3 class="font-semibold text-sm text-[#014422] mb-1">100-Day Trades of Public-Listed Palm Oil Companies</h3>
           <div class="bg-gray-100 text-sm text-gray-800 px-4 py-2 rounded-md flex items-center justify-between">
             <code>https://bursa-palmai.onrender.com/tradedata</code>
-            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/tradedata')" class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
+            <button onclick="navigator.clipboard.writeText('https://bursa-palmai.onrender.com/tradedata')"
+              class="ml-2 text-blue-600 hover:underline text-xs">Copy</button>
           </div>
           <p class="text-xs text-gray-500 mt-2">
             Method: <span class="font-medium">GET</span> <br>
@@ -724,4 +766,5 @@
 
   <script src="/static/script.js"></script>
 </body>
+
 </html>

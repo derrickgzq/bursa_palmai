@@ -49,19 +49,34 @@ client = OpenAI(
 )
 
 #FinBERT
-# Load FinBERT model and tokenizer once
-finbert_model = AutoModelForSequenceClassification.from_pretrained("yiyanghkust/finbert-tone")
-finbert_tokenizer = AutoTokenizer.from_pretrained("yiyanghkust/finbert-tone")
 labels = ["negative", "neutral", "positive"]
 
 def analyze_sentiment(text):
-    inputs = finbert_tokenizer(text, return_tensors="pt", truncation=True)
+    """
+    Analyze the sentiment of financial text using FinBERT.
+
+    Args:
+        text (str): The input text to analyze.
+
+    Returns:
+        tuple: (sentiment, float(score)), where sentiment is one of 'negative', 'neutral', or 'positive',
+    inputs = finbert_tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
+    """
+    # Lazy-load and cache model/tokenizer
+    if not hasattr(analyze_sentiment, "finbert_model"):
+        analyze_sentiment.finbert_model = AutoModelForSequenceClassification.from_pretrained("yiyanghkust/finbert-tone")
+    if not hasattr(analyze_sentiment, "finbert_tokenizer"):
+        analyze_sentiment.finbert_tokenizer = AutoTokenizer.from_pretrained("yiyanghkust/finbert-tone")
+    finbert_model = analyze_sentiment.finbert_model
+    finbert_tokenizer = analyze_sentiment.finbert_tokenizer
+
+    inputs = finbert_tokenizer(text, return_tensors="pt", truncation=True, max_length=128)
 
     with torch.no_grad():
         outputs = finbert_model(**inputs)
     probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0]
     score, pred_idx = torch.max(probs, dim=0)
-    sentiment = labels[pred_idx]
+    sentiment = labels[pred_idx.item()]
     return sentiment, float(score)
 
 app = FastAPI()
@@ -109,11 +124,14 @@ weather_gdf = gpd.GeoDataFrame(
 
 # 5. Load concessions and convert to centroids only
 concessions = gpd.read_file("rspo_oil_palm/rspo_oil_palm_v20200114.shp")
-concessions = concessions.to_crs("EPSG:4326")
+# Project to a suitable projected CRS for accurate centroid calculation
+concessions = concessions.to_crs("EPSG:3395")
 concessions = concessions[concessions['country'] == 'Malaysia']
 
 # ➤ Convert polygons to centroids and drop heavy geometry
 concessions['geometry'] = concessions.geometry.centroid
+# Convert back to geographic CRS for mapping
+concessions = concessions.to_crs("EPSG:4326")
 concessions['Latitude'] = concessions.geometry.y
 concessions['Longitude'] = concessions.geometry.x
 
@@ -266,15 +284,16 @@ def get_market_cap_data():
     result = []
     for name, ticker in companies.items():
         try:
-            stock = yf.Ticker(ticker, proxy="")
-            info = stock.info
+            stock = yf.Ticker(ticker)
+            info = stock.get_info()
             market_cap = info.get("marketCap", None)
             if market_cap:
                 result.append({
                     "company": name,
                     "market_cap_billion": round(market_cap / 1e9, 2)
                 })
-        except:
+        except Exception as e:
+            print(f"Error fetching {ticker}: {e}")
             continue
 
     if not result:
@@ -796,7 +815,7 @@ def get_commodities_data():
 def get_soy_price_data(ticker: str):
     end = datetime.today()
     start = end - timedelta(days=30)
-    data = yf.download("ZL=F", start=start, end=end, progress=False, proxy="")
+    data = yf.download("ZL=F", start=start, end=end, progress=False)
 
     dates = list(data.index.strftime('%Y-%m-%d')) 
     data.columns = data.columns.droplevel(1)  # Remove 'Ticker' level

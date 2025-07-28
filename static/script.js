@@ -283,7 +283,7 @@ function initMainpage() {
               bodyFont: { family: "Inter", size: 13 },
               titleFont: { family: "Inter", size: 14, weight: "bold" },
               callbacks: {
-                label: function(context) {
+                label: function (context) {
                   return `KLCI: ${context.parsed.y}`;
                 },
               },
@@ -381,8 +381,8 @@ function initMainpage() {
         item.change > 0
           ? "text-green-600"
           : item.change < 0
-          ? "text-red-600"
-          : "text-gray-600";
+            ? "text-red-600"
+            : "text-gray-600";
       const logoFilename = logoMap[item.symbol] || "default_logo.png";
       const stockname = stockMap[item.symbol] || item.symbol;
 
@@ -430,16 +430,16 @@ function initMainpage() {
   // ai summary news
   const summaryDiv = document.getElementById("aiSummary");
 
-  fetch(BACKEND_URL + "/ai-summary") 
+  fetch(BACKEND_URL + "/ai-summary")
     .then(response => response.json())
     .then(data => {
       summaryDiv.innerHTML = `
-        <p><strong>AI Summary:</strong> ${data.summary}</p>
+        <p><strong>AI Generated Summary:</strong> ${data.summary}</p>
       `;
     })
     .catch(error => {
-      console.error("Error fetching AI summary:", error);
-      summaryDiv.innerHTML = `<p style="color: red;"><strong>Failed to load AI summary.</strong></p>`;
+      console.error("Error fetching AI generated summary:", error);
+      summaryDiv.innerHTML = `<p style="color: red;"><strong>Failed to load AI generated summary.</strong></p>`;
     });
 
   // News cards
@@ -451,7 +451,7 @@ function initMainpage() {
       if (!newsCardsContainer) return;
       newsCardsContainer.innerHTML = "";
 
-      data.news.slice(0, 6).forEach((item) => {
+      data.news.slice(0, 10).forEach((item) => {
         const card = document.createElement("div");
         card.className =
           "w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition";
@@ -1249,49 +1249,43 @@ async function initCommodities() {
               title: { display: true, text: "Volume / Stocks / Export" },
               position: "left",
             },
-            y1: {
-              beginAtZero: true,
-              position: "right",
-              grid: { drawOnChartArea: false },
-              title: { display: true, text: "FFB Price (RM)" },
-            },
           },
         },
       });
     })
     .catch((error) => console.error("Error fetching MPOB data:", error));
 
-    // Multi-line chart for CPO, FFB, and Palm Kernel
-    async function fetchMainCommoditiesData() {
-      const response = await fetch(BACKEND_URL + "/sqlite/commodities");
-      const result = await response.json();
+  // Multi-line chart for CPO, FFB, and Palm Kernel
+  async function fetchMainCommoditiesData() {
+    const response = await fetch(BACKEND_URL + "/sqlite/commodities");
+    const result = await response.json();
 
-      // Step 1: Get all unique dates sorted
-      const uniqueDates = Array.from(new Set(result.map(item => item.date))).sort();
+    // Step 1: Get all unique dates sorted
+    const uniqueDates = Array.from(new Set(result.map(item => item.date))).sort();
 
-      // Step 2: Group values by item type and date
-      const grouped = {
-        "local crude palm oil": {},
-        "fresh fruit bunches": {},
-        "palm kernel": {},
-      };
+    // Step 2: Group values by item type and date
+    const grouped = {
+      "local crude palm oil": {},
+      "fresh fruit bunches": {},
+      "palm kernel": {},
+    };
 
-      result.forEach(item => {
-        grouped[item.item][item.date] = item.value;
-      });
+    result.forEach(item => {
+      grouped[item.item][item.date] = item.value;
+    });
 
-      // Step 3: For each item, create an array of values aligned by date
-      const data = {
-        dates: uniqueDates,
-        cpo: uniqueDates.map(date => grouped["local crude palm oil"][date] ?? null),
-        ffb: uniqueDates.map(date => grouped["fresh fruit bunches"][date] ?? null),
-        kernel: uniqueDates.map(date => grouped["palm kernel"][date] ?? null),
-      };
+    // Step 3: For each item, create an array of values aligned by date
+    const data = {
+      dates: uniqueDates,
+      cpo: uniqueDates.map(date => grouped["local crude palm oil"][date] ?? null),
+      ffb: uniqueDates.map(date => grouped["fresh fruit bunches"][date] ?? null),
+      kernel: uniqueDates.map(date => grouped["palm kernel"][date] ?? null),
+    };
 
-      return data;
-    }
+    return data;
+  }
 
-    function drawMainCommoditiesChart(data) {
+  function drawMainCommoditiesChart(data) {
     const ctx = document.getElementById("cpo-price-chart")?.getContext("2d");
     if (!ctx) return;
 
@@ -1832,7 +1826,7 @@ async function initExportImport() {
           size =
             minSize +
             ((degree - minDegree) / (maxDegree - minDegree)) *
-              (maxSize - minSize);
+            (maxSize - minSize);
         } else if (degree > 0) {
           size = maxSize;
         }
@@ -1916,13 +1910,13 @@ async function initExportImport() {
             from: isExport
               ? isoToNodeId[row.reporterISO]
               : isImport
-              ? isoToNodeId[row.partnerISO]
-              : undefined,
+                ? isoToNodeId[row.partnerISO]
+                : undefined,
             to: isExport
               ? isoToNodeId[row.partnerISO]
               : isImport
-              ? isoToNodeId[row.reporterISO]
-              : undefined,
+                ? isoToNodeId[row.reporterISO]
+                : undefined,
             arrows: "to",
             width: Math.max(1, (row.fobvalue / maxFobValue) * 10),
             title: `FOB Value: ${row.fobvalue.toLocaleString("en-MY", {
@@ -2032,7 +2026,7 @@ async function initExportImport() {
         }
       });
     } else {
-      console.warn("Physics toggle not found; defaulting to static graph");
+      //console.warn("Physics toggle not found; defaulting to static graph");
     }
 
     // Hover edge events
@@ -2313,176 +2307,183 @@ async function initMpobStats() {
   );
 
   // Initialize map with default base layer
-let map = L.map("map", {
-  center: [4.785756684, 108.2661479634814],
-  zoom: 6,
-  layers: [osm]
-});
+  let map = L.map("map", {
+    center: [4.785756684, 108.2661479634814],
+    zoom: 6,
+    layers: [osm]
+  });
 
-// Marker cluster group for earthquakes
-const earthquakeMarkers = L.markerClusterGroup();
+  // Marker cluster group for earthquakes
+  const earthquakeMarkers = L.markerClusterGroup();
 
-// Custom control for arrow indicator
-const EarthquakeArrowControl = L.Control.extend({
-  options: { position: 'bottomright' },
+  // Custom control for arrow indicator
+  const EarthquakeArrowControl = L.Control.extend({
+    options: { position: 'bottomright' },
 
-  onAdd: function (map) {
-    const container = L.DomUtil.create('div', 'earthquake-arrow-control');
-    container.style.display = 'none';
-    container.style.backgroundColor = 'white';
-    container.style.border = '1px solid #ccc';
-    container.style.borderRadius = '4px';
-    container.style.padding = '5px';
-    container.style.cursor = 'pointer';
-    container.innerHTML = `
-      <i class="fas fa-arrow-right" style="color: #FFFF00; font-size: 16px;"></i>
+    onAdd: function (map) {
+      const container = L.DomUtil.create('div', 'earthquake-arrow-control');
+      container.style.display = 'none';
+      container.style.backgroundColor = 'white';
+      container.style.border = '1px solid #ccc';
+      container.style.borderRadius = '4px';
+      container.style.padding = '5px';
+      container.style.cursor = 'pointer';
+      container.innerHTML = `
+      <i class="fas fa-arrow-right" style="color: #ff0000ff; font-size: 16px;"></i>
       <span style="margin-left: 5px; font-size: 12px; color: #345f3c;">Earthquake</span>
     `;
-    L.DomEvent.disableClickPropagation(container);
-    L.DomEvent.on(container, 'click', this._panToNearestEarthquake, this);
-    return container;
-  },
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.on(container, 'click', this._panToNearestEarthquake, this);
+      return container;
+    },
 
-  initialize: function (markers) {
-    this._markers = markers;
-    this._map = null;
-  },
+    initialize: function (markers) {
+      this._markers = markers;
+      this._map = null;
+    },
 
-  onRemove: function () {
-    const container = this.getContainer();
-    if (container && container.parentNode) {
-      container.parentNode.removeChild(container);
-    }
-  },
-
-  updateArrow: function () {
-    const container = this.getContainer();
-    if (!this._map || !container) return;
-
-    const bounds = this._map.getBounds();
-    let nearestMarker = null;
-    let minDistance = Infinity;
-    const mapCenter = this._map.getCenter();
-
-    this._markers.eachLayer(marker => {
-      if (!bounds.contains(marker.getLatLng())) {
-        const distance = mapCenter.distanceTo(marker.getLatLng());
-        if (distance < minDistance) {
-          minDistance = distance;
-          nearestMarker = marker;
-        }
+    onRemove: function () {
+      const container = this.getContainer();
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
       }
-    });
+    },
 
-    if (nearestMarker) {
-      container.style.display = 'block';
-      const markerPos = nearestMarker.getLatLng();
-      const angle = this._calculateAngle(mapCenter, markerPos);
-      container.querySelector('i').style.transform = `rotate(${angle}deg)`;
-      this._targetLatLng = markerPos;
-    } else {
-      container.style.display = 'none';
+    updateArrow: function () {
+      const container = this.getContainer();
+      if (!this._map || !container) return;
+
+      const bounds = this._map.getBounds();
+      let nearestMarker = null;
+      let minDistance = Infinity;
+      const mapCenter = this._map.getCenter();
+
+      this._markers.eachLayer(marker => {
+        if (!bounds.contains(marker.getLatLng())) {
+          const distance = mapCenter.distanceTo(marker.getLatLng());
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearestMarker = marker;
+          }
+        }
+      });
+
+      if (nearestMarker) {
+        container.style.display = 'block';
+        const markerPos = nearestMarker.getLatLng();
+        const angle = this._calculateAngle(mapCenter, markerPos);
+        container.querySelector('i').style.transform = `rotate(${angle}deg)`;
+        this._targetLatLng = markerPos;
+      } else {
+        container.style.display = 'none';
+      }
+    },
+
+    _calculateAngle: function (from, to) {
+      const dy = to.lat - from.lat;
+      const dx = to.lng - from.lng;
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      return angle;
+    },
+
+    _panToNearestEarthquake: function () {
+      if (this._map && this._targetLatLng) {
+        this._map.panTo(this._targetLatLng, { animate: true, duration: 0.5 });
+      }
     }
-  },
+  });
 
-  _calculateAngle: function (from, to) {
-    const dy = to.lat - from.lat;
-    const dx = to.lng - from.lng;
-    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
-    return angle;
-  },
+  // Custom control for reset view button
+  const ReturnToDefaultControl = L.Control.extend({
+    options: { position: 'topleft' },
 
-  _panToNearestEarthquake: function () {
-    if (this._map && this._targetLatLng) {
-      this._map.panTo(this._targetLatLng, { animate: true, duration: 0.5 });
-    }
-  }
-});
-
-// Custom control for reset view button
-const ReturnToDefaultControl = L.Control.extend({
-  options: { position: 'topleft' },
-
-  onAdd: function (map) {
-    const container = L.DomUtil.create('div', 'return-default-control');
-    container.style.backgroundColor = 'white';
-    container.style.border = '1px solid #ccc';
-    container.style.borderRadius = '4px';
-    container.style.padding = '5px';
-    container.style.cursor = 'pointer';
-    container.innerHTML = `
+    onAdd: function (map) {
+      const container = L.DomUtil.create('div', 'return-default-control');
+      container.style.backgroundColor = 'white';
+      container.style.border = '1px solid #ccc';
+      container.style.borderRadius = '4px';
+      container.style.padding = '5px';
+      container.style.cursor = 'pointer';
+      container.innerHTML = `
       <i class="fas fa-home" style="color: #345f3c; font-size: 16px;"></i>
     `;
-    L.DomEvent.disableClickPropagation(container);
-    L.DomEvent.on(container, 'click', () => {
-      map.setView([4.785756684, 108.2661479634814], 6, { animate: true, duration: 0.5 });
-    });
-    return container;
-  },
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.on(container, 'click', () => {
+        map.setView([4.785756684, 108.2661479634814], 6, { animate: true, duration: 0.5 });
+      });
+      return container;
+    },
 
-  onRemove: function () {
-    const container = this.getContainer();
-    if (container && container.parentNode) {
-      container.parentNode.removeChild(container);
-    }
-  }
-});
-
-// Fetch earthquake warnings
-fetch('https://api.data.gov.my/weather/warning/earthquake')
-  .then(response => {
-    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-    return response.json();
-  })
-  .then(data => {
-    // Get date 3 days ago
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 3);
-
-    // Filter entries
-    const filtered = data.filter(item => {
-      const localDate = new Date(item.localdatetime);
-      return localDate > yesterday;
-    });
-
-    // Add pulsing markers
-    filtered.forEach(({ lat, lon, location, n_distancemas, magdefault, magtypedefault }) => {
-      const marker = L.marker([lat, lon], {
-        icon: L.icon.pulse({
-          iconSize: [20, 20],
-          color: 'yellow',
-          fillColor: 'yellow',
-          heartbeat: 1.2
-        })
-      }).bindPopup(`
-        <strong>${location}</strong><br>
-        Distance from: ${n_distancemas}<br>
-        Magnitude: ${magdefault} ${magtypedefault}
-      `);
-      earthquakeMarkers.addLayer(marker);
-    });
-
-    // Add layer to map
-    map.addLayer(earthquakeMarkers);
-
-    // Add controls after map is ready
-    map.whenReady(() => {
-      try {
-        // Add arrow control
-        const arrowControl = new EarthquakeArrowControl(earthquakeMarkers);
-        arrowControl.addTo(map);
-        arrowControl.updateArrow();
-        map.on('moveend zoomend', () => arrowControl.updateArrow());
-
-        // Add reset view control
-        const resetControl = new ReturnToDefaultControl();
-        resetControl.addTo(map);
-      } catch (error) {
-        console.error('Error adding controls:', error);
+    onRemove: function () {
+      const container = this.getContainer();
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
       }
-    });
-  })
-  .catch(error => console.error('Error fetching earthquake data:', error));
+    }
+  });
+
+  // Fetch earthquake warnings
+  fetch('https://api.data.gov.my/weather/warning/earthquake')
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      // Get date 2 days ago
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 2);
+
+      // Filter entries
+      const filtered = data.filter(item => {
+        const localDate = new Date(item.localdatetime);
+        return localDate > yesterday;
+      });
+
+      // Add pulsing markers
+      filtered.forEach(({ lat, lon, location, localdatetime, n_distancemas, magdefault, magtypedefault }) => {
+        const marker = L.marker([lat, lon], {
+          icon: L.icon.pulse({
+            iconSize: [20, 20],
+            color: 'red',
+            fillColor: 'red',
+            heartbeat: 1.2
+          })
+        }).bindTooltip(`
+    <strong>${location}</strong><br>
+    Distance from Malaysia Region: ${n_distancemas}<br>
+    Magnitude: ${magdefault} ${magtypedefault}<br>
+    Date: ${localdatetime}
+  `, {
+          direction: 'top',     // show above marker
+          sticky: true,         // tooltip follows the mouse
+          opacity: 0.9,         // optional styling
+          offset: [0, -10]      // move up slightly
+        });
+
+        earthquakeMarkers.addLayer(marker);
+      });
+
+      // Add layer to map
+      map.addLayer(earthquakeMarkers);
+
+      // Add controls after map is ready
+      map.whenReady(() => {
+        try {
+          // Add arrow control
+          const arrowControl = new EarthquakeArrowControl(earthquakeMarkers);
+          arrowControl.addTo(map);
+          arrowControl.updateArrow();
+          map.on('moveend zoomend', () => arrowControl.updateArrow());
+
+          // Add reset view control
+          const resetControl = new ReturnToDefaultControl();
+          resetControl.addTo(map);
+        } catch (error) {
+          console.error('Error adding controls:', error);
+        }
+      });
+    })
+    .catch(error => console.error('Error fetching earthquake data:', error));
 
   let forecastLayer = null;
   let millCluster = null;
