@@ -1,5 +1,5 @@
-//const BACKEND_URL = "http://localhost:8000";
-const BACKEND_URL = "https://bursa-palmai.onrender.com";
+const BACKEND_URL = "http://localhost:8000";
+//const BACKEND_URL = "https://bursa-palmai.onrender.com";
 
 // MAINPAGE INITIALIZATION
 async function loadNewsSentiment() {
@@ -451,7 +451,7 @@ function initMainpage() {
       if (!newsCardsContainer) return;
       newsCardsContainer.innerHTML = "";
 
-      data.news.slice(0,6).forEach((item) => {
+      data.news.slice(0, 6).forEach((item) => {
         const card = document.createElement("div");
         card.className =
           "w-full border rounded-lg shadow p-4 flex flex-col justify-between hover:shadow-lg transition";
@@ -460,10 +460,27 @@ function initMainpage() {
           ? `<p class="text-xs text-gray-500 mb-2">${item.published}</p>`
           : "";
 
+        const sentimentColor = {
+          positive: "bg-green-100 text-green-800 border border-green-400",
+          negative: "bg-red-100 text-red-800 border border-red-400",
+          neutral: "bg-yellow-100 text-yellow-800 border border-yellow-400",
+        }[item.sentiment] || "bg-gray-100 text-gray-800 border border-gray-400";
+
+        const sentimentTag = `
+          <span class="text-xs px-2 py-1 rounded-full font-semibold ${sentimentColor}" style="display: inline-block; width: fit-content;">
+            ${item.sentiment.toUpperCase()} • ${(item.score * 100).toFixed(1)}%
+          </span>
+        `;
+
         card.innerHTML = `
-          <h3 class="text-lg font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
-            <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="hover:underline">${item.headline}</a>
-          </h3>
+          <div class="flex justify-between items-start">
+            <h3 class="text-lg font-bold" style="color: #014422; font-family: 'Inter', sans-serif;">
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                ${item.headline}
+              </a>
+            </h3>
+            ${sentimentTag}
+          </div>
           ${published}
           <p class="flex-grow mt-1" style="color: #345f3c; font-family: 'Inter', sans-serif;">
             ${item.description}
@@ -472,6 +489,7 @@ function initMainpage() {
             Read more
           </a>
         `;
+
         newsCardsContainer.appendChild(card);
       });
     } catch (error) {
@@ -2295,11 +2313,176 @@ async function initMpobStats() {
   );
 
   // Initialize map with default base layer
-  let map = L.map("map", {
-    center: [4.310756684156521, 108.3481479634814],
-    zoom: 6,
-    layers: [osm], // default base layer
-  });
+let map = L.map("map", {
+  center: [4.785756684, 108.2661479634814],
+  zoom: 6,
+  layers: [osm]
+});
+
+// Marker cluster group for earthquakes
+const earthquakeMarkers = L.markerClusterGroup();
+
+// Custom control for arrow indicator
+const EarthquakeArrowControl = L.Control.extend({
+  options: { position: 'bottomright' },
+
+  onAdd: function (map) {
+    const container = L.DomUtil.create('div', 'earthquake-arrow-control');
+    container.style.display = 'none';
+    container.style.backgroundColor = 'white';
+    container.style.border = '1px solid #ccc';
+    container.style.borderRadius = '4px';
+    container.style.padding = '5px';
+    container.style.cursor = 'pointer';
+    container.innerHTML = `
+      <i class="fas fa-arrow-right" style="color: #FFFF00; font-size: 16px;"></i>
+      <span style="margin-left: 5px; font-size: 12px; color: #345f3c;">Earthquake</span>
+    `;
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.on(container, 'click', this._panToNearestEarthquake, this);
+    return container;
+  },
+
+  initialize: function (markers) {
+    this._markers = markers;
+    this._map = null;
+  },
+
+  onRemove: function () {
+    const container = this.getContainer();
+    if (container && container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+  },
+
+  updateArrow: function () {
+    const container = this.getContainer();
+    if (!this._map || !container) return;
+
+    const bounds = this._map.getBounds();
+    let nearestMarker = null;
+    let minDistance = Infinity;
+    const mapCenter = this._map.getCenter();
+
+    this._markers.eachLayer(marker => {
+      if (!bounds.contains(marker.getLatLng())) {
+        const distance = mapCenter.distanceTo(marker.getLatLng());
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestMarker = marker;
+        }
+      }
+    });
+
+    if (nearestMarker) {
+      container.style.display = 'block';
+      const markerPos = nearestMarker.getLatLng();
+      const angle = this._calculateAngle(mapCenter, markerPos);
+      container.querySelector('i').style.transform = `rotate(${angle}deg)`;
+      this._targetLatLng = markerPos;
+    } else {
+      container.style.display = 'none';
+    }
+  },
+
+  _calculateAngle: function (from, to) {
+    const dy = to.lat - from.lat;
+    const dx = to.lng - from.lng;
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    return angle;
+  },
+
+  _panToNearestEarthquake: function () {
+    if (this._map && this._targetLatLng) {
+      this._map.panTo(this._targetLatLng, { animate: true, duration: 0.5 });
+    }
+  }
+});
+
+// Custom control for reset view button
+const ReturnToDefaultControl = L.Control.extend({
+  options: { position: 'topleft' },
+
+  onAdd: function (map) {
+    const container = L.DomUtil.create('div', 'return-default-control');
+    container.style.backgroundColor = 'white';
+    container.style.border = '1px solid #ccc';
+    container.style.borderRadius = '4px';
+    container.style.padding = '5px';
+    container.style.cursor = 'pointer';
+    container.innerHTML = `
+      <i class="fas fa-home" style="color: #345f3c; font-size: 16px;"></i>
+    `;
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.on(container, 'click', () => {
+      map.setView([4.785756684, 108.2661479634814], 6, { animate: true, duration: 0.5 });
+    });
+    return container;
+  },
+
+  onRemove: function () {
+    const container = this.getContainer();
+    if (container && container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+  }
+});
+
+// Fetch earthquake warnings
+fetch('https://api.data.gov.my/weather/warning/earthquake')
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    return response.json();
+  })
+  .then(data => {
+    // Get date 3 days ago
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 3);
+
+    // Filter entries
+    const filtered = data.filter(item => {
+      const localDate = new Date(item.localdatetime);
+      return localDate > yesterday;
+    });
+
+    // Add pulsing markers
+    filtered.forEach(({ lat, lon, location, n_distancemas, magdefault, magtypedefault }) => {
+      const marker = L.marker([lat, lon], {
+        icon: L.icon.pulse({
+          iconSize: [20, 20],
+          color: 'yellow',
+          fillColor: 'yellow',
+          heartbeat: 1.2
+        })
+      }).bindPopup(`
+        <strong>${location}</strong><br>
+        Distance from: ${n_distancemas}<br>
+        Magnitude: ${magdefault} ${magtypedefault}
+      `);
+      earthquakeMarkers.addLayer(marker);
+    });
+
+    // Add layer to map
+    map.addLayer(earthquakeMarkers);
+
+    // Add controls after map is ready
+    map.whenReady(() => {
+      try {
+        // Add arrow control
+        const arrowControl = new EarthquakeArrowControl(earthquakeMarkers);
+        arrowControl.addTo(map);
+        arrowControl.updateArrow();
+        map.on('moveend zoomend', () => arrowControl.updateArrow());
+
+        // Add reset view control
+        const resetControl = new ReturnToDefaultControl();
+        resetControl.addTo(map);
+      } catch (error) {
+        console.error('Error adding controls:', error);
+      }
+    });
+  })
+  .catch(error => console.error('Error fetching earthquake data:', error));
 
   let forecastLayer = null;
   let millCluster = null;
@@ -2317,7 +2500,7 @@ async function initMpobStats() {
   // Legend for Palm Oil Estates
   const legend = L.control({ position: "bottomright" });
 
-  legend.onAdd = function () {
+  legend.onAdd = function (map) {
     const div = L.DomUtil.create("div", "info legend");
     div.style.background = "white";
     div.style.padding = "10px";
@@ -2325,23 +2508,77 @@ async function initMpobStats() {
     div.style.borderRadius = "6px";
     div.style.fontSize = "14px";
     div.style.lineHeight = "1.4em";
+    div.style.fontFamily = "'Inter', sans-serif";
+    div.style.width = "150px"; // Smaller by default
+    div.style.transition = "width 0.3s ease";
+
+    // Initial collapsed state
     div.innerHTML = `
-      <strong>Palm Oil Estate</strong><br/>
-      <div style="display: flex; align-items: center; margin-top: 4px;">
-        <div style="width: 12px; height: 12px; background: gray; border-radius: 50%; margin-right: 6px;"></div>
-        Circle Marker
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="color: #345f3c;">Map Legend</strong>
+        <button id="toggleLegend" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #345f3c;" title="Toggle Legend">▶</button>
       </div>
-      <hr style="margin: 6px 0;" />
-      <strong>Weather Forecast</strong><br/>
-      <div><span style="color: green;">●</span> Tiada Hujan/Cerah</div>
-      <div><span style="color: yellow;">●</span> Berangin</div>
-      <div><span style="color: orange;">●</span> Hujan</div>
-      <div><span style="color: red;">●</span> Ribut Petir</div>
-      <hr style="margin: 6px 0;" />
-      <div><i class="fas fa-industry" style="color: brown;"></i> Palm Oil Mills</div>
+      <div id="legendContent" style="display: none; margin-top: 8px;">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+          <div style="flex: 1; min-width: 120px;">
+            <strong>Palm Oil Estate</strong><br>
+            <div style="display: flex; align-items: center; margin-top: 4px;">
+              <div style="width: 12px; height: 12px; background: gray; border-radius: 50%; margin-right: 6px;"></div>
+              Circle Marker
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <strong>Palm Oil Mills</strong><br>
+            <div style="display: flex; align-items: center; margin-top: 4px;">
+              <i class="fas fa-industry" style="color: #8B4513; margin-right: 6px;"></i>
+              Factory Icon
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <strong>Earthquake Warnings</strong><br>
+            <div style="display: flex; align-items: center; margin-top: 4px;">
+              <div style="width: 12px; height: 12px; background: yellow; border-radius: 50%; margin-right: 6px; animation: pulse 1.2s infinite;"></div>
+              Pulsing Marker
+            </div>
+          </div>
+        </div>
+        <hr style="margin: 8px 0;">
+        <strong>Weather Forecast</strong>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px;">
+          <div style="flex: 1; min-width: 100px;"><span style="color: #2ecc71;">●</span> Tiada Hujan/Cerah</div>
+          <div style="flex: 1; min-width: 100px;"><span style="color: #dad01a;">●</span> Berangin</div>
+          <div style="flex: 1; min-width: 100px;"><span style="color: #cc6e0a;">●</span> Hujan</div>
+          <div style="flex: 1; min-width: 100px;"><span style="color: #e74c3c;">●</span> Ribut Petir</div>
+        </div>
+      </div>
     `;
+
+    // Toggle function
+    L.DomEvent.on(div, "click", function (e) {
+      if (e.target.id === "toggleLegend") {
+        const content = div.querySelector("#legendContent");
+        const button = div.querySelector("#toggleLegend");
+
+        const isCollapsed = content.style.display === "none";
+        content.style.display = isCollapsed ? "block" : "none";
+        button.innerHTML = isCollapsed ? "▼" : "▶";
+        div.style.width = isCollapsed ? "300px" : "150px";
+      }
+    });
+
     return div;
   };
+
+  // CSS for pulse animation
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 255, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0); }
+    }
+  `;
+  document.head.appendChild(style);
 
   legend.addTo(map);
 

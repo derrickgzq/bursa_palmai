@@ -32,6 +32,9 @@ import sqlite3
 import geopandas as gpd
 import re
 from io import StringIO
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 #database
 SQLITE_DB = "bursa_palmai_database.db"
@@ -53,6 +56,7 @@ labels = ["negative", "neutral", "positive"]
 
 def analyze_sentiment(text):
     inputs = finbert_tokenizer(text, return_tensors="pt", truncation=True)
+
     with torch.no_grad():
         outputs = finbert_model(**inputs)
     probs = torch.nn.functional.softmax(outputs.logits, dim=-1)[0]
